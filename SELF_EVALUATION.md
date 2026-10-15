@@ -52,3 +52,15 @@ Written by the assistant after reviewing its own work. Dates: 2026-10-15.
 - Mechanical sizes beyond the process model (plate thickness, nozzles, frames, internal container layout, foundations) are conceptual assumptions; no ASME VIII / wind / seismic calculation.
 - Container internals (pumps, blowers, panels) are envelope blocks, not vendor models.
 - Title-block names are placeholders.
+
+# Phase 3b + 4 self-evaluation (detailed drawings, financial model)
+
+## Done
+- 3D detail: nozzle reinforcing pads, weld seams, cladding bands, instruments (LT/TT/sight glass), davit, nameplate, earthing lugs, skirt vents; membrane modules with 19 PVDF tubes; improved pumps (flanges, guards, fins); engine manifolds/filters; BTF platform; gas-holder anchor bolts; plant pipe rack with 4 process lines piped to every reactor, cable tray, fence, lighting.
+- Drawings kept at 8 sheets but denser: section DETAIL A (nozzle + pad, 1:10) and B (anchor chair, 1:15) on the reactor; material list with masses from 3D solids; section C-C of the UF module (1:4); DETAIL C clamping ring of the gas holder; BTF bed chain dimensions + nozzle table; genset performance table; end views; material/mass columns on every parts list; connection schedule on PM-1. All sheets 0 checker issues, all DXF audit 0 errors.
+- Financial model (Excel with live formulas verified by LibreOffice recalculation), report PDF, 10 figures.
+
+## Honest weaknesses
+- Single-set economics are thin (IRR 11.7% vs WACC 9.7%; Monte Carlo P(NPV>0) ~40%). They depend on carbon price (break-even USD 9/t), the POME treatment fee paid by the mill (assumption) and the Perpres 112/2022 tariff (legal status to confirm).
+- CAPEX per kW (~4,950 USD/kWe) is above the literature average for POME biogas (2,758 USD/kW); the case relies on serial-production learning (unit 10 ~ 3,500).
+- Many unit costs are estimates, not quotations.

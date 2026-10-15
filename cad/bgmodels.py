@@ -63,6 +63,13 @@ def flange(r_pipe, x, y, z, d, dn, blind=False):
     f = cyl_dir(rf, tf, (x, y, z), d)
     if not blind: f = f.cut(cyl_dir(r_pipe - _wall(dn), tf, (x, y, z), d))
     return f
+def repad(Rshell, tsh, ang, z, dn, t=None, x0=0, y0=0):
+    """pelat penguat (reinforcing pad) melengkung mengikuti shell: OD pad = 2 x OD nosel"""
+    rp = DN_OD[dn] / 2; t = t or tsh; ux, uy = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+    rpad = rp * 2.0 if dn < 600 else rp + 200
+    c = cyl_dir(rpad, Rshell + tsh + t + 50, (x0, y0, z), (ux, uy, 0))
+    ring = tube(Rshell + tsh + t, Rshell + tsh, 2 * rpad + 20, x0, y0, z - rpad - 10)
+    return c.intersect(ring).cut(cyl_dir(rp + 1, Rshell + 400, (x0, y0, z), (ux, uy, 0)))
 def nozzle_radial(Rshell, ang, z, dn, proj, x0=0, y0=0):
     """nosel radial berongga: leher dari dalam dinding ke luar; muka flens pada jari-jari Rshell+proj"""
     rp = DN_OD[dn] / 2; t = _wall(dn); blind = dn >= 600
@@ -88,12 +95,23 @@ def pump(L_=900, Wb=450, motor_r=150, casing_r=200, x=0, y=0, z=0, name="pump"):
     mL = L_ * 0.48
     parts.append((name + "-motor", cyl(motor_r, mL, x + L_ - mL - 30, y, z + 80 + motor_r + 20, "x"), MOTOR))
     parts.append((name + "-kaki", box(mL * 0.8, motor_r * 1.6, motor_r + 20, x + L_ - mL, y - motor_r * .8, z + 80), MOTOR))
-    parts.append((name + "-kopling", cyl(motor_r * .45, 120, x + L_ - mL - 150, y, z + 80 + motor_r + 20, "x"), YELLOW))
+    parts.append((name + "-kopling", cyl(motor_r * .45, 120, x + L_ - mL - 150, y, z + 80 + motor_r + 20, "x"), DARK))
+    zc = z + 80 + motor_r + 20
+    parts.append((name + "-pelindung", tube(motor_r * .75, motor_r * .7, 200, x + L_ - mL - 190, y, zc, "x").cut(box(220, 4 * motor_r, 2 * motor_r, x + L_ - mL - 200, y - 2 * motor_r, zc - 2 * motor_r)), YELLOW))
+    parts.append((name + "-kipas-motor", cyl(motor_r * 1.04, 90, x + L_ - 30, y, zc, "x"), MOTOR))
+    parts.append((name + "-kotak-terminal", box(mL * .3, motor_r * .9, motor_r * .6, x + L_ - mL * .6, y - motor_r * .45, zc + motor_r - 10), MOTOR))
+    for k in range(int(mL // 60)):
+        parts.append((name + "-sirip-motor-%d" % k, tube(motor_r + 12, motor_r - 2, 14, x + L_ - mL - 20 + 60 * (k + .5), y, zc, "x"), MOTOR))
+    for xx in (x + 60, x + L_ - 60):
+        for yy in (y - Wb / 2 + 50, y + Wb / 2 - 50):
+            parts.append((name + "-baut-%d-%d" % (xx, yy), cyl(14, 40, xx, yy, z + 80), DARK))
     cx = x + casing_r + 60
     vol = cyl(casing_r, casing_r * .7, cx, y - casing_r * .35, z + 80 + motor_r + 20, "y")
     parts.append((name + "-volute", vol, PAINT_B))
     parts.append((name + "-isap", cyl(casing_r * .42, 160, cx - casing_r * .35, y, z + 80 + motor_r + 20, "-x"), PAINT_B))
+    parts.append((name + "-isap-flens", cyl(casing_r * .78, 24, cx - casing_r * .35 - 160, y, z + 80 + motor_r + 20, "-x"), DARK))
     parts.append((name + "-buang", cyl(casing_r * .35, casing_r + 140, cx + casing_r * .3, y, z + 80 + motor_r + 20, "z"), PAINT_B))
+    parts.append((name + "-buang-flens", cyl(casing_r * .66, 24, cx + casing_r * .3, y, z + 80 + motor_r + 20 + casing_r + 140, "z"), DARK))
     parts.append((name + "-bantalan", box(220, 180, 160, cx + casing_r * .4, y - 90, z + 80 + motor_r - 60), PAINT_B))
     return parts
 
@@ -154,10 +172,26 @@ def vessel(kind="reactor", ladder=True):
         a = 2 * math.pi * (i + .5) / 16
         P_.append(("baut-%d" % i, cyl(18, 180, (VR + 140) * math.cos(a), (VR + 140) * math.sin(a), -60), DARK))
         if i % 2 == 0: P_.append(("kursi-%d" % i, box(30, 30, 260, (VR + 140) * math.cos(a) - 15, (VR + 140) * math.sin(a) - 15, 40), DARK))
+    # kampuh las melingkar antar course pelat 2400 mm (manik las) + kampuh kepala-shell
+    for k in range(1, int(VH // 2400) + 1):
+        P_.append(("las-course-%d" % k, cq.Solid.makeTorus(VR + VT, 4).translate(cq.Vector(0, 0, ZB + 2400 * k)), DARK))
+    for zz in (ZB, ZT): P_.append(("las-kepala-%d" % zz, cq.Solid.makeTorus(VR + VT, 5).translate(cq.Vector(0, 0, zz)), DARK))
+    # ventilasi rok 4 x DN80, rangka bukaan akses, papan nama, lug pembumian
+    vent = []
+    for i in range(4):
+        a = math.pi / 4 + i * math.pi / 2
+        vent.append(cyl_dir(45, 60, ((VR + VT - 10) * math.cos(a), (VR + VT - 10) * math.sin(a), HS - 250), (math.cos(a), math.sin(a), 0)))
+    P_[[n for n, _, _ in P_].index("rok")] = ("rok", sk.cut(union(vent)), STEEL)
+    P_.append(("rok-rangka-akses", tube(530, 452, 140, 0, -(VR + VT + 12) - 60, 650, "y"), STEEL))
+    P_.append(("papan-nama", box(320, 8, 220, -160 - 900, -(VR + VT + 12) - 8, 1050), "#d9c27a"))
+    for s_ in (-1, 1): P_.append(("lug-bumi%+d" % s_, box(80, 60, 50, (VR + VT + 12) if s_ > 0 else -(VR + VT + 12) - 80, -30, 300), "#b87333"))
     if kind == "reactor":
         ins = tube(VR + VT + INS + 1, VR + VT + INS, VH, 0, 0, ZB)
         P_.append(("klading-shell", ins, CLAD))
         P_.append(("klading-atas", ellhead(VR + VT + INS, HB + INS, 1.0, ZT, True), CLAD))
+        for k in range(int(VH // 1200) + 1):
+            P_.append(("klading-sabuk-%d" % k, tube(VR + VT + INS + 5, VR + VT + INS + 1, 30, 0, 0, ZB + 40 + min(k * 1200, VH - 70)), "#aeb5bc"))
+        P_.append(("cincin-penyangga-insulasi", tube(VR + VT + INS, VR + VT, 10, 0, 0, ZB - 10), DARK))
     Ro = VR + VT + (INS if kind == "reactor" else 0)
     # nosel
     for tag, srv, dn, ang, z, proj in NOZ:
@@ -171,8 +205,23 @@ def vessel(kind="reactor", ladder=True):
         elif z == "top3":
             zz = ZT + HB * math.sqrt(max(0, 1 - (1300 / VR) ** 2)) - 60
             P_.append((tag, nozzle_vert(-1300, 600, zz, dn, 450), STEEL))
+            # davit lubang orang
+            P_.append(("davit-tiang", cyl(35, 1300, -1300 + 520, 600, zz + 300), YELLOW))
+            P_.append(("davit-lengan", cyl_dir(35, 520, (-1300 + 520, 600, zz + 1600), (-1, 0, 0)), YELLOW))
+            P_.append(("davit-soket", tube(60, 36, 300, -1300 + 520, 600, zz + 300), DARK))
         else:
             P_.append((tag, nozzle_radial(VR, ang, z, dn, (Ro - VR) + proj), STEEL))
+            if dn >= 100: P_.append((tag + "-pad", repad(VR, VT, ang, z, dn), STEEL))
+            # instrumen pada nosel instrumen
+            ux, uy = math.cos(math.radians(ang)), math.sin(math.radians(ang)); rf = Ro + proj
+            if tag in ("N9", "N10"):
+                P_.append((tag + "-LT", cyl_dir(45, 160, (ux * rf, uy * rf, z), (ux, uy, 0)), "#3b6fb0"))
+                P_.append((tag + "-LT-kepala", cyl(75, 120, ux * (rf + 200), uy * (rf + 200), z - 60), "#3b6fb0"))
+            if tag == "N11":
+                P_.append(("TT-kepala", cyl_dir(55, 140, (ux * rf, uy * rf, z), (ux, uy, 0)), "#3b6fb0"))
+            if tag == "N12":
+                P_.append(("SG-kaca", cyl_dir(60, 30, (ux * rf, uy * rf, z), (ux, uy, 0)), "#6fb7d8"))
+                P_.append(("SG-flens-luar", tube(115, 60, 30, ux * (rf + 30), uy * (rf + 30), z - 15).rotate(cq.Vector(ux * (rf + 30), uy * (rf + 30), z), cq.Vector(ux * (rf + 30) - uy, uy * (rf + 30) + ux, z), 90), DARK))
     # nosel bawah (pengurasan) lewat rok
     P_.append(("N13", cyl(DN_OD[80] / 2, HB + 200, 0, 0, ZB - HB - 220), STEEL))
     # internal: header cincin jet
@@ -227,7 +276,7 @@ def vessel_mass():
     """massa kosong bejana (t) dari volume baja"""
     st = 0.0
     for n, s, c in vessel("reactor", ladder=False):
-        if n.startswith(("shell", "kepala", "rok", "cincin", "N", "M")): st += s.Volume()
+        if n.startswith(("shell", "kepala", "rok", "cincin", "N", "M", "las")) and "-LT" not in n: st += s.Volume()
     return st * 7.85e-9
 
 # =====================================================================================================
@@ -307,6 +356,10 @@ def pipe_run(pts, r, name, color=PIPE):
 # 3. PM-4 KONTAINER MEMBRAN
 # =====================================================================================================
 MOD_D, MOD_L = 220.0, 3000.0
+# 19 tabung membran PVDF Ø32 (ID 26) susunan heksagonal pitch 42 di dalam rumah Ø220
+HEX19 = [(0, 0)] + [(42 * math.cos(math.radians(60 * k)), 42 * math.sin(math.radians(60 * k))) for k in range(6)] + \
+        [(84 * math.cos(math.radians(30 * k)) if k % 2 == 0 else 72.7 * math.cos(math.radians(30 * k)), 84 * math.sin(math.radians(30 * k)) if k % 2 == 0 else 72.7 * math.sin(math.radians(30 * k))) for k in range(12)]
+def TUBES(x, y, z, L_): return [cyl(13, L_ + 2, x, y + dy, z + dz, "x") for dy, dz in HEX19]
 def pm4(walls=("back", "left", "roof", "front", "right")):
     P_ = container("C4", walls=walls, louvres=2, side_doors=1)
     z0 = 160
@@ -326,7 +379,12 @@ def pm4(walls=("back", "left", "roof", "front", "right")):
                 if n >= 40: break
                 yy = 380 + i * 270; zz = z0 + 300 + j * 520
                 inst = n < EQ["membrane"]["modules"]
-                P_.append(("MB-301-modul-%02d" % n, cyl(MOD_D / 2, MOD_L, xb, yy, zz, "x"), MEMB if inst else "#cfd4d9"))
+                if inst:
+                    P_.append(("MB-301-modul-%02d" % n, tube(MOD_D / 2, MOD_D / 2 - 6, MOD_L, xb, yy, zz, "x"), MEMB))
+                    P_.append(("MB-301-cermin-%02d" % n, tube(MOD_D / 2 - 6, 0.1, 25, xb, yy, zz, "x").cut(union(TUBES(xb - 1, yy, zz, 27))), "#b9c4cc"))
+                    P_.append(("MB-301-tabung-%02d" % n, union([tube(16, 13, MOD_L, xb, yy + dy, zz + dz, "x") for dy, dz in HEX19]), "#e2ddc4"))
+                else:
+                    P_.append(("MB-301-modul-%02d" % n, cyl(MOD_D / 2, MOD_L, xb, yy, zz, "x"), "#cfd4d9"))
                 if inst:
                     P_.append(("MB-301-tutup-a%02d" % n, cyl(MOD_D / 2 + 15, 90, xb - 90, yy, zz, "x"), PAINT_B))
                     P_.append(("MB-301-tutup-b%02d" % n, cyl(MOD_D / 2 + 15, 90, xb + MOD_L, yy, zz, "x"), PAINT_B))
@@ -440,6 +498,12 @@ def btf():
     P_ += pump(900, 420, 120, 150, 1200, -1500, z0, "P-305")
     P_.append(("K-301", cyl(260, 300, -1450, 1000, z0 + 200, "y"), PAINT_B))
     P_.append(("K-301-motor", cyl(110, 350, -1450, 1300, z0 + 460, "y"), MOTOR))
+    # platform atas BTF + pegangan tangan
+    zp = z0 + 400 + BTF_H + 150
+    P_.append(("BTF-platform", box(1400, 2000, 40, -r - 1000, -1000, zp), GRATE))
+    for i_, s_ in enumerate(handrail([(-r - 1000, -1000), (-r - 1000, 1000), (-r + 400, 1000)], zp + 40, 1100, 1000, 20)): P_.append(("BTF-rel-%d" % i_, s_, YELLOW))
+    for i_, s_ in enumerate(handrail([(-r - 1000 + 500, -1000), (-r + 400, -1000)], zp + 40, 1100, 1000, 20)): P_.append(("BTF-rel2-%d" % i_, s_, YELLOW))
+    for yy in (-900, 900): P_.append(("BTF-braket-%d" % yy, box(1200, 80, 300, -r - 800, yy - 40, zp - 300), DARK))
     # tangga
     for s in (-1, 1):
         P_.append(("BTF-tangga-%+d" % s, cyl(22, BTF_H + 600, -r - 300, s * 230, z0), YELLOW))
@@ -492,6 +556,10 @@ def gasholder():
     hi = 0.55 * h; Ri = ((Dg / 2 - 150) ** 2 + hi ** 2) / (2 * hi)
     P_.append(("GH-membran-dalam", capshell(Ri, 500 + 250 + hi - Ri, 20), "#cfd6dc"))
     P_.append(("GH-cincin-angkur", tube(Dg / 2 + 120, Dg / 2 - 20, 250, 0, 0, 500), DARK))
+    P_.append(("GH-cincin-jepit", tube(Dg / 2 + 120, Dg / 2 - 20, 20, 0, 0, 750 + 45), "#5b6670"))
+    for k in range(48):
+        a = 2 * math.pi * (k + .5) / 48
+        P_.append(("GH-baut-%d" % k, cyl(12, 600, (Dg / 2 + 50) * math.cos(a), (Dg / 2 + 50) * math.sin(a), 300), "#3a3a3a"))
     P_.append(("GH-blower", cyl(400, 600, Dg / 2 + 900, 0, 500, "z"), PAINT_B))
     P_.append(("GH-blower-motor", cyl(180, 500, Dg / 2 + 900, -300, 1300, "y"), MOTOR))
     P_ += pipe_run([(Dg / 2 + 900, 0, 1100), (Dg / 2 + 120, 0, 1100)], 100, "GH-udara", PIPE)
@@ -528,6 +596,15 @@ def pm8(walls=("back", "left", "roof", "front", "right")):
         for s in (0, 1):
             P_.append(("GE-kepala-%d%d" % (k, s), box(450, 380, 300, 1850 + k * 560, 690 + s * 680, z0 + 1550), "#5f8a5f"))
     P_.append(("GE-turbo", cyl(260, 500, 5350, 1220, z0 + 1500, "x"), STEEL))
+    for s_ in (0, 1):
+        P_.append(("GE-manifold-%d" % s_, cyl(90, 3400, 1800, 870 + s_ * 700, z0 + 1950, "x"), "#9c8f84"))
+        P_.append(("GE-filter-udara-%d" % s_, cyl(230, 600, 4850, 770 + s_ * 900, z0 + 1700), "#3f4f3f"))
+        for k in range(6):
+            P_.append(("GE-runner-%d%d" % (s_, k), cyl(45, 200, 2075 + k * 560, 870 + s_ * 700, z0 + 1850), "#9c8f84"))
+    P_.append(("GE-bak-oli", box(3400, 900, 260, 1800, 770, z0 + 250 - 10), "#3b4a3b"))
+    P_.append(("GE-starter", cyl(110, 400, 4900, 760, z0 + 600, "x"), DARK))
+    P_.append(("GE-tangki-oli", cyl(300, 900, 9500, 600, z0), "#5a5a3a"))
+    for k in range(4): P_.append(("GE-peredam-%d" % k, box(250, 250, 120, 1800 + k * 1900, 620, z0 + 250 - 120), "#222222"))
     P_.append(("GE-roda-gila", cyl(650, 300, 5300, 1220, z0 + 950, "x"), DARK))
     P_.append(("GE-generator", cyl(600, 2000, 5600, 1220, z0 + 950, "x"), "#2f5d8a"))
     P_.append(("GE-terminal", box(500, 700, 500, 6500, 870, z0 + 1550), "#2f5d8a"))
@@ -597,14 +674,47 @@ def plant(simple=True):
             add(rv, x0 + PITCH * (k + 1), y0 + PITCH * row, pre="R-2%02d/" % n); tags.append(("R-2%02d" % n, x0 + PITCH * (k + 1), y0 + PITCH * row))
     add(tk, x0, y0, pre="TK-101/"); tags.append(("TK-101", x0, y0))
     add(tk, x0, y0 + PITCH, pre="TK-301/"); tags.append(("TK-301", x0, y0 + PITCH))
-    # pipe rack di tengah antar baris
-    yr = y0 + PITCH / 2
+    # pipe rack di tengah antar baris: 4 jalur proses + baki kabel
+    yr = y0 + PITCH / 2; ZR = 5250.0
     for k in range(9):
         xx = x0 + PITCH * k - 300
         out.append(("rack-tiang-%d" % k, box(250, 1200, 5000, xx, yr - 600, 0), PAINT_B))
+        out.append(("rack-tapak-%d" % k, box(500, 1450, 60, xx - 125, yr - 725, 0), CONC))
+        out.append(("rack-baki-kabel-tiang-%d" % k, box(100, 100, 900, xx + 75, yr - 50, ZR), PAINT_B))
     out.append(("rack-balok", box(PITCH * 8 + 600, 1200, 250, x0 - 300, yr - 600, 5000), PAINT_B))
-    for j, (dy, r_, col) in enumerate(((-350, 84, PIPE), (0, 109, "#c8a23a"), (350, 84, PIPE))):
-        out.append(("rack-pipa-%d" % j, cyl(r_, PITCH * 8 + 600, x0 - 300, yr + dy, 5250 + r_, "x"), col))
+    out.append(("rack-baki-kabel", box(PITCH * 8 + 600, 600, 100, x0 - 300, yr - 300, ZR + 900), "#8a8f55"))
+    LINES = {"umpan": (-450, 57, PIPE), "lumpur": (-150, 84, "#7a6a55"), "retentat": (150, 84, "#7a6a55"), "biogas": (450, 109, "#c8a23a")}
+    for j, (ln_, (dy, r_, col)) in enumerate(LINES.items()):
+        out.append(("rack-pipa-%s" % ln_, cyl(r_, PITCH * 8 + 600, x0 - 300, yr + dy, ZR + r_, "x"), col))
+    # sambungan tiap reaktor ke jalur rack (umpan N1, lumpur N4, retentat N5, biogas N7)
+    Ro = VR + VT + INS
+    def nzp(ang, rr): a = math.radians(ang); return rr * math.cos(a), rr * math.sin(a)
+    for row in range(2):
+        sgn = 1 if row == 0 else -1
+        for k in range(7):
+            cx, cy = x0 + PITCH * (k + 1), y0 + PITCH * row
+            yedge = yr - sgn * 750
+            for ln_, ang, zn in (("umpan", 200, ZB + 1200), ("lumpur", 20, ZB + 900), ("retentat", 0, ZB + 11400)):
+                dy, r_, col = LINES[ln_]
+                fx, fy = nzp(ang, Ro + 400 + 40); ex, ey = nzp(ang, Ro + 400 + 260)
+                pts = [(cx + fx, cy + fy, zn), (cx + ex, cy + ey, zn), (cx + ex, yedge, zn)]
+                ztop = ZR + 2 * r_ + 350
+                pts += [(cx + ex, yedge, ztop), (cx + ex, yr + dy, ztop), (cx + ex, yr + dy, ZR + 2 * r_)]
+                out.extend(pipe_run(pts, r_, "R%d%d-%s" % (row, k, ln_), col))
+            dy, r_, col = LINES["biogas"]
+            zg = ZT + HB - 60 + 600
+            out.extend(pipe_run([(cx, cy, zg), (cx, cy, zg + 350), (cx, yr + dy, zg + 350), (cx, yr + dy, ZR + 2 * r_)], r_, "R%d%d-biogas" % (row, k), col))
+            out.append(("R%d%d-katup-biogas" % (row, k), box(260, 260, 300, cx - 130, yr + dy - 130, ZR + 2 * r_ + 1200), RED))
+    # jalur ke PM-4 (lewat celah R-201/R-202) dan biogas ke PM-6 (ujung timur rack)
+    xg = x0 + PITCH * 1.5
+    for ln_ in ("lumpur", "retentat"):
+        dy, r_, col = LINES[ln_]
+        out.extend(pipe_run([(xg + dy, yr + dy, ZR + 2 * r_), (xg + dy, yr + dy, ZR + 2 * r_ + 1200), (xg + dy, y0 + PITCH + 5200 + 300 + (dy + 450), ZR + 2 * r_ + 1200),
+                             (x0 + PITCH * 2 - 500, y0 + PITCH + 5200 + 300 + (dy + 450), ZR + 2 * r_ + 1200), (x0 + PITCH * 2 - 500, y0 + PITCH + 5200 + 300 + (dy + 450), 900)], r_, "ke-PM4-" + ln_, col))
+    dy, r_, col = LINES["biogas"]
+    xe = x0 + PITCH * 8 + 300
+    out.extend(pipe_run([(xe, yr + dy, ZR + r_), (xe + 3000, yr + dy, ZR + r_), (xe + 3000, y0 + PITCH + 5200 - 600, ZR + r_), (x0 + PITCH * 4 + 1000 + 11000, y0 + PITCH + 5200 - 600, ZR + r_),
+                         (x0 + PITCH * 4 + 1000 + 11000, y0 + PITCH + 5200 - 600, 2400)], r_, "biogas-ke-PM6", col))
     # modul
     yb = y0 + PITCH + 5200
     add(pm4(), x0 + PITCH * 2, yb, pre="PM-4/")
@@ -626,6 +736,23 @@ def plant(simple=True):
         bb = s_.BoundingBox(); xs += [bb.xmin, bb.xmax]; ys += [bb.ymin, bb.ymax]
     X0, X1, Y0, Y1 = min(xs) - 3000, max(xs) + 3000, min(ys) - 3000, max(ys) + 3000
     out.append(("plot-lantai", box(X1 - X0, Y1 - Y0, 10, X0, Y0, -10), "#dcd8cf"))
+    if not simple:
+        # pagar BRC 2,1 m + gerbang, lampu penerangan
+        per = [(X0, Y0), (X1, Y0), (X1, Y1), (X0, Y1), (X0, Y0)]
+        for i, ((ax, ay), (bx, by)) in enumerate(zip(per[:-1], per[1:])):
+            Lg = math.hypot(bx - ax, by - ay); ux, uy = (bx - ax) / Lg, (by - ay) / Lg
+            n = int(Lg // 3000)
+            for j in range(n + 1):
+                px, py = ax + ux * Lg * j / n, ay + uy * Lg * j / n
+                if i == 0 and abs(px - (X0 + 6000)) < 3500: continue
+                out.append(("pagar-tiang-%d-%d" % (i, j), box(60, 60, 2100, px - 30, py - 30, 0), "#5d7a5d"))
+            for zz in (300, 1200, 2050):
+                seg = [(0, Lg)] if i else [(0, 2400), (9600, Lg)]
+                for a_, b_ in seg:
+                    out.append(("pagar-rel-%d-%d-%d" % (i, zz, a_), cyl_dir(15, b_ - a_, (ax + ux * a_, ay + uy * a_, zz), (ux, uy, 0)), "#5d7a5d"))
+        for k, (lx, ly) in enumerate(((X0 + 1500, Y0 + 1500), (X1 - 1500, Y0 + 1500), (X0 + 1500, Y1 - 1500), (X1 - 1500, Y1 - 1500), ((X0 + X1) / 2, Y0 + 1500), ((X0 + X1) / 2, Y1 - 1500))):
+            out.append(("lampu-tiang-%d" % k, cyl(60, 8000, lx, ly, 0), "#6f7377"))
+            out.append(("lampu-kepala-%d" % k, box(600, 300, 120, lx - 300, ly - 150, 8000), "#e8e3c0"))
     return out, tags, (X0, Y0, X1, Y1)
 
 MODULES = {"R-201": lambda: vessel("reactor"), "TK-101": lambda: vessel("tank"), "PM-1": pm1, "PM-4": pm4, "PM-5": pm5,

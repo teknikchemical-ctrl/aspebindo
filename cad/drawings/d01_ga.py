@@ -7,7 +7,7 @@ import json, math
 frame(1, "Tata Letak Umum Set Portabel\nPKS 45 t TBS/jam", "BG-GA-001", "1 : 300", "General Arrangement")
 out, tags, (X0, Y0, X1, Y1) = M.plant(simple=True)
 skip = ('baut', 'kursi', 'rib-', 'sirip', 'anak-tangga', 'sangkar', 'rel-', 'skid-lintang', 'cetakan', 'kunci', 'nosel-jet', 'plot-lantai',
-        'header-jet', 'pipa-jet', 'louvre', 'bantalan', 'kopling', 'GE-kepala', 'MB-301-tutup')
+        'header-jet', 'pipa-jet', 'louvre', 'bantalan', 'kopling', 'GE-kepala', 'MB-301-tutup', '-siku-', 'MB-301-tabung', 'MB-301-cermin', 'sirip-motor', 'pelindung', '-baut-', 'GH-baut', '-pad', 'klading-sabuk', 'las-', 'TT-', '-LT', 'SG-', 'davit', 'GE-runner', 'GE-peredam', 'GE-manifold', 'BTF-rel', 'kipas-motor', 'kotak-terminal', 'flens')
 sh = [s for n, s, c in out if not any(k in n for k in skip)]
 SC = 300.0
 A = View((0, 0, 1), (1, 0, 0), SC, 22 - X0 / SC, 128 + Y0 / SC, name='denah')

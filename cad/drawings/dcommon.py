@@ -136,3 +136,35 @@ def finish(name):
         check(verbose=False, overlay=True); d.pdf(os.path.join(OUT, name + "_chk.pdf"))
     print(name, "ISU =", len(iss))
     return len(iss)
+
+# ---------------------------------------------------------------- tampilan detail (diperbesar)
+import cadquery as cq
+def crop(shapes, ang, r0, r1, z0, z1, w, cx=0, cy=0):
+    """potong kumpulan bentuk dengan kotak lokal: arah radial sudut ang (deg) dari r0..r1, lebar w, tinggi z0..z1"""
+    bx = cq.Solid.makeBox(r1 - r0, w, z1 - z0, cq.Vector(r0, -w / 2, z0)).rotate(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), ang).translate(cq.Vector(cx, cy, 0))
+    out = []
+    for s in shapes:
+        try:
+            r = s.intersect(bx)
+            if r.Volume() > 1: out.append(r)
+        except Exception:
+            pass
+    return out
+
+def detail_view(shapes, ang, origin, scale, ox, oy, name, cx=0, cy=0):
+    """potongan vertikal melalui bidang radial sudut ang; sumbu-x kertas = arah radial keluar"""
+    a = math.radians(ang)
+    V = View((math.sin(a), -math.cos(a), 0), (math.cos(a), math.sin(a), 0), scale, ox, oy, origin=(cx, cy, 0), name=name)
+    V.section(shapes, origin, hatch_sp=1.2, ang=45, draw_rest=True)
+    kd.OPEN_VIEWS.add(name)
+    return V
+
+def callout(p, r, letter, size=3.5, ang=45):
+    """lingkaran rujukan detail pada tampilan induk"""
+    d.circ(p[0], p[1], r, .35, None, 'util', K)
+    a = math.radians(ang)
+    tx, ty = p[0] + (r + 3.2) * math.cos(a), p[1] - (r + 3.2) * math.sin(a)
+    TC(tx, ty, letter, size, 'm', owner=('callout', letter))
+
+def mass_of(parts, pred):
+    return sum(s.Volume() for n, s, c in parts if pred(n)) * 7.85e-9 * 1000   # kg

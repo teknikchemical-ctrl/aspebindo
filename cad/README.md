@@ -37,3 +37,7 @@ Renderer: three.js di Chromium headless (Playwright), karena VTK tidak punya Ope
   asumsi desain konseptual, bukan hasil desain detail ASME / struktur. Perlu verifikasi engineer berlisensi.
 - Nama di blok judul (Universitas, Nama Tim, Checked/Approved) masih placeholder - isi sebelum dikirim.
 - Luas plot dari GA = 89,8 x 31,9 m = 0,29 ha (termasuk jalan 3 m), menggantikan estimasi rumus 0,16 ha.
+
+## Rev B (detail)
+Lembar tetap 8, detail ditambah: DETAIL A/B reaktor, potongan C-C modul UF, DETAIL C cincin jepit GH, daftar material + massa di setiap lembar, tabel nosel BTF, data kinerja genset, tampak ujung.
+Buku render dibuat ulang dengan `python3 make_renderbook.py`. GA memakai model pabrik dengan pipe rack + perpipaan antar reaktor.

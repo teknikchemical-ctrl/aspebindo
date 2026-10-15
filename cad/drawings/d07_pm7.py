@@ -29,6 +29,24 @@ for s_ in (-1, 1):
         L([(x - 3 * s_, c[1]), (x + 2 * s_, c[1])], .7, None, 'inst')
     TC(x + 2 * s_ + (3 if s_ > 0 else -3), c[1] - 3, "A", 3.5, 'm')
 vlabel(c[0] + 30, c[1] + 54, "DENAH GH-301", "1:150")
+for lab_, pt, pr in (("GAS MASUK DN200", (0, Dg / 2 + 1500, 0), 30), ("GAS KELUAR DN200", (0, -Dg / 2 - 1500, 0), -30),
+                     ("BLOWER PENYANGGA", (Dg / 2 + 900, 0, 0), -50), ("KATUP PENGAMAN", (-Dg / 2 - 700, 0, 0), 140),
+                     ("48 BAUT ANGKUR M24", ((Dg / 2 + 50) * math.cos(.9), (Dg / 2 + 50) * math.sin(.9), 0), 50)):
+    auto_leader(A.P(pt), lab_, pref=pr, rmin=8, rmax=40, size=3.0)
+callout(S.P((Dg / 2 + 50, 0, 650)), 600 / 150 + 1.5, "C", ang=-60)
+# ---------------- DETAIL C: cincin angkur & jepit membran 1:20
+selC = [s_ for n, s_, c_ in gh if n in ("GH-pondasi", "GH-lantai", "GH-cincin-angkur", "GH-cincin-jepit", "GH-membran-luar", "GH-membran-dalam") or n.startswith("GH-baut-0")]
+DC = Dg / 2
+cC = crop(selC, 360 * .5 / 48, DC - 550, DC + 500, 0, 880, 250)
+SCC = 25.0; kC = 1 / SCC
+oxC = 246 - (DC - 550) * kC; oyC = 249
+DCv = detail_view(cC, 360 * .5 / 48, (0, 0, 0), SCC, oxC, oyC, 'detC')
+pC = lambda r, z: (oxC + r * kC, oyC - z * kC)
+dim_v(pC(0, 0)[1], pC(0, 500)[1], pC(DC - 550, 0)[0] - 4, "500", pC(DC - 550, 0)[0], pC(DC - 300, 0)[0], size=3.0, out=True, side=-1)
+for lab_, pt, pr in (("CINCIN BAJA 140x250", (DC + 50, 620), 10), ("MEMBRAN LUAR + DALAM", (DC + 80, 860), 30),
+                     ("BETON K-300", (DC + 300, 250), -20), ("BAUT M24", (DC + 50, 840), 0)):
+    auto_leader(pC(*pt), lab_, pref=pr, rmin=6, rmax=30, size=3.0)
+vlabel(380, 228, "DETAIL C", "1:25", size=3.5)
 # ---------------- FL-301 elevasi 1:60
 F = View((0, -1, 0), (1, 0, 0), 60.0, 200, 160, name='flare')
 F.draw([s for n, s, c in fl], hidden=True, w=.4); kd.OPEN_VIEWS.add('flare')

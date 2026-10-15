@@ -31,9 +31,10 @@ Cv.draw([s for n, s, c in bt if not n.startswith(("P-305", "K-301", "BTF-anak", 
 R_ = M.BTF_D / 2; z0 = 258
 cxl, cxr = Cv.P((-R_ - 8, 0, 0))[0], Cv.P((R_ + 8, 0, 0))[0]; yg2 = Cv.P((0, 0, 0))[1]
 dim_h(cxl, cxr, yg2 + 8, "Ø" + fn(M.BTF_D) + " ID", yg2, yg2)
-dim_v(Cv.P((0, 0, z0 + 400))[1], Cv.P((0, 0, z0 + 400 + M.BTF_H))[1], cxr + 12, fn(M.BTF_H), cxr, cxr)
-for k, (a, b) in enumerate(((z0 + 400 + 1500, z0 + 400 + 4300), (z0 + 400 + 4300 + 120, z0 + 400 + 7100))):
-    pass
+dim_v(Cv.P((0, 0, z0 + 400))[1], Cv.P((0, 0, z0 + 400 + M.BTF_H))[1], cxr + 22, fn(M.BTF_H), cxr, cxr)
+zz_ = [0, z0 + 400, z0 + 400 + 910, z0 + 400 + 3610, z0 + 400 + 6310, z0 + 400 + M.M_DIST, z0 + 400 + M.BTF_H]
+for i in range(len(zz_) - 1):
+    dim_v(Cv.P((0, 0, zz_[i]))[1], Cv.P((0, 0, zz_[i + 1]))[1], cxr + 9, fn(zz_[i + 1] - zz_[i]), cxr, cxr, size=3.0, out=(zz_[i + 1] - zz_[i]) < 1000, side=1)
 vlabel((cxl + cxr) / 2, yg2 + 14, "BTF-301 (ELEVASI)", "1:60")
 # ---------------- balon (denah)
 EQ = M.EQ
@@ -49,14 +50,21 @@ items = [(1, "BTF-301", "Bio-trickling filter Ø2400 x 8000, media PP %s m³" % 
          (10, "-", "Header gas DN250", "1", (7000, 300, 0), -60)]
 for num, tg, ds, q, p, pr in items:
     auto_balloon(num, P(p), pref=pr, rmin=8, rmax=60)
-rows = [[n, t, ds, q] for n, t, ds, q, p, pr in items] + [[11, "-", "Kontainer ISO 40 ft HC (ATEX zona 2)", "1"], [12, "-", "Skid BTF 3600 x 3600 + tangga", "1"]]
-table(262, 124, [("No", 8, 'm'), ("Tag", 20, 'm'), ("Uraian", 108, 'l'), ("Jml", 10, 'm')], rows, "DAFTAR BAGIAN", rh=4.4, size=2.5, hsize=2.6)
+SH = {1: ("Bio-trickling filter Ø2400x8000", "FRP vinilester", "3800"), 2: ("Pompa resirkulasi nutrien", "PP, 1,5 kW", "60"),
+      3: ("Blower udara BTF", "Al, 0,75 kW", "45"), 4: ("Pendingin gas shell-tube", "SS316L", "650"), 5: ("Chiller paket", "R-32, 15 kWe", "780"),
+      6: ("KO pot Ø700 + demister", "SS304", "210"), 7: ("Blower biogas %s m³/jam" % fn(EQ["gas_blower"]["flow_m3_h"]), "Al, ATEX 18,5 kW", "2x420"),
+      8: ("Filter karbon aktif Ø1200", "CS epoksi + KI-AC", "2x1650"), 9: ("Panel kontrol + analis gas", "IP54, ATEX", "380"), 10: ("Header gas DN250", "SS304", "420")}
+rows = [[n, t, SH[n][0], SH[n][1], q, SH[n][2]] for n, t, ds, q, p, pr in items] + [[11, "-", "Kontainer 40 ft HC, ATEX z2", "Corten", "1", "4300"], [12, "-", "Skid BTF 3600 + tangga", "S275 galv.", "1", "1650"]]
+yb_ = table(262, 124, [("No", 7, 'm'), ("Tag", 19, 'm'), ("Uraian", 56, 'l'), ("Bahan", 32, 'l'), ("Jml", 10, 'm'), ("kg", 22, 'm')], rows, "DAFTAR BAGIAN", rh=4.4, size=2.5, hsize=2.6)
 image("PM-6_iso-depan.png", 262, 16, 146, 90, name='ISO')
 TC(335, 110, "ISOMETRI (TANPA SKALA)", 3.5, 'm')
-note(262, 200, ["1. BTF dikirim sebagai bejana terpisah di trailer.", "2. H₂S: %s ppm masuk → %s ppm ke genset." % (fn(M.R["nominal"]["h2s_ppm_raw"]), fn(M.R["nominal"]["h2s_ppm_fuel"])),
-                "3. Kontainer: ventilasi paksa + detektor gas."], 3.0)
+noz = [["G1", "DN250", "Gas masuk (bawah)"], ["G2", "DN250", "Gas keluar (puncak)"], ["A1", "DN50", "Udara dari K-301"], ["L1", "DN80", "Resirkulasi ke distributor"],
+       ["L2", "DN80", "Sump / blowdown"], ["MH", "DN600", "Lubang orang"]]
+table(262, yb_ + 3, [("Tag", 14, 'm'), ("Ukuran", 18, 'm'), ("Layanan BTF-301", 64, 'l')], noz, "NOSEL BTF-301", rh=4.4, size=2.5, hsize=2.6)
+note(364, yb_ + 7, ["1. BTF dikirim terpisah", "   di trailer.", "2. H₂S %s → %s ppm." % (fn(M.R["nominal"]["h2s_ppm_raw"]), fn(M.R["nominal"]["h2s_ppm_fuel"])),
+                    "3. Kontainer: ventilasi", "   paksa + detektor gas."], 3.0)
 tg = Cv.P((-R_ - 350, 0, z0 + 1300)); leader(tg[0], tg[1], tg[0] - 5, tg[1] - 11, "GAS MASUK DN250", 3.0, "r")
-tg = Cv.P((-R_ + 250, 0, z0 + 400 + 3600)); leader(tg[0], tg[1], cxl - 8, tg[1] - 8, "UNGGUN MEDIA PP", 3.0, 'r')
+tg = Cv.P((-R_ + 250, 0, z0 + 400 + 3600)); leader(tg[0], tg[1], cxl - 8, tg[1] - 8, "UNGGUN MEDIA PP 2 x 2600", 3.0, 'r')
 for lab_, pt, pr in (("GAS KELUAR DN250", (0, 0, z0 + 400 + M.BTF_H + 850), 160),
                      ("RESIRKULASI DN80", (-R_ - 340, 0, z0 + M.BTF_H - 300), 200),
                      ("DISTRIBUTOR", (R_ - 300, 0, z0 + 400 + M.M_DIST), 30)):
