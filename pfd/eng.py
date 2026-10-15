@@ -1030,3 +1030,105 @@ def _dxf(s,path,title=None):
                 if cl!='#000000': e.dxf.true_color=ezdxf.colors.rgb2int(rgb(cl))
     doc.saveas(path)
 Doc.dxf=_dxf
+
+# =====================================================================================================
+#  EKSTENSI Rev 1: simbol ISO 10628 tambahan, tag aliran (No/T/P), gelembung ISA-5.1 dengan garis
+# =====================================================================================================
+def _sym_reactor(d,e):
+    """reaktor tegak berinsulasi (kepala elipsoidal) dengan cincin nosel jet dan muka cairan"""
+    x,y,w,h=e.x,e.y,e.w,e.h; r=min(w/2,h*.12)
+    Sym.vessel(d,e)
+    d.line([(x-.9,y+h-r)]+d.arcpts(x+w/2,y+r,w/2+.9,r+.9,180,0)[::-1][::-1]+[(x+w+.9,y+h-r)],.15,[.9,.6])   # insulasi
+    d.line(d.arcpts(x+w/2,y+h-r,w/2+.9,r+.9,180,360),.15,[.9,.6])
+    d.line([(x+.5,y+h*.20),(x+w-.5,y+h*.20)],.15,[.8,.5])                                # muka cairan
+    yy=y+h*.86
+    d.line([(x+w*.12,yy),(x+w*.88,yy)],.25)
+    for f in (.22,.5,.78):
+        cx=x+w*f; d.poly([(cx-.7,yy),(cx+.7,yy),(cx,yy-1.4)],.15,'#ffffff')
+def _sym_membrane(d,e):
+    """unit membran (ISO 10628): persegi panjang dibagi diagonal"""
+    x,y,w,h=e.x,e.y,e.w,e.h
+    d.rect(x,y,w,h,.45,Sym.WF); d.line([(x,y+h),(x+w,y)],.3)
+    for i in range(1,4): d.line([(x+w*i/4,y+h*.08),(x+w*i/4,y+h*.92)],.12,[.6,.6])
+def _sym_gasholder(d,e):
+    """penampung gas membran ganda: alas + kubah luar + membran dalam putus-putus"""
+    x,y,w,h=e.x,e.y,e.w,e.h; cx=x+w/2; hb=h*.28
+    d.poly(d.arcpts(cx,y+h-hb,w/2,h-hb,180,0)+[(x+w,y+h),(x,y+h)],.45,Sym.WF)
+    d.line(d.arcpts(cx,y+h-hb,w/2-1.2,h-hb-1.6,180,0),.2,[1.0,.6])
+    d.line([(x,y+h-hb),(x+w,y+h-hb)],.25)
+    d.line([(x-1.8,y+h),(x+w+1.8,y+h)],.7)
+def _sym_genset(d,e):
+    """genset gas dalam kontainer: mesin (M) + generator (G)"""
+    x,y,w,h=e.x,e.y,e.w,e.h
+    d.rect(x,y,w,h,.45,Sym.WF); d.rect(x+.8,y+.8,w-1.6,h-1.6,.15,None,dash=[1.2,.7])
+    r=h*.30; cy=y+h*.5; ex=x+w*.32; gx=x+w*.70
+    d.rect(ex-r*1.15,cy-r,r*2.3,r*2,.35,Sym.WF); d.text(ex,cy+CAPC*2.2,'M',2.2,'m',True,owner=e.tag)
+    d.line([(ex+r*1.15,cy),(gx-r,cy)],.45)
+    d.circ(gx,cy,r,.35,Sym.WF); d.text(gx,cy+CAPC*2.2,'G',2.2,'m',True,owner=e.tag)
+def _sym_kopot(d,e):
+    """pot pemisah kondensat (KO pot) dengan demister"""
+    Sym.vessel(d,e); x,y,w,h=e.x,e.y,e.w,e.h
+    d.rect(x+w*.12,y+h*.20,w*.76,h*.08,.15,None)
+    for i in range(4): d.line([(x+w*(.18+.2*i),y+h*.2),(x+w*(.28+.2*i),y+h*.28)],.1)
+Sym.reactor=staticmethod(_sym_reactor); Sym.membrane=staticmethod(_sym_membrane); Sym.gasholder=staticmethod(_sym_gasholder)
+Sym.genset=staticmethod(_sym_genset); Sym.kopot=staticmethod(_sym_kopot)
+
+def _stag(s,x,y,num,T,P,side='t',lead=2.4,w=7.6):
+    """tag aliran gaya EPC: kotak tiga baris (No, T degC, P bar) di atas/bawah garis, dengan garis penunjuk."""
+    hr=2.7; h=3*hr
+    if side in 'lr':                                   # garis vertikal: kotak di kiri/kanan, penunjuk horizontal
+        xc=x-lead-w/2 if side=='l' else x+lead+w/2
+        s.line([(x,y),(xc+(w/2 if side=='l' else -w/2),y)],.18,None,K,'label')
+        x=xc; y0=y-h/2; y1=y0+h
+    elif side=='t': y1=y-lead; y0=y1-h
+    else: y0=y+lead; y1=y0+h
+    if side in 'tb': s.line([(x,y),(x,y1 if side=='t' else y0)],.18,None,K,'label')
+    s.rect(x-w/2,y0,w,h,.3,'#ffffff','label')
+    s.line([(x-w/2,y0+hr),(x+w/2,y0+hr)],.18,None,K,'label'); s.line([(x-w/2,y0+2*hr),(x+w/2,y0+2*hr)],.18,None,K,'label')
+    s.text(x,y0+hr*.5+CAPC*1.65,str(num),1.65,'m',True,chk=False,layer='label')
+    s.text(x,y0+hr*1.5+CAPC*1.35,T,1.35,'m',False,chk=False,layer='label')
+    s.text(x,y0+hr*2.5+CAPC*1.35,P,1.35,'m',False,chk=False,layer='label')
+    bb=(x-w/2-.2,y0-.2,x+w/2+.2,y1+.2)
+    s.texts.append(dict(bb=bb,t='STAG%s'%num,owner=('stag',num),layer='label',skip=()))
+    return bb
+def _inst2(s,x,y,fn,loop,r=2.9,layer='inst'):
+    """gelembung ISA-5.1 (instrumen pada panel/DCS yang dapat diakses operator): lingkaran dengan garis horizontal"""
+    s.circ(x,y,r,.28,'#ffffff',layer)
+    s.line([(x-r,y),(x+r,y)],.2,None,K,layer)
+    s.text(x,y-.55,fn,1.45,'m',True,layer=layer,chk=False)
+    s.text(x,y+1.95,str(loop),1.45,'m',False,layer=layer,chk=False)
+    q=r*.62; s.texts.append(dict(bb=(x-q,y-q,x+q,y+q),t='%s-%s'%(fn,loop),owner=('inst',fn,loop),layer=layer))
+    return dict(x=x,y=y,r=r)
+Doc.stag=_stag; Doc.inst2=_inst2
+
+def _sym_ccomp(d,e):
+    """kompresor/blower sentrifugal ISO 10628-2: lingkaran + dua garis menyempit ke arah buang (kanan)"""
+    r=min(e.w,e.h)/2; cx,cy=e.x+e.w/2,e.y+e.h/2
+    d.circ(cx,cy,r,.4,Sym.WF)
+    a=math.radians(122); b=math.radians(32)
+    d.line([(cx+r*math.cos(a),cy-r*math.sin(a)),(cx+r*math.cos(b),cy-r*math.sin(b))],.3)
+    d.line([(cx+r*math.cos(a),cy+r*math.sin(a)),(cx+r*math.cos(b),cy+r*math.sin(b))],.3)
+def _sym_tankf(d,e):
+    """tangki atap kerucut (API 650 kecil) tanpa agitator"""
+    x,y,w,h=e.x,e.y,e.w,e.h; rf=min(h*.12,w*.18)
+    d.poly([(x,y+rf),(x+w/2,y),(x+w,y+rf),(x+w,y+h),(x,y+h)],.4,Sym.WF)
+    d.line([(x+.4,y+rf+(h-rf)*.18),(x+w-.4,y+rf+(h-rf)*.18)],.12,[.8,.5])
+def _sym_hcyc(d,e):
+    """hidrosiklon: silinder pendek + kerucut panjang"""
+    x,y,w,h=e.x,e.y,e.w,e.h; cx=x+w/2
+    d.poly([(x,y),(x+w,y),(x+w,y+h*.28),(cx+w*.12,y+h),(cx-w*.12,y+h),(x,y+h*.28)],.4,Sym.WF)
+    d.line([(cx-w*.18,y-1.2),(cx-w*.18,y+h*.34)],.25); d.line([(cx+w*.18,y-1.2),(cx+w*.18,y+h*.34)],.25)
+Sym.ccomp=staticmethod(_sym_ccomp); Sym.tankf=staticmethod(_sym_tankf); Sym.hcyc=staticmethod(_sym_hcyc)
+def _surf_ccomp(e,side,f):
+    r=min(e.w,e.h)/2; cx,cy=e.x+e.w/2,e.y+e.h/2
+    if side=='l': return (cx-r,cy,'L')
+    if side=='r': return (cx+r,cy,'R')
+    if side in 'tb':
+        xx=e.x+f*e.w; u=min(1,abs(xx-cx)/r); dy=r*math.sqrt(max(0,1-u*u))
+        return (xx,cy-dy,'U') if side=='t' else (xx,cy+dy,'D')
+Surf.ccomp=staticmethod(_surf_ccomp)
+def _surf_tankf(e,side,f):
+    if side=='t':
+        rf=min(e.h*.12,e.w*.18); xx=e.x+f*e.w; return (xx,e.y+rf*abs(xx-(e.x+e.w/2))/(e.w/2),'U')
+Surf.tankf=staticmethod(_surf_tankf)
+Surf.reactor=staticmethod(lambda e,side,f: Surf._head(e,side,f,min(e.w/2,e.h*.12)) if side in 'tb' else None)

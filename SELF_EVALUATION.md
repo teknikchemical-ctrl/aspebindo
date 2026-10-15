@@ -20,3 +20,22 @@ Written by the assistant after reviewing its own work. Dates: 2026-10-15.
 6. **Heat is abundant and mostly unused**: 2.1 MWth hot water against a mill that has little use for it, plus 1.3 MWth of POME cooling load rejected.
 7. **Full EFB co-digestion in CSTRs at this scale has pilot, not commercial, precedent.** POME-only CHP is the proven reference.
 8. PFD: team name, university and date in the title block are placeholders (`TEAM`, `UNIV` in `pfd/pfd_biogas.py`). Instrument loops (10) are representative, not a full control philosophy. The DXF carries no fills, so it looks cleaner on screen than the PDF.
+
+
+---
+# Rev 1 self-evaluation (portable thermophilic AnMBR + new PFD)
+
+## What changed
+| Finding (Rev 0) | Action (Rev 1) |
+|---|---|
+| Rev 0 was "a kit of modules", but 2,000 m3 field-built digesters are not a portable product | The process was changed to a **thermophilic (55 C) anaerobic membrane bioreactor (AnMBR) on POME**. Membrane solids retention (SRT 12 d, HRT 4.6 d) plus thermophilic kinetics give 2,632 m3 instead of 14,023 m3. **One standard road-transportable vessel (D 4.2 m x 15.2 m, 194 m3)** is used for every reactor and tank: 10 / 14 / 19 reactors for 30 / 45 / 60 t FFB/h. Everything else ships in containers or skids. The total is 28 truck loads and the plot is about 0.16 ha. |
+| EFB (32 % lignin) set most of the Rev 0 reactor volume | EFB was dropped from the portable product; it stays with the mill as mulch or boiler fuel. |
+| POME is hot (85 C) and Rev 0 cooled it to 38 C and then reheated | At 55 C the plant needs **no heating**; it only cools the feed, and the feed's residual heat covers reactor losses. |
+| The Rev 0 PFD carried the stream table and had little instrumentation | PFD-BG-002 Rev 1 changes: no table; EPC callout strip; stream tags (No./T/P); 22 ISA-5.1 loops, including level control on every vessel; module boundaries PM-1..PM-10; scale table for 30/45/60 t/h. The automatic overlap checker reports 0 issues. |
+
+## Remaining weaknesses
+1. **Thermophilic AnMBR parameters are literature-typical, not measured.** These include the thermophilic ADM1 ratios, a membrane flux of 15 LMH, 1.5 kWh/m3 and the 35 g/L solids limit. **A pilot AnMBR on real POME is the key validation step.**
+2. **Net power about equals the mill's own demand** (961 vs 945 kWe). The product displaces diesel or grid power and earns methane credits; it does not export.
+3. **Waste-sludge flow is large** (226 m3/d at 2-3 % solids). A screw press handles it, but cake disposal needs a plan; land application to the estate is assumed.
+4. **Membrane fouling and cleaning chemicals are not modelled**; CIP is drawn but not costed in detail.
+5. **Economics are a placeholder screen** (6.1 MUSD, about 6 y payback).

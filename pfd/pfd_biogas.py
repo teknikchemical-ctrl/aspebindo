@@ -4,6 +4,8 @@ PFD A2 - Generator Biogas Modular POME + TKKS (EIC 2026).
 Membaca ../process/outputs/results.json (neraca massa dan energi) dan menggambar dengan mesin PFD (eng.py).
 Keluaran: outputs/PFD_BG-001_Rev0.pdf, .dxf, .svg
 Jalankan: python3 pfd_biogas.py
+SUDAH DIGANTI oleh pfd_portable.py (Rev 1). Skrip ini memerlukan results.json Rev 0 dan tidak lagi jalan dengan keluaran Rev 1;
+PDF/DXF Rev 0 disimpan di outputs/ sebagai arsip.
 """
 import sys, os, json
 HERE = os.path.dirname(os.path.abspath(__file__))

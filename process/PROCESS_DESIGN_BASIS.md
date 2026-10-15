@@ -1,159 +1,105 @@
-# Process Design Basis - Modular POME + EFB Biogas Generator
+# Process Design Basis - Rev 1: Portable Thermophilic AnMBR Biogas Generator (POME)
 
-*Generated from `outputs/results.json` (seed 20261015, N_MC = 400). Every number below is a model output; assumptions and their provenance are in section 9.*
+*Generated from `outputs/results.json` (seed 20261015, N_MC = 400). Rev 0 (mesophilic CSTR with EFB co-digestion) is kept as comparison case A.*
 
-## 1. Product definition
-A **numbered-up bank of identical mesophilic CSTR digester modules** that co-digests palm oil mill effluent (POME) with shredded empty fruit bunch (EFB) and delivers electricity and hot water to the mill. One standard module (2,000 m3 liquid) is repeated: **3 / 7 / 10 modules** serve 20 / 45 / 70 t FFB/h mills. Gas treatment, CHP, dewatering and utilities are shared equipment sized for the whole bank.
+## 1. Product
+A **portable, shop-built biogas power plant for palm oil mills of 30-60 t FFB/h** (the common sizes in Sumatra). Hot POME (85 C) is digested at **55 C in a thermophilic anaerobic membrane bioreactor (AnMBR)**: an external tubular ultrafiltration loop retains the biomass and solids (SRT 12 d) while the liquid passes in 4.5 d. This makes the reactor 5.2x smaller than the Rev 0 mesophilic design, so it fits in **one standard road-transportable vessel (D 4.2 m, 194 m3)** that is numbered up: **10 / 14 / 19 vessels** for 30 / 45 / 60 t FFB/h. Everything else ships in 40 ft containers or container-size skids.
 
-## 2. Fixed process decisions
+## 2. Why this technology (model results, same 45 t FFB/h feed)
+
+| Case | Reactor volume m3 | HRT / SRT d | OLR kg COD/m3.d | CH4 Nm3/d | Nm3 CH4 per m3.d | MLSS g/L |
+|---|---|---|---|---|---|---|
+| A  Mesofilik CSTR + TKKS 29% (Rev0) | 14,023 | 22.0 / 22.0 | 4.0 | 10,347 | 0.74 | 29.3 |
+| B  Mesofilik CSTR, POME | 11,700 | 20.0 / 20.0 | 2.5 | 6,862 | 0.59 | 10.3 |
+| C  Termofilik CSTR, POME | 2,925 | 5.0 / 5.0 | 10.0 | 6,403 | 2.19 | 11.3 |
+| D  Termofilik AnMBR, POME (dipilih) | 2,632 | 4.5 / 12.0 | 11.1 | 6,907 | 2.62 | 26.8 |
+
+* POME arrives at 75-95 C, so 55 C operation needs **no heating**: the feed is only cooled, and its residual heat covers the reactor losses.
+* Thermophilic kinetics (ADM1 thermophilic parameter set) plus membrane solids retention raise volumetric productivity about 4x over Rev 0.
+* EFB co-digestion is **dropped** from the portable product: in Rev 0, EFB (32 % non-degradable lignin, hydrolysis k ~0.03 1/d) set most of the reactor volume. EFB stays with the mill (mulch / boiler).
+* Literature anchors: thermophilic CSTR on POME reached 17 kg COD/m3.d at HRT 5 d (Choorit & Wisarnwan, 2007); a 55 C AnMBR on palm oil wastewater held 93-98 % COD removal at 2-10 kg COD/m3.d (Membranes, 2019); Kubota markets a membrane-based compact POME biogas system; containerised 600 kW biogas gensets run at the Sei Pelakar mill in Sumatra (Guascor).
+
+## 3. Fixed design decisions
 | # | Decision | Value | Basis |
 |---|---|---|---|
-| 1 | Reactor type | Mesophilic CSTR, steel/glass-fused tank, double-membrane gas roof | Controllable temperature and mixing; ~half the HRT of a lagoon; module-able |
-| 2 | Temperature | 38 C | Model optimum range 35-40 C; heat comes from CHP jacket |
-| 3 | EFB fed to digesters | **29.3 % of mill EFB** (58.1 t wet/d) | Largest share whose P95 blend TS stays <= 8 % (feed-uncertainty Monte Carlo, P95 TS = 8.00 %) |
-| 4 | EFB shredder product size | **10 mm** | Largest size within 1 % of best net energy (gas gain vs shredding energy) |
-| 5 | Design HRT | **20 d** (actual 22.0 d with whole modules) | max(HRT for 92 % of asymptotic CH4 = 20 d, 4 x washout HRT 4 d = 16 d) |
-| 6 | Standard module | **2,000 m3 liquid, D = 16.7 m, H = 9.2 m** | Largest catalogue size with <= 15 % overshoot in all three mill tiers and >= 4 modules at 45 t/h (N+1 operability) |
-| 7 | Pre-treatment | Fine screen -> POME cooler (85 -> 39 C) -> blend tank; EFB hammer mill + conveyor | POME must be cooled to hold the blend at 38 C |
-| 8 | H2S control | Bio-trickling filter (micro-air) -> gas chiller -> activated-carbon polish | 1928 ppm raw -> 23 ppm to engine |
-| 9 | Power | 2 x 1,000 kWe lean-burn gas engines (CHP), jacket + exhaust heat recovery | Sized on P95 fuel of the Monte Carlo (4,648 kW) |
-| 10 | Digestate | Screw press -> cake (compost / plantation) + filtrate (land application) | 85 % solids capture, 22 % DS cake |
-| 11 | Stability control | pH set-point 7.0 (NaOH) and **urea-N set-point 100 mg N/L** | EFB is N-poor; without N dosing 3 % of Monte-Carlo draws starved and acidified |
+| 1 | Reactor | Thermophilic AnMBR, CSTR with jet mixing + external tubular UF | Volume, effluent quality, biomass retention |
+| 2 | Temperature | 55 C | Hot POME; ADM1 thermophilic set |
+| 3 | HRT / SRT | 4.5 d / 12 d (actual HRT 4.64 d) | Smallest volume with MLSS <= 85 % of 35 g/L, OLR <= 15 kg COD/m3.d, FOS/TAC <= 0.3, CH4 >= 95 % of best (HRT x SRT grid) |
+| 4 | Standard vessel | D 4.2 m, liquid height 14.0 m, 194 m3; ships 17.3 m long | Largest road-transportable vessel with <= 15 % overshoot in all three mill sizes |
+| 5 | Pre-treatment | Rotary screen + hydrocyclone desander + plate cooler (85 -> 56 C) | Grit would accumulate SRT/HRT times in the membrane loop |
+| 6 | Membrane | 996 m2 tubular UF at 15 LMH, 34 modules, 22 kWe | External cross-flow handles 20-40 g/L solids |
+| 7 | Biogas cleaning | Bio-trickling filter -> chiller 5 C -> blower -> activated carbon | 2,887 ppm raw -> 34 ppm H2S to engine |
+| 8 | Gas storage | Double-membrane gas holder 1,135 m3 (2 h at P95) | Smooths the 20 h/d mill feed |
+| 9 | Power | 2 x 800 kWe containerised gas engines | Sized on P95 fuel 3,252 kW |
+| 10 | Stability control | pH 7.0 (NaOH), urea-N >= 100 mg N/L, level and temperature control on every vessel | Monte Carlo upset probability 0.0 % |
 
-## 3. Equipment list (tags are fixed for the PFD and 3D models)
-| Tag | Equipment | Qty | Key size |
-|---|---|---|---|
-| SC-101 | Fine screen (POME) | 1 | 24 m3/h |
-| E-101 | POME plate cooler (to cooling water) | 1 | 1,300 kWth, 85 -> 39 C |
-| SH-101 | EFB hammer mill / shredder | 1 | 2.9 t/h, 19 kW, 10 mm |
-| CV-101 | EFB screw / belt conveyor | 1 | 2.9 t/h |
-| TK-101 | Blend / buffer tank (mixed) | 1 | 106 m3 (4 h) |
-| P-201 | Digester feed pumps (progressive cavity) | 7+1 | 26.6 m3/h total, 25 m head |
-| R-201..R-207 | Digester modules (CSTR, insulated, membrane roof) | 7 | 2,000 m3 liquid, D 16.7 m, H 9.2 m, dome 4.0 m, gas buffer 467 m3 |
-| MX-201.. | Side-entry / top-entry mixers | 2 per module | 12 kW per module (6 W/m3) |
-| TK-201 / P-203 | NaOH dosing tank + pump | 1 | P95 207 kg NaOH/d |
-| TK-202 / P-204 | Urea-N dosing tank + pump | 1 | P95 57 kg N/d |
-| P-202 | Digestate transfer pump (to screw press) | 1+1 | 26.6 m3/h, 15 m head |
-| BTF-301 | Bio-trickling filter (desulfurizer) | 1 | 755 Nm3/h gas, 25 m3 packing (120 s EBCT), air 5.8 Nm3/h |
-| K-301 | Air blower to BTF | 1 | 5.8 Nm3/h |
-| HX-301 | Gas chiller + condensate pot | 1 | 23 kWth, 5 C dew point |
-| K-302 | Biogas blower | 1+1 | 822 m3/h, 20 kPa |
-| AC-301 | Activated-carbon polishing filter | 1 | 3.6 kg H2S/d |
-| FL-301 | Enclosed flare | 1 | 900 Nm3/h |
-| GE-401/402 | CHP gas engine-generators (containerised) | 2 | 1,000 kWe each |
-| HX-401 | Exhaust heat recovery boiler / hot-water exchanger | 1 | exhaust to 150 C |
-| PR-501 | Screw press (digestate dewatering) | 1 | 26.6 m3/h, 77 t/d cake |
-| CT-601 | Cooling tower (modular cells) | 1 | 1,330 kWth |
+## 4. Portable module set (45 t FFB/h)
 
-
-## 3b. Portable-module architecture (shipping kit)
-The digestion volume of a mill (V = Q x HRT = 14,000 m3 at 45 t FFB/h) cannot be moved as one unit, so *portable* is achieved as a **kit of transportable modules**; planning estimates only (see `portable_modules.py`).
-
-| Module | Content | Qty | Mass t (total) | ISO-sized units |
+| Module | Content | Qty | Shipping | Mass t |
 |---|---|---|---|---|
-| PM-A Skid persiapan umpan | rotary screen, hammer mill 10 mm, conveyor, MCC | 1 | 10.5 | 1 |
-| PM-B Skid pendingin POME | plate cooler 1300 kWth + 2 modular cooling-tower cells | 1 | 12.0 | 1 |
-| PM-C Kit modul digester | 2000 m3 liquid, D 16.7 m, H 9.2 m, bolted panels + membrane roof + 2 mixers; floor slab poured on site | 7 | 162.0 | 14 |
-| PM-D Skid pengolahan gas | 755 Nm3/h; bio-trickling filter shipped as a separate vessel | 1 | 14.5 | 2 |
-| PM-D2 Flare tertutup | 900 Nm3/h enclosed flare | 1 | 3.0 | 1 |
-| PM-E Kontainer CHP | 1000 kWe gas engine-generator per 40 ft HC container; plus 5 t heat-recovery skid | 2 | 61.0 | 3 |
-| PM-F Skid dewatering dan dosing | screw press 26.6 m3/h, polymer unit, NaOH and urea-N dosing | 1 | 11.0 | 1 |
+| PM-1 Skid praolah POME | rotary screen, hydrocyclone desander, plate cooler 812 kWth | 1 | kontainer 40 ft (skid) | 12.0 |
+| PM-2 Bejana standar: tangki penyangga umpan | same 194 m3 vessel as the reactors, 8.0 h hold-up | 1 | bejana di trailer low-bed | 19.0 |
+| PM-3 Bejana standar: reaktor AnMBR termofilik | D 4.2 m x H 15.2 m, 194 m3, 55 C, jet mixing; ships 17.3 m long | 14 | bejana di trailer low-bed | 266.0 |
+| PM-4 Kontainer membran + CIP | 996 m2 tubular UF, 34 modules, cross-flow 149 m3/h | 1 | kontainer 40 ft HC | 16.0 |
+| PM-5 Skid dosing dan pompa umpan | feed pumps, NaOH and urea-N dosing | 1 | skid 20 ft | 8.0 |
+| PM-6 Skid pengolahan biogas | 492 Nm3/h; BTF 16 m3 packing ships as its own vessel | 1 | kontainer 40 ft + bejana BTF | 14.0 |
+| PM-7 Penampung gas + flare | double-membrane gas holder 1135 m3 (2 h), flare 624 Nm3/h | 1 | kontainer 20 ft (membran terlipat) + skid flare | 7.0 |
+| PM-8 Kontainer CHP | 800 kWe biogas engine-generator per container | 2 | kontainer 40 ft HC | 48.0 |
+| PM-9 Skid pemulih panas + menara pendingin | hot-water recovery 1439 kWth; cooling 832 kWth | 1 | skid 20 ft + sel CT modular | 9.0 |
+| PM-10 Bejana standar: tangki permeat + skid lumpur | permeate tank (same vessel), screw press 226.3 m3/d waste sludge | 1 | bejana + skid 20 ft | 27.0 |
 
-**Total for the 45 t FFB/h plant: 23 ISO-sized units, about 274 t shipped, plot about 0.39 ha.** Digester kits ship flat-pack and are re-locatable; only the floor slab and civil works are site-built.
+**Total: 28 truck loads, about 426 t; plot about 0.16 ha** (Rev 0: 0.39 ha). Planning estimates.
 
-## 4. Design-basis operating point (45 t FFB/h x 20 h, nameplate)
+## 5. Design-basis operating point (45 t FFB/h x 20 h)
 | Item | Value |
 |---|---|
-| POME | 585 m3/d |
-| EFB to digesters | 58.1 t/d |
-| Blend | 637 m3/d, TS 6.7 %, COD 89 kg/m3 |
-| Digester state | pH 7.00, VFA 32 mg/L, FOS/TAC 0.013, TAN 106 mg N/L |
-| Biogas | 18,125 Nm3/d, CH4 57.1 %, raw H2S 1,928 ppm |
-| COD to methane | 52 % of blend COD (32 % non-degradable lignin/inerts) |
-| Electricity | gross 1,667 kWe, parasitic 224 kWe, **net 1,443 kWe**, mill demand 945 kW, surplus 498 kWe |
-| Heat | CHP 2,119 kWth, digesters 49 kWth, to mill 2,071 kWth; POME cooling rejected 1,330 kWth |
-| CHP | 2 of 2 engines at 85 % load, eta_el 38.9 %, exhaust 464 C (from energy balance) |
+| POME | 585 m3/d at 85 C, COD 50 kg/m3 |
+| Reactor state | pH 7.10, VFA 84 mg/L, FOS/TAC 0.043, TAN 153 mg N/L, MLSS 25.9 g/L, OLR 10.7 kg COD/m3.d |
+| Biogas | 11,815 Nm3/d, CH4 58.5 % (6,907 Nm3 CH4/d) |
+| Electricity | gross 1,088 kWe, parasitic 127, **net 961 kWe**, mill demand 945 kW |
+| Heat | POME cooling 812 kWth rejected; CHP hot water 1,439 kWth available |
+| Effluent | permeate + filtrate; waste sludge 226.3 m3/d -> 22.8 t/d cake |
+| Methane avoided | 36,777 tCO2e/y vs open ponds (IPCC defaults) |
 
-## 5. Uncertainty (Latin-hypercube Monte Carlo, N = 400; P5 / P50 / P95; mill load factor 0.92 +/- 0.07)
+## 6. Uncertainty (Monte Carlo N = 400, mill load 0.92 +/- 0.07; P5 / P50 / P95)
 | Output | P5 / P50 / P95 |
 |---|---|
-| Biogas, Nm3/d | 13,250 / 16,422 / 19,632 |
-| CH4 fraction | 0.560 / 0.572 / 0.588 |
-| COD removal | 0.484 / 0.524 / 0.564 |
-| Gross power, kWe | 1,177 / 1,498 / 1,822 |
-| Net power, kWe | 988 / 1,286 / 1,590 |
-| Surplus after mill demand, kWe | 182 / 423 / 683 |
-| Raw H2S, ppm | 803 / 1,749 / 3,358 |
-| Urea-N dosing, kg N/d | 0 / 0 / 57 |
-| Probability of digester upset | 0.0 % |
+| Biogas, Nm3/d | 8,001 / 10,527 / 13,615 |
+| Net power, kWe | 646 / 845 / 1,123 |
+| Surplus over mill demand, kWe | -215 / -20 / 225 |
+| Reactor MLSS, g/L | 18.5 / 23.5 / 29.6 |
+| OLR, kg COD/m3.d | 7.5 / 9.6 / 12.2 |
+| Urea-N, kg N/d | 0 / 0 / 31 |
 
-## 6. Scalability (same module)
-| Mill | Modules | Digester volume | Biogas Nm3/d | Net kWe | Net GWh/y (300 d) |
-|---|---|---|---|---|---|
-| 20 t FFB/h | 3 | 6,000 m3 | 8,020 | 629 | 4.5 |
-| 45 t FFB/h | 7 | 14,000 m3 | 18,125 | 1,443 | 10.4 |
-| 70 t FFB/h | 10 | 20,000 m3 | 27,901 | 2,238 | 16.1 |
+## 7. Scalability
+| Mill | Reactor vessels | Net kWe | Net GWh/y | CHP |
+|---|---|---|---|---|
+| 30 t FFB/h | 10 | 627 | 4.5 | 2 x 600 kWe |
+| 45 t FFB/h | 14 | 961 | 6.9 | 2 x 800 kWe |
+| 60 t FFB/h | 19 | 1,311 | 9.4 | 3 x 600 kWe |
 
-## 7. Mass-balance closure (relative error)
+## 8. Closure (relative error)
 | Check | Error |
 |---|---|
-| digester_mass | 3.1e-06 |
-| digester_C | 3.8e-05 |
-| digester_H | 1.2e-06 |
-| digester_O | 1.4e-06 |
-| digester_N | -2.4e-04 |
-| digester_S | -5.3e-04 |
+| reactor_mass | 2.5e-06 |
+| reactor_C | 5.2e-05 |
+| reactor_H | 1.1e-06 |
+| reactor_O | 1.1e-06 |
+| reactor_N | 7.0e-06 |
+| reactor_S | -1.5e-05 |
+| membrane_loop_mass | -3.0e-17 |
 | dewatering_mass | 0.0e+00 |
-| btf_S | 0.0e+00 |
-| btf_C | 1.4e-16 |
-| chp_mass | 1.5e-10 |
+| chp_mass | 2.2e-10 |
 | chp_C | 0.0e+00 |
-| chp_H | -1.2e-16 |
-| chp_O | 1.1e-16 |
+| chp_H | 0.0e+00 |
+| chp_O | -1.7e-16 |
 | chp_N | 0.0e+00 |
 | chp_S | 0.0e+00 |
-| blend_consistency | 1.8e-16 |
-| plant_mass | 2.3e-06 |
-| COD_digester | 3.5e-05 |
+| plant_mass | 1.9e-06 |
+| COD_reactor | 4.7e-05 |
 
-## 8. Stream table (kg/h, design basis)
-| No. | Stream | T, C | P, bar | Phase | Total kg/h |
-|---|---|---|---|---|---|
-| 1 | POME mentah dari pabrik | 85 | 1.30 | C | 24,375 |
-| 2 | TKKS mentah ke digester | 27 | 1.01 | PB | 2,434 |
-| 3 | Residu saringan | 85 | 1.01 | P | 70 |
-| 4 | POME tersaring | 85 | 1.30 | C | 24,305 |
-| 5 | POME didinginkan | 39 | 1.20 | C | 24,305 |
-| 6 | TKKS tercacah | 27 | 1.01 | PB | 2,434 |
-| 7 | Umpan campuran POME+TKKS | 38 | 2.00 | B | 26,739 |
-| 8 | Larutan alkali (NaOH) | 27 | 2.00 | C | 1 |
-| 9 | Biogas mentah (jenuh uap, 38 C) | 38 | 1.02 | G | 986 |
-| 10 | Digestat dari digester | 38 | 1.50 | CP | 25,753 |
-| 11 | Udara ke bio-desulfurisasi | 27 | 1.20 | G | 7 |
-| 12 | Biogas keluar BTF (30 C) | 30 | 1.05 | G | 975 |
-| 13 | Lumpur belerang / blowdown BTF | 30 | 1.01 | CP | 19 |
-| 14 | Kondensat chiller | 5 | 1.01 | C | 21 |
-| 15 | Biogas bersih ke CHP (5 C) | 20 | 1.15 | G | 954 |
-| 16 | Karbon aktif jenuh (H2S) | 27 | 1.01 | P | 0 |
-| 17 | Udara pembakaran CHP | 27 | 1.10 | G | 9,535 |
-| 18 | Gas buang CHP (setelah pemulihan panas) | 150 | 1.01 | G | 10,489 |
-| 19 | Kue digestat | 38 | 1.01 | PB | 3,224 |
-| 20 | Filtrat (efluen cair) | 38 | 1.01 | C | 22,532 |
-| 21 | Polimer flokulan | 27 | 1.01 | C | 3 |
-| 22 | Gas ke flare (kelebihan/darurat) | 20 | 1.10 | G | 0 |
-| 23 | Nutrien nitrogen (urea, dihitung sbg N) | 27 | 2.00 | C | 0 |
-
-Component split of every stream is in `results.json -> streams[].comp`.
-
-## 9. Model basis and provenance
-* Biology: reduced ADM1, 30 states. Hydrolysis (first order), acidogenesis, acetogenesis, aceto- and hydrogenotrophic methanogenesis, acetate/H2 sulfate reduction; pH, free NH3, free H2S, LCFA, H2 inhibition; charge-balance pH; quasi-steady headspace with Henry-law transfer.
-* Stoichiometry for CO2, H2O, NH3 and sulfate is generated from chemical formulas by element balance (residual 3e-17).
-* Calibrated at run time to literature BMPs (POME 397, EFB 264 NmL CH4/g VS): fitted POME BMP 405, EFB BMP 267; calibrated k_cel_ref = 0.031 1/d, shielding beta = 0.68, POME refractory COD = 20 %.
-* Parameter provenance tags: `[LIT-S]` found by literature search in this project, `[ADM1]` Batstone et al. (2002) defaults, `[ASSUME]` engineering assumption to be replaced with site/vendor data, `[CALIB]` fitted. Full table: `results.json -> assumptions`.
-
-## 10. Limitations and open items
-* Feed ranges are literature-based, not site-measured; replacing POME composition, EFB composition and flow with one real mill data set is the highest-value upgrade.
-* EFB hydrolysis rate and recalcitrant fraction are only constrained by one literature BMP (30 d); they are the main structural uncertainty for continuous operation.
-* Sulfide-inhibition constants, SRB kinetics, part-load engine curve, heat-exchanger/cooling-tower and electricity-per-tonne figures are `[ASSUME]`.
-* Economics in `results.json -> economics_screen` use placeholder unit costs - not for decisions until vendor quotes replace them.
-* Full EFB co-digestion in continuous CSTRs at this scale has pilot, not commercial, precedent; POME-only biogas CHP is the proven reference case.
+## 9. Limitations
+* Thermophilic ADM1 parameter ratios and membrane flux / energy / solids limit are literature-typical values, not pilot data; a pilot AnMBR on real POME is the single most important validation step.
+* POME composition is literature-based; one real mill data set would tighten every number.
+* With POME only, net power about equals the mill's own demand; the business case is diesel/grid displacement plus methane credits, not export.
+* Economics (`economics_screen`) use placeholder costs.

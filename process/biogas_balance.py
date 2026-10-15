@@ -210,6 +210,8 @@ PAR = {
  "efb_share":  (0.30,  "fix", "[DESIGN] fraction of EFB to AD (re-optimised in Section 8)"),
  "TS_max":     (0.08,  "fix", "[ASSUME] max blend TS (wet basis) for pumpable, mixable CSTR"),
  "e_scr":      (0.05,  "fix", "[ASSUME] particulate removal across fine screen"),
+ "e_grit":     (0.60,  "fix", "[ASSUME] mineral grit/sand removal in hydrocyclone desander HC-101"),
+ "srt":        (0.0,   "fix", "[DESIGN] solids retention time with membrane, d (0 = plain CSTR, SRT = HRT)"),
  # ---- hydrolysis (first order, 1/d at 35 degC)
  "k_ch":       (1.0,   ("ln", 0.40), "[CALIB/ASSUME] POME carbohydrate particulates"),
  "k_pr":       (0.6,   ("ln", 0.40), "[ASSUME] POME protein particulates"),
@@ -252,6 +254,12 @@ PAR = {
  "dose_max": (0.03, "fix", "kmol/m3/d"),
 }
 def pmed(name): return PAR[name][0]
+
+# ADM1 thermophilic (55 degC) / mesophilic (35 degC) parameter ratios, Batstone et al. (2002) Tables 6.1-6.2  [ADM1-T, verify]
+#   km_su 70/30, km_aa 70/50, km_fa 10/6, km_c4+pro (30+20)/2 / 16, km_ac 16/8, km_h2 35/35; Ks x2 (su, ac, pro); k_dec 0.04/0.02; KI_NH3 0.011/0.0036
+TFACT = dict(km_su=70 / 30, km_aa=70 / 50, km_fa=10 / 6, km_pro=25 / 16, km_ac=16 / 8, km_h2=1.0, Ks_su=2.0, Ks_ac=2.0, Ks_pro=2.0,
+             k_dec=2.0, KI_nh3=0.011 / 0.0036, km_sa=2.0, km_sh=1.0)
+T_THERMO = 45.0
 
 # --- logistic-normal COD / dry-mass composition groups
 POME_KEYS = ["su", "aa", "vfa", "sI", "ch", "pr", "li", "inert"]
@@ -314,8 +322,9 @@ def build_feed(th, share=None, cap_ts=True, efb_on=True):
     for k in ("ch", "pr", "inert"):
         cP[IX[k]] = raw[k] - scr_cod[k]
     cP[IX["IN"]] = th["tan_pome"]; cP[IX["SO4"]] = th["so4_pome"]
-    cP[IX["cat"]] = th["cat_pome"]; cP[IX["ash"]] = th["ash_pome"] * (1 - es)
-    scr_mass = sum(mass_of(Qp * scr_cod[k], STATE_SP[k]) for k in scr_cod) + Qp * th["ash_pome"] * es
+    ash_keep = (1 - es) * (1 - th.get("e_grit", 0.0))
+    cP[IX["cat"]] = th["cat_pome"]; cP[IX["ash"]] = th["ash_pome"] * ash_keep
+    scr_mass = sum(mass_of(Qp * scr_cod[k], STATE_SP[k]) for k in scr_cod) + Qp * th["ash_pome"] * (1 - ash_keep)
     # --- EFB (dry-basis composition -> COD states)
     M_all = ffb * th["efb_ratio"]                                    # t wet EFB/d (all)
     w = th["fr_efb"]; frc = efb_frec(th)
@@ -407,15 +416,22 @@ def gas_flux(a, b):
 class Digester:
     """One CSTR module (all modules in the bank are identical -> 'numbering up')."""
     def __init__(s, th, F, N_mod, V_mod, Q_override=None):
-        s.th = th; s.V = V_mod; s.N = N_mod
+        s.V = V_mod; s.N = N_mod
+        if th["T_dig"] >= T_THERMO:                       # thermophilic kinetic set (ADM1 ratios), reference temperature 55 degC
+            th = dict(th)
+            for k_, f_ in TFACT.items(): th[k_] = th[k_] * f_
+        s.th = th
         s.Qm = (F["Q"] if Q_override is None else Q_override) / N_mod
         s.D = s.Qm / V_mod
+        s.srt = th.get("srt", 0.0) or 0.0
+        s.Dx = (1.0 / s.srt) if (s.srt > 0 and s.Qm > 0) else s.D   # particulate washout (membrane retains solids; waste = V/SRT; no wasting without feed)
+        s.Qw = s.V * s.Dx                                 # waste-sludge flow per module, m3/d
         s.feed = F["c"].tolist()
         T = th["T_dig"]; s.T = T
         s.c = eq_consts(T)
         s.H = [henry(k, T) for k in ("co2", "ch4", "h2", "h2s")]
         s.Pdry = (P_ATM / 1e5 + th["dP_roof"]) - p_sat(T) / 1e5
-        s.fu = math.exp(th["th_up"] * (T - 35.0)); s.fh = math.exp(th["th_hyd"] * (T - 35.0))
+        s.fu = math.exp(th["th_up"] * (T - (55.0 if T >= T_THERMO else 35.0))); s.fh = math.exp(th["th_hyd"] * (T - 35.0))
         s.kcel = th["k_cel_ref"] * (th["d_ref_mm"] / th["d_p_mm"]) ** th["gam_size"]
         s.khem = th["k_hem_ref"] * (th["d_ref_mm"] / th["d_p_mm"]) ** th["gam_size"]
         s.h_prev = 1e-7
@@ -423,7 +439,7 @@ class Digester:
         s.dosed = 0.0
 
     def rhs(s, t, y):
-        th = s.th; c = s.c; D = s.D; f = s.feed
+        th = s.th; c = s.c; D = s.D; f = s.feed; Dx = s.Dx
         (su, aa, fa, pro, ac, h2, ch4, sI, ch, pr, li, cel, hem, lig, rc, inert,
          Xsu, Xaa, Xfa, Xpro, Xac, Xh2, Xsa, Xsh, IC, IN, SO4, IS, cat, ash) = y.tolist()
         h = solve_h(cat, max(IN, 0.0), max(IC, 0.0), max(ac, 0.0), max(pro, 0.0), max(IS, 0.0), max(SO4, 0.0), c, s.h_prev)
@@ -480,22 +496,22 @@ class Digester:
                  + (1 - Yfa) * F_FA["h2"] * r_fa + (1 - Ypro) * F_PRO["h2"] * r_pro - r_h2 - r_sh - 16.0 * j_h2)
         dy[6] = D * (f[6] - ch4) + (1 - Yac) * r_ac + (1 - Yh2) * r_h2 - 64.0 * j_ch4
         dy[7] = D * (f[7] - sI) + F_DEC["sI"] * r_dec
-        dy[8] = D * (f[8] - ch) + F_DEC["ch"] * r_dec - r_ch
-        dy[9] = D * (f[9] - pr) + F_DEC["pr"] * r_dec - r_pr
-        dy[10] = D * (f[10] - li) + F_DEC["li"] * r_dec - r_li
-        dy[11] = D * (f[11] - cel) - r_cel
-        dy[12] = D * (f[12] - hem) - r_hem
-        dy[13] = D * (f[13] - lig)
-        dy[14] = D * (f[14] - rc)
-        dy[15] = D * (f[15] - inert) + F_DEC["inert"] * r_dec
-        dy[16] = D * (f[16] - Xsu) + Ysu * r_su - dX[0]
-        dy[17] = D * (f[17] - Xaa) + Yaa * r_aa - dX[1]
-        dy[18] = D * (f[18] - Xfa) + Yfa * r_fa - dX[2]
-        dy[19] = D * (f[19] - Xpro) + Ypro * r_pro - dX[3]
-        dy[20] = D * (f[20] - Xac) + Yac * r_ac - dX[4]
-        dy[21] = D * (f[21] - Xh2) + Yh2 * r_h2 - dX[5]
-        dy[22] = D * (f[22] - Xsa) + Ysa * r_sa - dX[6]
-        dy[23] = D * (f[23] - Xsh) + Ysh * r_sh - dX[7]
+        dy[8] = D * f[8] - Dx * ch + F_DEC["ch"] * r_dec - r_ch
+        dy[9] = D * f[9] - Dx * pr + F_DEC["pr"] * r_dec - r_pr
+        dy[10] = D * f[10] - Dx * li + F_DEC["li"] * r_dec - r_li
+        dy[11] = D * f[11] - Dx * cel - r_cel
+        dy[12] = D * f[12] - Dx * hem - r_hem
+        dy[13] = D * f[13] - Dx * lig
+        dy[14] = D * f[14] - Dx * rc
+        dy[15] = D * f[15] - Dx * inert + F_DEC["inert"] * r_dec
+        dy[16] = D * f[16] - Dx * Xsu + Ysu * r_su - dX[0]
+        dy[17] = D * f[17] - Dx * Xaa + Yaa * r_aa - dX[1]
+        dy[18] = D * f[18] - Dx * Xfa + Yfa * r_fa - dX[2]
+        dy[19] = D * f[19] - Dx * Xpro + Ypro * r_pro - dX[3]
+        dy[20] = D * f[20] - Dx * Xac + Yac * r_ac - dX[4]
+        dy[21] = D * f[21] - Dx * Xh2 + Yh2 * r_h2 - dX[5]
+        dy[22] = D * f[22] - Dx * Xsa + Ysa * r_sa - dX[6]
+        dy[23] = D * f[23] - Dx * Xsh + Ysh * r_sh - dX[7]
         dy[24] = (D * (f[24] - IC) + S["up_su"]["co2"] * r_su + S["up_aa"]["co2"] * r_aa + S["up_fa"]["co2"] * r_fa
                   + S["up_pro"]["co2"] * r_pro + S["up_ac"]["co2"] * r_ac + S["up_h2"]["co2"] * r_h2
                   + S["srb_ac"]["co2"] * r_sa + S["srb_h2"]["co2"] * r_sh + S["dec"]["co2"] * r_dec - j_co2)
@@ -505,7 +521,7 @@ class Digester:
         dy[26] = D * (f[26] - SO4) + S["srb_ac"]["so4"] * r_sa + S["srb_h2"]["so4"] * r_sh
         dy[27] = D * (f[27] - IS) - (S["srb_ac"]["so4"] * r_sa + S["srb_h2"]["so4"] * r_sh) - j_h2s
         dy[28] = D * (f[28] - cat) + dose
-        dy[29] = D * (f[29] - ash)
+        dy[29] = D * f[29] - Dx * ash
         s.aux = dict(pH=pH, h=h, j_co2=j_co2, j_ch4=j_ch4, j_h2=j_h2, j_h2s=j_h2s, J=Jt, dose=dose, doseN=doseN,
                      co2=co2, nh3=nh3, h2s=h2s, Inh3=Inh3, Ih2s=Ih2s_ac, Ifa=Ifa_ac, Iac=Iac,
                      r=dict(hyd_ch=r_ch, hyd_cel=r_cel, hyd_hem=r_hem, hyd_pr=r_pr, hyd_li=r_li, up_su=r_su, up_aa=r_aa,
@@ -526,7 +542,8 @@ class Digester:
 
     def steady(s, y0=None, nhrt=3.0, tol=2e-4, max_ext=4):
         y = s.y_init() if y0 is None else np.array(y0, float)
-        T = nhrt / s.D
+        tau = max(1.0 / s.D, s.srt) if s.D > 0 else s.srt
+        T = nhrt * tau
         for k in range(max_ext + 1):
             sol = solve_ivp(s.rhs, (0.0, T), y, method="BDF", rtol=1e-6, atol=ATOL, first_step=1e-4)
             y = np.maximum(sol.y[:, -1], 0.0) if sol.success else y
@@ -534,7 +551,7 @@ class Digester:
             rel = np.max(np.abs(d) / (np.abs(y) + 1e-3 * (1 + np.abs(y).max())))
             if sol.success and rel < tol:
                 return y, True, rel
-            T = 1.5 / s.D
+            T = 1.5 * tau
         return y, False, rel
 
     # ---------------------------------------------------------------- diagnostics at a state
@@ -546,7 +563,8 @@ class Digester:
         f = np.array(s.feed)
         cod_idx = list(range(24))
         cod_in = f[cod_idx].sum() + 64.0 * f[IX["IS"]]
-        cod_out = y[cod_idx].sum() + 64.0 * y[IX["IS"]]
+        sol_idx = list(range(8)); part_idx = list(range(8, 24))
+        cod_out = y[sol_idx].sum() + 64.0 * y[IX["IS"]] + y[part_idx].sum() * (s.Dx / s.D if s.D > 0 else 1.0)   # flow-weighted, per m3 of feed
         Jgas = dict(co2=x["j_co2"] * V, ch4=x["j_ch4"] * V, h2=x["j_h2"] * V, h2s=x["j_h2s"] * V)   # kmol/d per module
         cod_gas = 64 * Jgas["ch4"] + 16 * Jgas["h2"] + 64 * Jgas["h2s"]
         cod_bal_err = (Qm * cod_in - Qm * cod_out - cod_gas)
@@ -555,11 +573,14 @@ class Digester:
         hco3 = v["IC"] * s.c["K1"] / (x["h"] + s.c["K1"])
         alk_mgL = hco3 * 50000.0                                   # mg/L as CaCO3
         vfa_mgL = v["ac"] / 64.0 * 60.05 * 1000.0 + v["pro"] / 112.0 * 74.08 * 1000.0
-        out = dict(pH=x["pH"], vfa_kgcod=vfa, vfa_mgL=vfa_mgL, alk_mgL=alk_mgL, fos_tac=vfa_mgL / max(alk_mgL, 1.0),
+        mlss = sum(y[IX[k]] * SPX[STATE_SP[k]].mass_per_cod for k in PART_STATES_) + y[IX["ash"]]
+        out = dict(mlss=mlss, Qw=s.Qw, Qm=Qm, pH=x["pH"], vfa_kgcod=vfa, vfa_mgL=vfa_mgL, alk_mgL=alk_mgL, fos_tac=vfa_mgL / max(alk_mgL, 1.0),
                    tan_mgN=v["IN"] * 14007.0, nh3_mgN=x["nh3"] * 14007.0, h2s_free_mgL=x["h2s"] * 34080.0,
                    Jgas=Jgas, cod_in=cod_in, cod_out=cod_out, cod_bal_err=cod_bal_err, dose=x["dose"], doseN=x["doseN"],
                    cod_removed_frac=1.0 - cod_out / cod_in if cod_in > 0 else 0.0, v=v, rates=x["r"], aux=x)
         return out
+
+PART_STATES_ = ("ch", "pr", "li", "cel", "hem", "lig", "rc", "inert", "Xsu", "Xaa", "Xfa", "Xpro", "Xac", "Xh2", "Xsa", "Xsh")
 
 # ============================================================================
 # 6. BATCH (BMP) SIMULATION  - used for validation / calibration of hydrolysis
@@ -571,8 +592,9 @@ def bmp_test(th, substrate, days=30.0, vs_loading=4.0, isr=2.0):
     """
     F = dict(c=np.zeros(NS), Q=1.0)
     thb = dict(th); thb["T_dig"] = 37.0
+    thb["srt"] = 0.0
     d = Digester(thb, F, 1, 1.0)
-    d.D = 0.0
+    d.D = 0.0; d.Dx = 0.0; d.Qw = 0.0
     y = np.zeros(NS)
     # inoculum: digested sludge (VS in biomass + inert); buffered (large strong-cation reserve)
     vs_in = isr * vs_loading                                  # g VS/L inoculum
@@ -717,7 +739,7 @@ EQ = dict(
     btf_eff=0.92, o2_per_h2s=0.9, ebct_s=120.0, ac_eff=0.85, chill_T=5.0, chill_cop=3.5,
     blower_dP_kPa=20.0, blower_eta=0.55, air_dP_kPa=12.0, air_eta=0.55, flare_margin=1.10,
     # CHP
-    chp_cat=[500.0, 800.0, 1000.0, 1250.0, 1560.0], eta_el_nom=0.395, eta_jacket=0.25, eta_rad=0.02,
+    chp_cat=[400.0, 600.0, 800.0, 1000.0, 1250.0], eta_el_nom=0.395, eta_jacket=0.25, eta_rad=0.02,
     min_load=0.50, lam=1.8, part_load_pts=[(0.50, 0.92), (0.75, 0.97), (1.00, 1.00)], chp_aux_frac=0.012,
     # dewatering / utilities
     press_capture=0.85, cake_DS=0.22, press_kWh_m3=1.0, polymer_kg_tDS=4.0, ct_kW_per_kWth=0.015,
@@ -725,6 +747,15 @@ EQ = dict(
     # catalogue of standard digester module volumes (m3 liquid)
     catalog=[1000.0, 1250.0, 1500.0, 2000.0, 2500.0, 3000.0, 4000.0, 5000.0],
     SF_wash=4.0, yield_frac=0.92, N_min_base=4,
+    # ---- Rev 1: portable thermophilic AnMBR
+    tiers=(30.0, 45.0, 60.0),                         # [LIT-S] common Sumatra mill sizes (RSPO reports: 45, 60; PTPN IV lines 30 + 45)
+    vessel_cat=[(3.5, 12.0), (4.0, 13.0), (4.2, 14.0)],  # (D, liquid height) m, shop-built, road-transportable lying down  [ASSUME]
+    vessel_free=1.2, U_vessel=0.35, mix_W_m3_T=10.0,   # m freeboard; W/m2K with 100 mm insulation; jet mixing W/m3  [ASSUME]
+    mlss_max=35.0, mlss_margin=0.85,                  # kg TSS/m3 for external tubular cross-flow UF  [ASSUME 20-40 in AnMBR practice]
+    olr_max=15.0,                                     # kg COD/m3.d; thermophilic CSTR on POME reached 17 at HRT 5 d (Choorit & Wisarnwan 2007)  [LIT-S]
+    yield_frac_T=0.95,
+    mem_flux=15.0, mem_m2_mod=30.0, mem_kWh_m3=1.5, mem_mod_per_cont=40, xflow_ratio=10.0,  # LMH, m2/module, kWh/m3 permeate  [ASSUME]
+    gh_hours=2.0, feed_tank_h=4.0, perm_tank_h=6.0, H_desander=20.0, screen_kW=3.0, H_perm=20.0,
 )
 PL = np.polyfit([p[0] for p in EQ["part_load_pts"]], [p[1] for p in EQ["part_load_pts"]], 2)
 def eta_rel(x): return float(np.polyval(PL, min(max(x, 0.3), 1.0)))
@@ -746,82 +777,71 @@ def run_steady(th, F, N, V, y0=None, nhrt=4.0):
     return d, y, g, ok
 
 # ============================================================================
-# 9. PROCESS DESIGN  (EFB share, shredder size, HRT, standard module)
+# 9. PROCESS DESIGN  (technology selection, thermophilic AnMBR HRT/SRT, transportable vessel module)
 # ============================================================================
-def design_share_from_feed_risk(th0, n=1500):
-    """largest EFB share such that the P95 of blend TS (feed uncertainty only) stays <= TS_max."""
-    g = np.random.default_rng(SEED + 1)
-    names = ["util", "pome_yield", "cod_pome", "ash_pome", "efb_ratio", "efb_mc"]
-    ths = draw_thetas(n, th0, g, names=names)
-    def p95_ts(sh):
-        v = [build_feed(t, share=sh, cap_ts=False)["TS"] for t in ths]
-        return float(np.percentile(v, 95))
-    if p95_ts(1.0) <= th0["TS_max"]:
-        return 1.0, p95_ts(1.0)
-    sh = brentq(lambda x: p95_ts(x) - th0["TS_max"], 0.0, 1.0, xtol=1e-3)
-    return float(sh), p95_ts(sh)
-
-def hrt_sweep(th, F, hrts, N=5):
-    """descending continuation sweep (warm start) -> list of dict results."""
-    out, y = [], None
-    for hrt in sorted(hrts, reverse=True):
-        V = F["Q"] * hrt / N
-        d, y, g, ok = run_steady(th, F, N, V, y0=y, nhrt=6.0)
-        J = g["Jgas"]; gs = gas_summary(J)
-        out.append(dict(hrt=hrt, ok=ok, pH=g["pH"], fos=g["fos_tac"], vfa=g["vfa_mgL"], ch4=J["ch4"] * VN * N,
-                        bg=gs["Nm3d"] * N, ch4_frac=gs["y"]["ch4"], cod_conv=64 * J["ch4"] / (d.Qm * g["cod_in"]),
-                        cod_rem=g["cod_removed_frac"], ph_ok=(g["pH"] > 6.5 and g["fos_tac"] < 0.4 and J["ch4"] > 0)))
-    return out
-
-def design_hrt(sweep):
-    ok = [r for r in sweep if r["ph_ok"]]
-    wash = min([r["hrt"] for r in sweep if not r["ph_ok"]], default=0.0)
-    wash = max([r["hrt"] for r in sweep if not r["ph_ok"]], default=0.0)      # largest failing HRT
-    asym = max(r["ch4"] for r in sweep if r["ph_ok"])
-    h_yield = min(r["hrt"] for r in ok if r["ch4"] >= EQ["yield_frac"] * asym)
-    h_floor = EQ["SF_wash"] * wash
-    return max(h_yield, h_floor), dict(h_wash=wash, h_yield=h_yield, h_floor=h_floor, ch4_asym=asym)
-
-def tier_flows(th, ffb_tph, share):
+def tier_flows(th, ffb_tph, share=0.0):
     t = dict(th); t["ffb_tph"] = ffb_tph
     return build_feed(t, share=share)
 
+def config_run(th, T, hrt, srt, share=0.0, y0=None):
+    """steady state of one configuration (single equivalent reactor of volume Q*HRT)."""
+    t = dict(th); t["T_dig"] = T; t["srt"] = srt; t["efb_share"] = share
+    F = build_feed(t, share=share); V = F["Q"] * hrt
+    d, y, g, ok = run_steady(t, F, 1, V, y0=y0, nhrt=5.0)
+    J = g["Jgas"]
+    return dict(T=T, hrt=hrt, srt=(srt or hrt), share=share, V=V, ch4=J["ch4"] * VN, olr=F["Q"] * g["cod_in"] / V,
+                mlss=g["mlss"], pH=g["pH"], fos=g["fos_tac"], cod_rem=g["cod_removed_frac"], ok=ok, prod=J["ch4"] * VN / V, Q=F["Q"])
 
-def choose_module(th, share, hrt, tiers=(20.0, 45.0, 70.0), base=45.0, over_max=0.15):
-    """one standard module for every tier ('numbering up'): largest catalogue size with overshoot <= over_max in all tiers."""
-    Vreq = {f: tier_flows(th, f, share)["Q"] * hrt for f in tiers}
+def anmbr_design(th, T=55.0, hrts=(2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0), srts=(8, 10, 12, 15, 20, 25, 30)):
+    """grid search: smallest reactor volume that respects membrane solids limit, loading limit, stability and >= yield_frac_T of best CH4."""
+    grid = []
+    for h in hrts:
+        for s_ in srts:
+            if s_ <= h: continue
+            grid.append(config_run(th, T, h, float(s_)))
+    best = max(r["ch4"] for r in grid)
+    feas = [r for r in grid if r["mlss"] <= EQ["mlss_max"] * EQ["mlss_margin"] and r["olr"] <= EQ["olr_max"] and r["fos"] <= 0.3
+            and r["ch4"] >= EQ["yield_frac_T"] * best and r["ok"]]
+    sel = min(feas, key=lambda r: (r["V"], r["srt"]))
+    return sel, grid, best
+
+def choose_vessel(th, hrt, tiers=None, base=45.0, over_max=0.15):
+    """one road-transportable shop-built vessel for every mill size ('numbering up')."""
+    tiers = tiers or EQ["tiers"]
+    Vreq = {f: tier_flows(th, f)["Q"] * hrt for f in tiers}
     cands = []
-    for m in sorted(EQ["catalog"], reverse=True):
-        N = {f: int(math.ceil(Vreq[f] / m)) for f in tiers}
-        over = {f: N[f] * m / Vreq[f] - 1.0 for f in tiers}
-        D = (4 * m / (math.pi * EQ["aspect"])) ** (1 / 3)
-        cands.append((m, N, over, D))
-        if N[base] >= EQ["N_min_base"] and D <= 26.0 and max(over.values()) <= over_max:
-            return dict(V_mod=m, N=N, over=over, D=D, Vreq=Vreq,
-                        rule="largest module with overshoot<=%.0f%% in all tiers, N_base>=%d" % (over_max * 100, EQ["N_min_base"]))
-    pool = [c for c in cands if c[1][base] >= EQ["N_min_base"]] or cands
-    m, N, over, D = min(pool, key=lambda c: max(c[2].values()))
-    return dict(V_mod=m, N=N, over=over, D=D, Vreq=Vreq, rule="fallback: minimum overshoot")
+    for D, Hl in sorted(EQ["vessel_cat"], key=lambda c: -(c[0] ** 2) * c[1]):
+        v = math.pi / 4 * D ** 2 * Hl
+        N = {f: int(math.ceil(Vreq[f] / v)) for f in tiers}
+        over = {f: N[f] * v / Vreq[f] - 1.0 for f in tiers}
+        cands.append((v, D, Hl, N, over))
+        if N[base] >= EQ["N_min_base"] and max(over.values()) <= over_max:
+            return dict(V_mod=v, D=D, H_liq=Hl, N=N, over=over, Vreq=Vreq, rule="largest transportable vessel with <=%.0f%% overshoot in all tiers" % (over_max * 100))
+    v, D, Hl, N, over = min(cands, key=lambda c: max(c[4].values()))
+    return dict(V_mod=v, D=D, H_liq=Hl, N=N, over=over, Vreq=Vreq, rule="fallback: minimum overshoot")
+
+def vessel_geometry(D, Hl, th):
+    V = math.pi / 4 * D ** 2 * Hl
+    Hs = Hl + EQ["vessel_free"]
+    A = math.pi * D * Hs + 2 * 1.084 * D ** 2                     # shell + two 2:1 ellipsoidal heads
+    UA = EQ["U_vessel"] * A
+    return dict(D=D, H_liq=Hl, H_shell=Hs, V=V, A=A, UA_kWK=UA / 1000.0, Q_loss_kW=UA * (th["T_dig"] - th["T_amb"]) / 1000.0,
+                mixer_kW=EQ["mix_W_m3_T"] * V / 1000.0, transport="%.1f m x %.1f m shell, shipped horizontal on low-bed trailer" % (D, Hs + 2 * 0.25 * D))
+
+def membrane_design(Q_perm):
+    A = Q_perm / 24.0 * 1000.0 / EQ["mem_flux"]
+    nmod = int(math.ceil(A / EQ["mem_m2_mod"]))
+    return dict(Q_perm=Q_perm, area_m2=A, modules=nmod, containers=int(math.ceil(nmod / EQ["mem_mod_per_cont"])),
+                kW=EQ["mem_kWh_m3"] * Q_perm / 24.0, loop_m3h=EQ["xflow_ratio"] * Q_perm / 24.0, flux=EQ["mem_flux"])
 
 # ============================================================================
-# 10. DIGESTER GEOMETRY, GAS TRAIN, CHP, ENERGY AND MASS BALANCE
+# 10. GAS TRAIN, CHP, ENERGY AND MASS BALANCE
 # ============================================================================
 CP_G = dict(co2=45.5, h2o=35.6, n2=30.9, o2=32.7, so2=46.5)       # kJ/kmol/K mean 25-450 degC  [ASSUME Shomate mean]
 MWG = dict(ch4=16.043, co2=44.009, h2=2.016, h2s=34.08, h2o=18.015, n2=28.014, o2=31.998, so2=64.06)
 T_STACK = 150.0                                                    # degC exhaust after heat recovery  [ASSUME]
 T_BTF = 30.0                                                       # degC gas leaving bio-desulfurizer
 CP_BIOGAS = 38.0                                                   # kJ/kmol/K wet biogas  [ASSUME]
-
-def tank_geometry(V, th, Q_gas_peak_m3d_per_module):
-    a = EQ["aspect"]; D = (4 * V / (math.pi * a)) ** (1 / 3); H = a * D
-    Hw = H + EQ["freeboard"]
-    Vst = max(Q_gas_peak_m3d_per_module * EQ["t_store_h"] / 24.0, 1.0)
-    hd = brentq(lambda hh: math.pi * hh * (3 * (D / 2) ** 2 + hh ** 2) / 6 - Vst, 1e-3, D)
-    A_wall = math.pi * D * Hw; A_roof = math.pi * ((D / 2) ** 2 + hd ** 2); A_floor = math.pi * (D / 2) ** 2
-    dT = th["T_dig"] - th["T_amb"]
-    UA = EQ["U_wall"] * A_wall + EQ["U_roof"] * A_roof + EQ["U_floor"] * A_floor
-    return dict(D=D, H_liq=H, H_wall=Hw, V_gas=Vst, dome_h=hd, A_wall=A_wall, A_roof=A_roof, A_floor=A_floor,
-                UA_kWK=UA / 1000.0, Q_loss_kW=UA * dT / 1000.0, mixer_kW=EQ["mix_W_m3"] * V / 1000.0)
 
 def combustion(fuel, lam):
     """fuel: kmol/d dict (ch4,co2,h2,h2s,n2,o2,h2o). Returns exhaust kmol/d and air kmol/d (lean burn, excess-air ratio lam)."""
@@ -897,29 +917,30 @@ def chp_dispatch(fuel_kW, chp, gt, th):
                 burned_kW=burned, exhaust=ex, n_air=n_air, fuel_burned=fuel, Q_stack=H_ex - Q_exh, fuel_frac=fr)
 
 def plant_energy(F, th, des, Jtot, chp):
-    """deterministic plant energy balance for one operating point."""
+    """deterministic plant energy balance for one operating point (thermophilic AnMBR plant)."""
     gt = gas_train(Jtot, th)
     ch = chp_dispatch(gt["lhv_kW"], chp, gt, th)
-    N = des["N"]; geo = des["geo"]; Qd = F["Q"]
+    N = des["N"]; geo = des["geo"]; Qd = F["Q"]; Qw = des["Qw"] if Qd > 0 else 0.0
+    Qperm = max(Qd - Qw, 0.0)
     P = {}
+    P["pretreatment"] = RHO_W * G * EQ["H_desander"] * (F["Qp"] / 86400.0) / EQ["eta_pump"] / 1e3 + (EQ["screen_kW"] if Qd > 0 else 0.0)
     P["feed_pumps"] = RHO_W * G * EQ["H_feed"] * (Qd / 86400.0) / EQ["eta_pump"] / 1e3
-    P["digestate_pumps"] = RHO_W * G * EQ["H_dig"] * (Qd / 86400.0) / EQ["eta_pump"] / 1e3
-    P["mixers"] = geo["mixer_kW"] * N
-    P["shredder"] = F["M_efb"] * shred_kWh_per_t_wet(th["d_p_mm"]) / 24.0
-    P["conveyors"] = F["M_efb"] * EQ["conv_kWh_t"] / 24.0
+    P["jet_mixing"] = geo["mixer_kW"] * N
+    P["membrane_crossflow"] = EQ["mem_kWh_m3"] * Qperm / 24.0
+    P["permeate_pumps"] = RHO_W * G * EQ["H_perm"] * (Qperm / 86400.0) / EQ["eta_pump"] / 1e3
+    P["sludge_press"] = EQ["press_kWh_m3"] * Qw / 24.0 + (2.0 if Qw > 0 else 0.0)
     P["air_blower"] = gt["P_air_kW"]; P["gas_blower"] = gt["P_blow_kW"]; P["gas_chiller"] = gt["P_chill_kW"]
-    P["screw_press"] = EQ["press_kWh_m3"] * Qd / 24.0
-    Q_ct = F["Qcool_kW"] + gt["Q_chill_kW"] * (1 + 1.0 / EQ["chill_cop"])
-    P["cooling_tower"] = EQ["ct_kW_per_kWth"] * Q_ct
+    Q_dig = geo["Q_loss_kW"] * N                                           # covered by sending the feed slightly warmer
+    Q_cool = max(F["Qcool_kW"] - Q_dig, 0.0) + gt["Q_chill_kW"] * (1 + 1.0 / EQ["chill_cop"])
+    P["cooling_tower"] = EQ["ct_kW_per_kWth"] * Q_cool
     P["chp_aux_misc"] = (EQ["chp_aux_frac"] + EQ["misc_frac"]) * ch["P_el"]
     P_par = sum(P.values())
-    Q_dig = geo["Q_loss_kW"] * N
     Q_heat_avail = ch["Q_jacket"] + ch["Q_exh"]
     P_mill = EQ["mill_kWh_tFFB"] * th["ffb_tph"] * th["util"]
     net = ch["P_el"] - P_par
     return dict(gt=gt, chp=ch, P=P, P_par=P_par, P_gross=ch["P_el"], P_net=net, Q_dig=Q_dig, Q_heat_avail=Q_heat_avail,
-                Q_heat_export=max(Q_heat_avail - Q_dig, 0.0), Q_cool=Q_ct, P_mill=P_mill, P_export=net - P_mill,
-                self_suff=min(net / P_mill, 9.99) if P_mill > 0 else 0.0)
+                Q_heat_export=Q_heat_avail, Q_cool=Q_cool, Q_pome_cool=max(F["Qcool_kW"] - Q_dig, 0.0), P_mill=P_mill,
+                P_export=net - P_mill, self_suff=min(net / P_mill, 9.99) if P_mill > 0 else 0.0, Qperm=Qperm, Qw=Qw)
 
 # ---------------------------------------------------------------- mass balance (species level, kg/d)
 GRP = [("water", "Air"), ("carb", "Karbohidrat partikulat (selulosa, hemiselulosa, pati)"), ("lignin", "Lignin dan residu sulit terurai"),
@@ -980,110 +1001,105 @@ def elements(sp, water=0.0):
 def gas_kg(nd):                      # kmol/d dict -> kg/d dict with g_ prefix
     return {"g_" + k: v * MWG[k] for k, v in nd.items()}
 
+STREAM_TP = {1: (85, 1.50), 2: (85, 1.01), 3: (85, 1.30), 4: (None, 1.20), 5: (30, 3.00), 6: (30, 3.00), 7: (None, 3.00), 8: (None, 4.00),
+             9: (None, 1.40), 10: (None, 1.20), 11: (None, 2.00), 12: (50, 1.01), 13: (50, 1.01), 14: (50, 2.00), 15: (None, 1.03),
+             16: (None, 1.02), 17: (30, 1.15), 18: (30, 1.05), 19: (30, 1.01), 20: (5, 1.01), 21: (25, 1.20), 22: (25, 1.15),
+             23: (30, 1.01), 24: (150, 1.02), 25: (30, 1.01), 26: (30, 2.00)}
+
 def mass_balance(th, F, des, d, y, g, E):
-    """full stream table (kg/d) and closure tests for the nominal operating point."""
-    N, V = des["N"], des["V_mod"]; Q = F["Q"]; Qp = F["Qp"]
+    """stream table (kg/d) + closure checks for the thermophilic AnMBR plant at the design point."""
+    N = des["N"]; Q = F["Q"]; Qp = F["Qp"]; Tr = th["T_dig"]
     gt, ch = E["gt"], E["chp"]
-    S = {}                                     # id -> dict(name, sp, water, T, P, phase)
-    # --- 1 raw POME, 3 screenings, 4 screened POME
+    Qw = des["Qw"]; Qperm = Q - Qw
+    S = {}
+    def st(i, name, sp, water, ph):
+        T, P = STREAM_TP[i]
+        S[i] = dict(name=name, sp=sp, water=water, T=(Tr if T is None else T), P=P, ph=ph)
+    # --- 1 raw POME, 2 screenings + grit, 3 screened/degritted POME, 4 cooled POME
     raw_vec = np.zeros(NS)
     for k, v in F["raw"].items(): raw_vec[IX[k]] = v
     raw_vec[IX["IN"]] = th["tan_pome"]; raw_vec[IX["SO4"]] = th["so4_pome"]; raw_vec[IX["cat"]] = th["cat_pome"]; raw_vec[IX["ash"]] = th["ash_pome"]
     sp1 = liq_species(raw_vec, Qp); m1 = Qp * EQ["rho_pome"]
-    S[1] = dict(name="POME mentah dari pabrik", sp=sp1, water=m1 - sum(sp1.values()), T=th["T_pome_in"], P=1.3, ph="C")
+    st(1, "POME mentah dari pabrik", sp1, m1 - sum(sp1.values()), "C")
+    ash_keep = (1 - th["e_scr"]) * (1 - th["e_grit"])
     scr_dry = {k: Qp * F["scr_cod"][k] * SPX[STATE_SP[k]].mass_per_cod for k in ("ch", "pr", "inert")}
-    scr_dry["ash"] = Qp * th["ash_pome"] * th["e_scr"]
+    scr_dry["ash"] = Qp * th["ash_pome"] * (1 - ash_keep)
     scr_w = sum(scr_dry.values()) * 0.6 / 0.4
-    S[3] = dict(name="Residu saringan", sp=scr_dry, water=scr_w, T=th["T_pome_in"], P=1.01, ph="P")
-    sp4 = {k: sp1[k] - scr_dry.get(k, 0.0) for k in sp1}
-    S[4] = dict(name="POME tersaring", sp=sp4, water=S[1]["water"] - scr_w, T=th["T_pome_in"], P=1.3, ph="C")
-    S[5] = dict(name="POME didinginkan", sp=dict(sp4), water=S[4]["water"], T=F["T_p_out"], P=1.2, ph="C")
-    # --- 2 EFB to AD, 6 shredded
-    tE = F["tE"]; spE = liq_species(tE, 1.0)             # tE is per day -> species kg/d
-    S[2] = dict(name="TKKS mentah ke digester", sp=spE, water=F["wat_efb"], T=th["T_amb"], P=1.01, ph="PB")
-    S[6] = dict(name="TKKS tercacah", sp=dict(spE), water=F["wat_efb"], T=th["T_amb"], P=1.01, ph="PB")
-    # --- 7 blend (+ 8 alkali)
-    sp7 = {k: S[5]["sp"].get(k, 0) + S[6]["sp"].get(k, 0) for k in set(S[5]["sp"]) | set(S[6]["sp"])}
-    w7 = S[5]["water"] + S[6]["water"]
-    # consistency with concentration vector c*Q (build_feed)
-    sp7c = liq_species(F["c"], Q)
-    blend_err = max(abs(sp7[k] - sp7c[k]) / (abs(sp7c[k]) + 1e-9) for k in sp7c if abs(sp7c[k]) > 1e-6)
-    S[7] = dict(name="Umpan campuran POME+TKKS", sp=sp7, water=w7, T=th["T_dig"], P=2.0, ph="B")
-    dose_kmol = g["dose"] * V * N
-    S[8] = dict(name="Larutan alkali (NaOH)", sp={"chem": dose_kmol * 40.0}, water=0.0, T=th["T_amb"], P=2.0, ph="C")
-    S[23] = dict(name="Nutrien nitrogen (urea, dihitung sbg N)", sp={"IN": g["doseN"] * V * N * SPX["nh3"].MW}, water=0.0, T=th["T_amb"], P=2.0, ph="C")
-    # --- digester: 9 raw biogas, 10 digestate
+    st(2, "Residu saringan dan pasir", scr_dry, scr_w, "PB")
+    sp3 = {k: sp1[k] - scr_dry.get(k, 0.0) for k in sp1}
+    st(3, "POME tersaring, bebas pasir", sp3, S[1]["water"] - scr_w, "C")
+    st(4, "POME didinginkan", dict(sp3), S[3]["water"], "C")
+    S[4]["T"] = Tr + E["Q_dig"] / max(Qp * EQ["rho_pome"] * CP_W / 86400.0, 1e-9)
+    # --- dosing 5 NaOH, 6 urea-N ; 7 reactor feed
+    dose_kmol = g["dose"] * des["V_mod"] * N; doseN_kmol = g["doseN"] * des["V_mod"] * N
+    st(5, "Larutan NaOH", {"chem": dose_kmol * 40.0}, 0.0, "C")
+    st(6, "Nutrien urea-N (sbg NH3)", {"IN": doseN_kmol * SPX["nh3"].MW}, 0.0, "C")
+    sp7 = dict(sp3); sp7["chem"] = sp7.get("chem", 0.0) + dose_kmol * 40.0; sp7["IN"] = sp7["IN"] + doseN_kmol * SPX["nh3"].MW
+    st(7, "Umpan reaktor", sp7, S[4]["water"], "C")
+    # --- reactor bank outputs: 15 biogas, permeate (10) + waste sludge (11)
     Jt = {k: v * N for k, v in g["Jgas"].items()}
     raw_gas = dict(Jt); raw_gas["h2o"] = gt["raw"]["h2o"]
-    S[9] = dict(name="Biogas mentah (jenuh uap, 38 C)", sp=gas_kg(raw_gas), water=0.0, T=th["T_dig"], P=1.02, ph="G")
-    w_rx = sum(STO[k]["h2o"] * g["rates"][k] for k in g["rates"]) * V * N * SPX["h2o"].MW      # kg/d water produced by reactions
-    yv = y.copy()
-    sp10 = liq_species(yv, Q)
-    w10 = w7 + w_rx - raw_gas["h2o"] * MWG["h2o"]   # water balance (reaction water from stoichiometry)
-    sp10["cat"] += 0.0
-    S[10] = dict(name="Digestat dari digester", sp=sp10, water=w10, T=th["T_dig"], P=1.5, ph="CP")
-    # --- dewatering: 19 cake, 20 filtrate, 21 polymer
-    solid_keys = list(PART_STATES) + ["ash"]
-    capt = {k: sp10[k] * EQ["press_capture"] for k in solid_keys}
+    st(15, "Biogas mentah dari reaktor", gas_kg(raw_gas), 0.0, "G")
+    st(16, "Biogas dari penampung gas", gas_kg(raw_gas), 0.0, "G")
+    w_rx = sum(STO[k]["h2o"] * g["rates"][k] for k in g["rates"]) * des["V_mod"] * N * SPX["h2o"].MW
+    w_out = S[7]["water"] + w_rx - raw_gas["h2o"] * MWG["h2o"]
+    sol_keys = ["su", "aa", "fa", "pro", "ac", "h2", "ch4", "sI", "IC", "IN", "SO4", "IS", "cat"]
+    part_keys = list(PART_STATES_) + ["ash"]
+    sp_perm = {k: liq_species(y, Qperm)[k] for k in sol_keys}
+    sp_w = liq_species(y, Qw)
+    st(10, "Permeat membran", sp_perm, w_out * Qperm / Q, "C")
+    st(11, "Lumpur buangan (waste sludge)", sp_w, w_out * Qw / Q, "CP")
+    # crossflow loop 8 -> membrane -> 9 retentate (internal; solids fully retained)
+    L = EQ["xflow_ratio"] * Qperm
+    sp8 = {k: liq_species(y, L + Qperm)[k] for k in sp_w}
+    sp9 = {k: (liq_species(y, L)[k] if k in sol_keys else sp8[k]) for k in sp_w}
+    st(8, "Lumpur reaktor ke membran", sp8, w_out / Q * (L + Qperm), "CP")
+    st(9, "Retentat kembali ke reaktor", sp9, w_out / Q * L, "CP")
+    # --- sludge dewatering 11 -> 12 cake + 13 filtrate ; 26 polymer ; 14 final effluent
+    capt = {k: sp_w[k] * EQ["press_capture"] for k in part_keys}
     sol_cake = sum(capt.values())
     poly = EQ["polymer_kg_tDS"] * sol_cake / 1000.0
-    cake_mass = sol_cake / EQ["cake_DS"]
-    w_cake = max(cake_mass - sol_cake, 0.0)
-    fw = w_cake / w10
-    sp19 = {k: (capt[k] if k in capt else sp10[k] * fw) for k in sp10}
-    sp19["chem"] = poly
-    sp20 = {k: sp10[k] - sp19[k] for k in sp10}
-    S[19] = dict(name="Kue digestat", sp=sp19, water=w_cake, T=th["T_dig"], P=1.01, ph="PB")
-    S[20] = dict(name="Filtrat (efluen cair)", sp=sp20, water=w10 - w_cake, T=th["T_dig"], P=1.01, ph="C")
-    S[21] = dict(name="Polimer flokulan", sp={"chem": poly}, water=0.0, T=th["T_amb"], P=1.01, ph="C")
-    # --- gas train: 11 air, 12 gas after BTF, 13 sulfur sludge, 14 condensate, 15 clean fuel gas, 16 spent carbon
+    cake_mass = sol_cake / EQ["cake_DS"]; w_cake = max(cake_mass - sol_cake, 0.0)
+    fw = w_cake / max(S[11]["water"], 1e-9)
+    sp12 = {k: (capt[k] if k in capt else sp_w[k] * fw) for k in sp_w}; sp12["chem"] = poly
+    sp13 = {k: sp_w[k] - sp12[k] for k in sp_w}
+    st(12, "Kue lumpur", sp12, w_cake, "PB")
+    st(13, "Filtrat", sp13, S[11]["water"] - w_cake, "C")
+    st(26, "Polimer flokulan", {"chem": poly}, 0.0, "C")
+    sp14 = {k: S[10]["sp"].get(k, 0.0) + sp13.get(k, 0.0) for k in set(S[10]["sp"]) | set(sp13)}
+    st(14, "Efluen akhir (permeat + filtrat)", sp14, S[10]["water"] + S[13]["water"], "C")
+    # --- gas train
     air_btf = dict(o2=gt["o2_sup"], n2=gt["n_air_btf"] * (0.7808 + 0.0093), co2=gt["n_air_btf"] * 0.0004)
-    S[11] = dict(name="Udara ke bio-desulfurisasi", sp=gas_kg(air_btf), water=0.0, T=th["T_amb"], P=1.2, ph="G")
+    st(17, "Udara ke BTF", gas_kg(air_btf), 0.0, "G")
     btf_out = dict(gt["btf"]); btf_out["h2o"] = gt["btf_w"]
-    S[12] = dict(name="Biogas keluar BTF (30 C)", sp=gas_kg(btf_out), water=0.0, T=T_BTF, P=1.05, ph="G")
-    sulfur = gt["h2s_rem"] * 32.06
-    w13 = (raw_gas["h2o"] + gt["h2s_rem"] - gt["btf_w"]) * MWG["h2o"]
-    S[13] = dict(name="Lumpur belerang / blowdown BTF", sp={"sulfur": sulfur}, water=w13, T=T_BTF, P=1.01, ph="CP")
-    S[14] = dict(name="Kondensat chiller", sp={}, water=gt["cond"] * MWG["h2o"], T=EQ["chill_T"], P=1.01, ph="C")
-    fuel_all = gt["fuel"]
-    S[15] = dict(name="Biogas bersih ke CHP (5 C)", sp=gas_kg(fuel_all), water=0.0, T=EQ["chill_T"] + 15, P=1.15, ph="G")
-    S[16] = dict(name="Karbon aktif jenuh (H2S)", sp={"chem": gt["ac_h2s"] * MWG["h2s"]}, water=0.0, T=th["T_amb"], P=1.01, ph="P")
-    # --- CHP: split fuel between burned (17 air, 18 exhaust) and flare (22)
+    st(18, "Biogas keluar BTF", gas_kg(btf_out), 0.0, "G")
+    st(19, "Blowdown BTF (belerang)", {"sulfur": gt["h2s_rem"] * 32.06}, (raw_gas["h2o"] + gt["h2s_rem"] - gt["btf_w"]) * MWG["h2o"], "CP")
+    st(20, "Kondensat chiller", {}, gt["cond"] * MWG["h2o"], "C")
+    st(21, "Biogas bersih ke CHP", gas_kg(gt["fuel"]), 0.0, "G")
+    st(25, "Karbon aktif jenuh", {"chem": gt["ac_h2s"] * MWG["h2s"]}, 0.0, "P")
     ex, n_air = ch["exhaust"], ch["n_air"]
-    air_ch = dict(o2=n_air * 0.2095, n2=n_air * (0.7808 + 0.0093), co2=n_air * 0.0004)
-    S[17] = dict(name="Udara pembakaran CHP", sp=gas_kg(air_ch), water=0.0, T=th["T_amb"], P=1.1, ph="G")
-    S[18] = dict(name="Gas buang CHP (setelah pemulihan panas)", sp=gas_kg(ex), water=0.0, T=T_STACK, P=1.01, ph="G")
-    fl = {k: v - ch["fuel_burned"].get(k, 0.0) for k, v in fuel_all.items()}
-    S[22] = dict(name="Gas ke flare (kelebihan/darurat)", sp=gas_kg(fl), water=0.0, T=EQ["chill_T"] + 15, P=1.1, ph="G")
-    # --- unit-level closure (kg/d and elements)
+    st(23, "Udara pembakaran", gas_kg(dict(o2=n_air * 0.2095, n2=n_air * (0.7808 + 0.0093), co2=n_air * 0.0004)), 0.0, "G")
+    st(24, "Gas buang CHP", gas_kg(ex), 0.0, "G")
+    st(22, "Gas ke flare", gas_kg({k: v - ch["fuel_burned"].get(k, 0.0) for k, v in gt["fuel"].items()}), 0.0, "G")
+    # --- closure checks
     def tot(s): return sum(s["sp"].values()) + s["water"]
     chk = {}
-    m_in = tot(S[7]) + tot(S[8]) + tot(S[23]); m_out = tot(S[9]) + tot(S[10])
-    chk["digester_mass"] = (m_in - m_out) / m_in
-    Ein = elements(S[7]["sp"], S[7]["water"]) + elements(S[23]["sp"]); Eout = elements(S[9]["sp"], 0.0) + elements(S[10]["sp"], S[10]["water"])
+    m_in = tot(S[7]); m_out = tot(S[10]) + tot(S[11]) + tot(S[15])
+    chk["reactor_mass"] = (m_in - m_out) / m_in
+    Ein = elements(S[7]["sp"], S[7]["water"]); Eout = elements(S[15]["sp"]) + elements(S[10]["sp"], S[10]["water"]) + elements(S[11]["sp"], S[11]["water"])
     for i, el in enumerate("CHONS"):
-        chk["digester_" + el] = (Ein[i] - Eout[i]) / max(abs(Ein[i]), 1e-12)
-    m_in = tot(S[10]) + tot(S[21]); m_out = tot(S[19]) + tot(S[20])
-    chk["dewatering_mass"] = (m_in - m_out) / m_in
-    m_in = tot(S[9]) + tot(S[11]); m_out = tot(S[12]) + tot(S[13])
-    chk["btf_gas_mass_excl_water"] = None
-    sp_in = elements(S[9]["sp"]) + elements(S[11]["sp"]); sp_out = elements(S[12]["sp"]) + elements(S[13]["sp"], S[13]["water"])
-    chk["btf_S"] = (sp_in[4] - sp_out[4]) / max(sp_in[4], 1e-12)
-    chk["btf_C"] = (sp_in[0] - sp_out[0]) / max(sp_in[0], 1e-12)
-    m_in = tot(S[15]) - tot(S[22]) + tot(S[17]); m_out = tot(S[18])
-    chk["chp_mass"] = (m_in - m_out) / m_in
-    Ein = elements(S[15]["sp"]) - elements(S[22]["sp"]) + elements(S[17]["sp"]); Eout = elements(S[18]["sp"])
+        chk["reactor_" + el] = (Ein[i] - Eout[i]) / max(abs(Ein[i]), 1e-12)
+    chk["membrane_loop_mass"] = (tot(S[8]) - tot(S[9]) - tot(S[10])) / tot(S[8])
+    chk["dewatering_mass"] = (tot(S[11]) + tot(S[26]) - tot(S[12]) - tot(S[13])) / tot(S[11])
+    m_in = tot(S[21]) - tot(S[22]) + tot(S[23]); chk["chp_mass"] = (m_in - tot(S[24])) / m_in
+    Ein = elements(S[21]["sp"]) - elements(S[22]["sp"]) + elements(S[23]["sp"]); Eout = elements(S[24]["sp"])
     for i, el in enumerate("CHONS"):
         chk["chp_" + el] = (Ein[i] - Eout[i]) / max(abs(Ein[i]), 1e-12)
-    chk["blend_consistency"] = blend_err
-    chk.pop("btf_gas_mass_excl_water")
-    # --- overall plant boundary (feed in / products + wastes out), kg/d
-    m_plant_in = tot(S[1]) + tot(S[2]) + tot(S[8]) + tot(S[23]) + tot(S[11]) + tot(S[17]) + tot(S[21])
-    m_plant_out = (tot(S[3]) + tot(S[19]) + tot(S[20]) + tot(S[13]) + tot(S[14]) + tot(S[16]) + tot(S[18]) + tot(S[22]))
+    ins = (1, 5, 6, 17, 23, 26); outs = (2, 12, 14, 19, 20, 22, 24, 25)
+    m_plant_in = sum(tot(S[i]) for i in ins); m_plant_out = sum(tot(S[i]) for i in outs)
     chk["plant_mass"] = (m_plant_in - m_plant_out) / m_plant_in
-    # COD / energy
-    chk["COD_digester"] = g["cod_bal_err"] / (d.Qm * g["cod_in"])
-    return S, chk, dict(m_in=m_plant_in, m_out=m_plant_out, w_rx=w_rx)
+    chk["COD_reactor"] = g["cod_bal_err"] / (d.Qm * g["cod_in"])
+    return S, chk, dict(m_in=m_plant_in, m_out=m_plant_out, w_rx=w_rx, ins=ins, outs=outs)
 
 def stream_table(S, order=None):
     rows = []
@@ -1096,8 +1112,8 @@ def stream_table(S, order=None):
 # ============================================================================
 # 11. MONTE CARLO, SENSITIVITY, ANNUAL DYNAMIC SIMULATION
 # ============================================================================
-MC_IN = ["util", "pome_yield", "cod_pome", "efb_ratio", "efb_mc", "d_p_mm", "beta_lig", "k_li", "k_ch", "k_cel_ref", "k_hem_ref",
-         "km_ac", "km_h2", "KI_nh3", "KI_h2s_ac", "kLa", "cat_pome", "so4_pome", "T_pome_in"]
+MC_IN = ["util", "pome_yield", "cod_pome", "ash_pome", "tan_pome", "k_li", "k_ch", "k_pr", "km_ac", "km_h2", "km_pro", "km_fa",
+         "KI_nh3", "KI_h2s_ac", "KI_fa_ac", "kLa", "cat_pome", "so4_pome", "T_pome_in"]
 
 def mc_run(th_mc, des, y_base, n, g, verbose=True):
     ths = draw_thetas(n, th_mc, g)
@@ -1117,7 +1133,7 @@ def mc_run(th_mc, des, y_base, n, g, verbose=True):
 def mc_arrays(rec, des, chp):
     A = {k: [] for k in ("bg", "ch4", "ch4_frac", "h2s_ppm_raw", "pH", "fos", "tan", "nh3", "cod_rem", "cod_conv", "share", "TS", "Q", "HRT",
                           "lhv_kW", "P_gross", "P_net", "P_export", "P_par", "Q_heat_export", "Q_cool", "flare_kW", "load", "eta_el", "self_suff",
-                          "upset", "ok", "ch4_yield_pome", "T_exh", "h2s_ppm_fuel", "P_mill", "cake_td", "dose", "doseN")}
+                          "upset", "ok", "ch4_yield_pome", "T_exh", "h2s_ppm_fuel", "P_mill", "cake_td", "dose", "doseN", "mlss", "olr")}
     X = {k: [] for k in MC_IN}
     for r in rec:
         t, F, J, gs, g = r["t"], r["F"], r["J"], r["gs"], r["g"]
@@ -1134,7 +1150,7 @@ def mc_arrays(rec, des, chp):
         A["upset"].append(float((g["pH"] < 6.5) or (g["fos_tac"] > 0.4) or (J["ch4"] <= 0)))
         A["ok"].append(float(r["ok"]))
         A["ch4_yield_pome"].append(J["ch4"] * VN / F["Qp"])
-        A["cake_td"].append(0.0); A["dose"].append(g["dose"] * des["V_mod"] * des["N"]); A["doseN"].append(g["doseN"] * des["V_mod"] * des["N"] * 14.007)
+        A["mlss"].append(g["mlss"]); A["olr"].append(F["Q"] * g["cod_in"] / (des["N"] * des["V_mod"])); A["cake_td"].append(0.0); A["dose"].append(g["dose"] * des["V_mod"] * des["N"]); A["doseN"].append(g["doseN"] * des["V_mod"] * des["N"] * 14.007)
         for k in MC_IN: X[k].append(t[k])
     return {k: np.array(v) for k, v in A.items()}, {k: np.array(v) for k, v in X.items()}
 
@@ -1190,39 +1206,37 @@ def startup_sim(th, des, days=120.0):
 # ============================================================================
 EMIS = dict(B0=0.25, MCF_base=0.80, remov_base=0.75, leak=0.01, slip=0.005, flare_destr=0.98, MCF_filtrate=0.2, GWP_CH4=28.0,
             ef_grid=0.80, ef_diesel=0.75)           # IPCC 2006 Vol.5 Ch.6 defaults / AR5 GWP100; EF kgCO2/kWh [ASSUME]
-def emissions(th, F, des, g, E, S_dig_cod_biodeg):
-    """tCO2e/yr for the nominal operating point (kg CH4/d first)."""
-    cod_pome_d = F["Qp"] * th["cod_pome"] * (1 - th["e_scr"] * (th["fr_pome"][4] + th["fr_pome"][5] + th["fr_pome"][7]))
-    base_ch4 = cod_pome_d * EMIS["remov_base"] * EMIS["B0"] * EMIS["MCF_base"]                        # open pond, kg CH4/d
+def emissions(th, F, des, g, E, S_eff_cod_biodeg):
+    cod_pome_d = F["Qp"] * th["cod_pome"]
+    base_ch4 = cod_pome_d * EMIS["remov_base"] * EMIS["B0"] * EMIS["MCF_base"]                       # open ponds, kg CH4/d
     Jt = {k: v * des["N"] for k, v in g["Jgas"].items()}
     ch4_prod = Jt["ch4"] * MWG["ch4"]
-    dissolved = g["v"]["ch4"] * F["Q"] * SPX["ch4"].mass_per_cod                                         # kg CH4/d leaves with digestate
+    dissolved = g["v"]["ch4"] * F["Q"] * SPX["ch4"].mass_per_cod
     proj = (EMIS["leak"] * ch4_prod + dissolved + EMIS["slip"] * ch4_prod * E["chp"]["fuel_frac"]
             + (1 - EMIS["flare_destr"]) * E["chp"]["flare_kW"] / max(E["gt"]["lhv_kW"], 1e-9) * ch4_prod
-            + EMIS["B0"] * EMIS["MCF_filtrate"] * S_dig_cod_biodeg)
+            + EMIS["B0"] * EMIS["MCF_filtrate"] * S_eff_cod_biodeg)
     days = th["days_yr"]
     return dict(base_t=base_ch4 * EMIS["GWP_CH4"] * days / 1000.0, proj_t=proj * EMIS["GWP_CH4"] * days / 1000.0,
-                avoided_t=(base_ch4 - proj) * EMIS["GWP_CH4"] * days / 1000.0, base_kgd=base_ch4, proj_kgd=proj,
-                elec_t=E["P_net"] * 24 * days / 1000.0 * EMIS["ef_diesel"] / 1000.0)
+                avoided_t=(base_ch4 - proj) * EMIS["GWP_CH4"] * days / 1000.0, base_kgd=base_ch4, proj_kgd=proj)
 
-ECON = dict(capex_dig=250.0, capex_chp=1050.0, capex_gas=420.0, capex_efb_per_tph=90e3, capex_press=180e3, bop=0.20, cont=0.15,
-            opex_frac=0.045, labour=96e3, p_el_export=0.08, p_el_self=0.15, p_carbon=8.0, discount=0.10, life=15)
+ECON = dict(capex_vessel_m3=650.0, capex_mem_m2=180.0, capex_mem_cont=150e3, capex_chp=1050.0, capex_gas=420.0, capex_pre=250e3,
+            capex_sludge=200e3, capex_gh=60e3, bop=0.20, cont=0.15, opex_frac=0.04, labour=96e3, mem_life=7.0,
+            p_el_export=0.08, p_el_self=0.15, p_carbon=8.0, discount=0.10, life=15)
 # USD; ALL unit costs are screening placeholders [ASSUME] -> replace with vendor quotations.
-def econ_screen(th, des, chp, E, em, g):
-    capex = (ECON["capex_dig"] * des["V_mod"] * des["N"] + ECON["capex_chp"] * chp["P_inst"]
-             + ECON["capex_gas"] * E["gt"]["fuel"]["ch4"] * VN / 24.0 * 1.0 + ECON["capex_efb_per_tph"] * (E["P"]["shredder"] > 0) * th["ffb_tph"] * th["efb_ratio"] * des["share"]
-             + ECON["capex_press"])
+def econ_screen(th, des, chp, E, em):
+    mem = des["membrane"]
+    c_mem = ECON["capex_mem_m2"] * mem["area_m2"] + ECON["capex_mem_cont"] * mem["containers"]
+    capex = (ECON["capex_vessel_m3"] * des["V_mod"] * des["N"] + c_mem + ECON["capex_chp"] * chp["P_inst"]
+             + ECON["capex_gas"] * E["gt"]["fuel"]["ch4"] * VN / 24.0 + ECON["capex_pre"] + ECON["capex_sludge"] + ECON["capex_gh"])
     capex *= (1 + ECON["bop"]) * (1 + ECON["cont"])
     days = th["days_yr"]
     self_kW = min(E["P_net"], E["P_mill"]); exp_kW = max(E["P_net"] - E["P_mill"], 0.0)
-    rev = (self_kW * ECON["p_el_self"] + exp_kW * ECON["p_el_export"]) * 24 * days + em["avoided_t"] * ECON["p_carbon"]
-    opex = ECON["opex_frac"] * capex + ECON["labour"]
-    cf = rev - opex
-    r, n = ECON["discount"], ECON["life"]
-    ann = (1 - (1 + r) ** -n) / r
+    rev_el = (self_kW * ECON["p_el_self"] + exp_kW * ECON["p_el_export"]) * 24 * days
+    rev = rev_el + em["avoided_t"] * ECON["p_carbon"]
+    opex = ECON["opex_frac"] * capex + ECON["labour"] + ECON["capex_mem_m2"] * mem["area_m2"] / ECON["mem_life"]
+    cf = rev - opex; r, n = ECON["discount"], ECON["life"]; ann = (1 - (1 + r) ** -n) / r
     return dict(capex=capex, revenue=rev, opex=opex, cashflow=cf, payback=capex / cf if cf > 0 else float("inf"), npv=-capex + cf * ann,
-                rev_el=(self_kW * ECON["p_el_self"] + exp_kW * ECON["p_el_export"]) * 24 * days, rev_c=em["avoided_t"] * ECON["p_carbon"],
-                lcoe=(capex / ann + opex) / max(E["P_net"] * 24 * days, 1.0))
+                rev_el=rev_el, rev_c=em["avoided_t"] * ECON["p_carbon"], lcoe=(capex / ann + opex) / max(E["P_net"] * 24 * days, 1.0))
 
 # ============================================================================
 # 13. PLOT STYLE (fixed categorical order, one axis per chart, thin marks, recessive grid)
@@ -1239,176 +1253,156 @@ def logx_ticks(ax, ticks):
     ax.set_xscale("log"); ax.set_xticks(ticks); ax.set_xticklabels([str(t) for t in ticks]); ax.minorticks_off()
 def savefig(fig, name):
     fig.savefig(os.path.join(FIGDIR, name + ".png"), facecolor=SURF, bbox_inches="tight")
-def pband(ax, a, color, label=None):
-    p5, p50, p95 = pct(a)
-    ax.axvline(p50, color=color, lw=1.6); ax.axvspan(p5, p95, color=color, alpha=0.10, lw=0)
-    return p5, p50, p95
 def hist(ax, a, color, xlabel, bins=24):
     ax.hist(a, bins=bins, color=color, alpha=0.85, edgecolor=SURF, linewidth=1.0)
-    p5, p50, p95 = pband(ax, a, INK)
+    p5, p50, p95 = pct(a)
+    ax.axvline(p50, color=INK, lw=1.6); ax.axvspan(p5, p95, color=INK, alpha=0.10, lw=0)
     ax.set_xlabel(xlabel); ax.set_yticks([])
     ax.text(0.98, 0.95, "P5 %.3g\nP50 %.3g\nP95 %.3g" % (p5, p50, p95), transform=ax.transAxes, ha="right", va="top", fontsize=7.5, color=INK2)
 
-def cod_routing(F, des, g, y):
-    N = des["N"]; Q = F["Q"]; v = g["v"]; J = {k: x * N for k, x in g["Jgas"].items()}
-    nondeg = sum(v[k] for k in ("lig", "rc", "inert", "sI")) * Q
-    degr = sum(v[k] for k in ("su", "aa", "fa", "pro", "ac", "ch", "pr", "li", "cel", "hem")) * Q
-    bio = sum(v[k] for k in ("Xsu", "Xaa", "Xfa", "Xpro", "Xac", "Xh2", "Xsa", "Xsh")) * Q
-    diss = (v["ch4"] + v["h2"] + 64 * v["IS"]) * Q
+def cod_routing(F, des, g):
+    N = des["N"]; Q = F["Q"]; Qw = des["Qw"]; v = g["v"]; J = {k: x * N for k, x in g["Jgas"].items()}
     return {"Metana (biogas)": 64 * J["ch4"], "H2S (reduksi sulfat)": 64 * J["h2s"] + 16 * J["h2"],
-            "Biomassa mikroba": bio, "Terurai sebagian (belum habis)": degr, "Tak terurai (lignin, inert)": nondeg, "CH4/H2S terlarut": diss}
+            "Biomassa (lumpur buangan)": sum(v[k] for k in ("Xsu", "Xaa", "Xfa", "Xpro", "Xac", "Xh2", "Xsa", "Xsh")) * Qw,
+            "Partikulat sisa (lumpur buangan)": sum(v[k] for k in ("ch", "pr", "li", "cel", "hem", "lig", "rc", "inert")) * Qw,
+            "Organik terlarut (efluen)": sum(v[k] for k in ("su", "aa", "fa", "pro", "ac", "sI")) * Q,
+            "CH4/H2S terlarut": (v["ch4"] + v["h2"] + 64 * v["IS"]) * Q}
+
+def EQ_CH4_PER_COD():                    # Nm3 CH4 per kg COD (stoichiometric)
+    return VN / SPX["ch4"].cod
 
 # ============================================================================
 # 14. MAIN
 # ============================================================================
 def main():
-    print("=" * 78); print(" POME + EFB CO-DIGESTION BIOGAS GENERATOR - MASS & ENERGY BALANCE"); print("=" * 78)
+    print("=" * 78); print(" PORTABLE THERMOPHILIC AnMBR BIOGAS GENERATOR (POME) - MASS & ENERGY BALANCE"); print("=" * 78)
     print("stoichiometry element-balance residual (max over %d reactions): %.1e" % (len(STO), STO_MAXRES))
-    print("molar volume %.3f Nm3/kmol | LHV(CH4) %.2f MJ/Nm3 (from dH_c) | N_MC=%d" % (VN, LHV_CH4_MJNM3, N_MC))
-    TH0 = nominal_theta(); TH0["util"] = 1.0                                  # design basis = nameplate
-    R = {}                                                                    # results container
-    # ---------------------------------------------------------------- A. calibration
+    TH0 = nominal_theta(); TH0["util"] = 1.0
+    R = {}
+    # ---------------------------------------------------------------- A. calibration (mesophilic BMP, literature)
     print("\n[A] calibration to literature BMPs (POME 397, EFB 264 NmL CH4/gVS) ...")
     TH, bmp_fit = calibrate(TH0)
-    tP, cP_ = bmp_test(TH, "pome"); tE_, cE_ = bmp_test(TH, "efb")
-    R["calibration"] = dict(values={n: float(TH[n]) for n in ("k_li", "k_ch", "k_cel_ref", "beta_lig", "f_ref_pome")},
-                            bmp_fit=bmp_fit, bmp_target=CAL_TARGETS)
-    # ---------------------------------------------------------------- B. process decisions
-    print("\n[B] process design decisions")
-    share, ts95 = design_share_from_feed_risk(TH)
-    TH["efb_share"] = share
-    print("   EFB share to AD: %.1f %% of EFB (P95 blend TS = %.2f %%, limit %.1f %%)" % (share * 100, ts95 * 100, TH["TS_max"] * 100))
-    sw_share = []
-    for sh in (0.0, 0.1, 0.2, 0.3, 0.4, 0.5):
-        F_ = build_feed(TH, share=sh, cap_ts=False); V_ = F_["Q"] * 20.0 / 5
-        d_, y_, g_, ok_ = run_steady(TH, F_, 5, V_); J_ = g_["Jgas"]
-        sw_share.append(dict(share=sh, TS=F_["TS"], ch4=J_["ch4"] * VN * 5, prod=J_["ch4"] * VN * 5 / (V_ * 5), efb_td=F_["M_efb"]))
-    sw_dp = []
-    for dp in (3, 5, 10, 15, 20, 30):
-        t_ = dict(TH); t_["d_p_mm"] = dp; F_ = build_feed(t_, share=share); V_ = F_["Q"] * 20.0 / 5
-        d_, y_, g_, ok_ = run_steady(t_, F_, 5, V_); ch4_ = g_["Jgas"]["ch4"] * VN * 5
-        e_gain = ch4_ * LHV_KJMOL["CH4"] / (VN) / 3.6 * EQ["eta_el_nom"]            # kWh_e/d (LHV: kJ/kmol -> kWh)
-        e_sh = F_["M_efb"] * shred_kWh_per_t_wet(dp)
-        sw_dp.append(dict(dp=dp, ch4=ch4_, net=e_gain - e_sh, shred=e_sh))
-    best = max(r["net"] for r in sw_dp)
-    dp_sel = max(r["dp"] for r in sw_dp if r["net"] >= 0.99 * best)
-    TH["d_p_mm"] = float(dp_sel)
-    print("   shredder product size: %d mm (largest size within 1 %% of best net energy)" % dp_sel)
-    F_nom = build_feed(TH, share=share)
-    hrts = [40, 30, 24, 20, 18, 16, 14, 12, 10, 8, 6, 5, 4, 3]
-    sw_hrt = hrt_sweep(TH, F_nom, hrts)
-    HRT, hinfo = design_hrt(sw_hrt)
-    print("   HRT sweep: washout HRT ~ %.0f d; %.0f %% of asymptotic CH4 reached at %.0f d; floor %.0f x washout = %.0f d -> design HRT %.0f d"
-          % (hinfo["h_wash"], EQ["yield_frac"] * 100, hinfo["h_yield"], EQ["SF_wash"], hinfo["h_floor"], HRT))
-    mod = choose_module(TH, share, HRT)
-    N, Vm = mod["N"][45.0], mod["V_mod"]
+    R["calibration"] = dict(values={n: float(TH[n]) for n in ("k_li", "k_ch", "k_cel_ref", "beta_lig", "f_ref_pome")}, bmp_fit=bmp_fit, bmp_target=CAL_TARGETS)
+    # ---------------------------------------------------------------- B. technology selection
+    print("\n[B] technology selection (same feed, 45 t FFB/h nameplate)")
+    TH["efb_share"] = 0.0
+    techs = [("A  Mesofilik CSTR + TKKS 29% (Rev0)", config_run(TH, 38.0, 22.0, 0.0, 0.293)),
+             ("B  Mesofilik CSTR, POME", config_run(TH, 38.0, 20.0, 0.0)),
+             ("C  Termofilik CSTR, POME", config_run(TH, 55.0, 5.0, 0.0))]
+    sel, grid, best = anmbr_design(TH)
+    techs.append(("D  Termofilik AnMBR, POME (dipilih)", sel))
+    for n_, r_ in techs:
+        print("   %-38s V %6.0f m3 | HRT %4.1f d SRT %4.1f d | OLR %4.1f | CH4 %6.0f Nm3/d | %4.2f Nm3/m3.d | MLSS %4.1f g/L"
+              % (n_, r_["V"], r_["hrt"], r_["srt"], r_["olr"], r_["ch4"], r_["prod"], r_["mlss"]))
+    HRT, SRT = sel["hrt"], sel["srt"]
+    TH["T_dig"] = 55.0; TH["srt"] = SRT
+    ves = choose_vessel(TH, HRT)
+    N, Vm = ves["N"][45.0], ves["V_mod"]
+    geo = vessel_geometry(ves["D"], ves["H_liq"], TH)
+    F_nom = build_feed(TH)
     HRT_act = N * Vm / F_nom["Q"]
-    print("   standard module: %.0f m3 liquid (D %.1f m) -> %s modules for 20/45/70 t FFB/h; base case N=%d, actual HRT %.1f d"
-          % (Vm, mod["D"], "/".join(str(mod["N"][k]) for k in (20.0, 45.0, 70.0)), N, HRT_act))
-    R["process_decisions"] = dict(efb_share=share, ts_p95=ts95, d_p_mm=dp_sel, hrt_design_d=HRT, hrt_info=hinfo, hrt_actual_d=HRT_act,
-                                  module=mod, T_dig=TH["T_dig"], reactor="mesophilic CSTR, steel/GFS tank, double-membrane roof",
-                                  sweeps=dict(share=sw_share, d_p=sw_dp, hrt=sw_hrt))
-    # ---------------------------------------------------------------- C. nominal (design-basis) run
-    print("\n[C] design-basis balance (45 t FFB/h x 20 h, EFB share %.0f %%)" % (share * 100))
-    d_nom, y_nom, g_nom, ok_nom = run_steady(TH, F_nom, N, Vm)
+    Qw = N * Vm / SRT
+    print("   selected: thermophilic AnMBR, HRT %.1f d, SRT %.0f d (MLSS %.1f g/L <= %.0f %% of %.0f, OLR %.1f <= %.0f)" % (HRT, SRT, sel["mlss"], EQ["mlss_margin"] * 100, EQ["mlss_max"], sel["olr"], EQ["olr_max"]))
+    print("   transportable vessel %.0f m3 (D %.1f m x H_liq %.1f m) -> %s vessels for 30/45/60 t FFB/h; base N=%d, actual HRT %.2f d"
+          % (Vm, ves["D"], ves["H_liq"], "/".join(str(ves["N"][k]) for k in EQ["tiers"]), N, HRT_act))
+    R["process_decisions"] = dict(technology="thermophilic (55 C) anaerobic membrane bioreactor, POME only", T_dig=55.0, hrt_design_d=HRT, srt_d=SRT,
+                                  hrt_actual_d=HRT_act, vessel=ves, efb="not co-digested in the portable module (returned to mill: mulch/boiler)",
+                                  tech_compare=[dict(name=n_, **{k: v for k, v in r_.items()}) for n_, r_ in techs],
+                                  grid=[{k: v for k, v in r.items()} for r in grid], ch4_best=best)
+    # ---------------------------------------------------------------- C. design-basis run
+    print("\n[C] design-basis balance (45 t FFB/h x 20 h)")
+    d_nom, y_nom, g_nom, ok_nom = run_steady(TH, F_nom, N, Vm, nhrt=6.0)
     J_nom = {k: v * N for k, v in g_nom["Jgas"].items()}; gs_nom = gas_summary(J_nom)
-    print("   steady state converged: %s | pH %.2f | VFA %.0f mg/L | FOS/TAC %.3f | TAN %.0f mg N/L | NH3 %.1f mg N/L"
-          % (ok_nom, g_nom["pH"], g_nom["vfa_mgL"], g_nom["fos_tac"], g_nom["tan_mgN"], g_nom["nh3_mgN"]))
-    print("   biogas %.0f Nm3/d (CH4 %.1f %%, raw H2S %.0f ppm) | CH4 %.0f Nm3/d | %.1f Nm3 biogas per m3 POME-equivalent"
-          % (gs_nom["Nm3d"], gs_nom["y"]["ch4"] * 100, 1e6 * gs_nom["y"]["h2s"], J_nom["ch4"] * VN, gs_nom["Nm3d"] / F_nom["Qp"]))
-    # ---------------------------------------------------------------- D. Monte Carlo (reactor level)
+    print("   steady %s | pH %.2f | VFA %.0f mg/L | FOS/TAC %.3f | TAN %.0f mg N/L | NH3 %.1f mg N/L | MLSS %.1f g/L"
+          % (ok_nom, g_nom["pH"], g_nom["vfa_mgL"], g_nom["fos_tac"], g_nom["tan_mgN"], g_nom["nh3_mgN"], g_nom["mlss"]))
+    print("   biogas %.0f Nm3/d (CH4 %.1f %%, raw H2S %.0f ppm) | CH4 %.0f Nm3/d | %.1f Nm3 biogas/m3 POME | COD removal %.1f %%"
+          % (gs_nom["Nm3d"], gs_nom["y"]["ch4"] * 100, 1e6 * gs_nom["y"]["h2s"], J_nom["ch4"] * VN, gs_nom["Nm3d"] / F_nom["Qp"], g_nom["cod_removed_frac"] * 100))
+    mem = membrane_design(F_nom["Q"] - Qw)
+    print("   membrane: %.0f m2 at %.0f LMH -> %d modules in %d container(s), %.0f kWe crossflow" % (mem["area_m2"], mem["flux"], mem["modules"], mem["containers"], mem["kW"]))
+    # ---------------------------------------------------------------- D. Monte Carlo
     print("\n[D] Monte Carlo (Latin hypercube, %d samples) ..." % N_MC)
     TH_mc = dict(TH); TH_mc["util"] = pmed("util")
-    y_mc0 = run_steady(TH_mc, build_feed(TH_mc, share=share), N, Vm)[1]
-    rec = mc_run(TH_mc, dict(N=N, V_mod=Vm, share=share), y_mc0, N_MC, rng)
+    y_mc0 = run_steady(TH_mc, build_feed(TH_mc), N, Vm, nhrt=6.0)[1]
+    rec = mc_run(TH_mc, dict(N=N, V_mod=Vm, share=0.0), y_mc0, N_MC, rng)
     lhv95 = float(np.percentile([gas_train(r["J"], r["t"])["lhv_kW"] for r in rec], 95))
     bg95 = float(np.percentile([r["gs"]["Nm3d"] for r in rec], 95))
     chp = chp_select(lhv95)
-    geo = tank_geometry(Vm, TH, bg95 / N)
-    des = dict(N=N, V_mod=Vm, geo=geo, share=share, chp=chp)
-    print("   P95 fuel %.0f kW -> CHP: %d x %.0f kWe (installed %.0f kWe) | P95 biogas %.0f Nm3/d -> flare %.0f Nm3/h"
-          % (lhv95, chp["N_gen"], chp["P_unit"], chp["P_inst"], bg95, EQ["flare_margin"] * bg95 / 24.0))
+    des = dict(N=N, V_mod=Vm, geo=geo, share=0.0, chp=chp, Qw=Qw, membrane=mem, srt=SRT)
     A, X = mc_arrays(rec, des, chp)
-    upset_p = float(A["upset"].mean())
-    print("   urea-N dosing needed (kg N/d): P50 %.0f | P95 %.0f ; NaOH P95 %.0f kg/d" % (np.percentile(A["doseN"], 50), np.percentile(A["doseN"], 95), np.percentile(A["dose"], 95) * 40.0))
-    print("   probability of digester upset (pH<6.5 or FOS/TAC>0.4): %.1f %% | steady-state not reached in %.1f %% of runs"
-          % (upset_p * 100, (1 - A["ok"].mean()) * 100))
-    for k, lab in (("bg", "biogas Nm3/d"), ("ch4_frac", "CH4 fraction"), ("cod_rem", "COD removal"), ("P_gross", "gross kWe"), ("P_net", "net kWe"),
-                   ("P_export", "export kWe"), ("share", "EFB share actually fed")):
-        print("   %-24s P5 %9.3f  P50 %9.3f  P95 %9.3f" % (lab, *pct(A[k])))
-    outs = ["bg", "P_net", "cod_conv", "fos", "tan"]
-    sens = spearman_table(X, A, outs)
-    # ---------------------------------------------------------------- E. final nominal balance with final equipment
+    print("   P95 fuel %.0f kW -> CHP %d x %.0f kWe | P95 biogas %.0f Nm3/d -> flare %.0f Nm3/h, gas holder %.0f m3"
+          % (lhv95, chp["N_gen"], chp["P_unit"], bg95, EQ["flare_margin"] * bg95 / 24, bg95 / 24 * EQ["gh_hours"]))
+    print("   urea-N P50/P95 %.0f/%.0f kg N/d ; NaOH P95 %.0f kg/d ; upset probability %.1f %%"
+          % (np.percentile(A["doseN"], 50), np.percentile(A["doseN"], 95), np.percentile(A["dose"], 95) * 40, A["upset"].mean() * 100))
+    for k, lab in (("bg", "biogas Nm3/d"), ("ch4_frac", "CH4 fraction"), ("cod_rem", "COD removal"), ("mlss", "MLSS g/L"), ("P_gross", "gross kWe"), ("P_net", "net kWe"), ("P_export", "surplus kWe")):
+        print("   %-16s P5 %9.3f  P50 %9.3f  P95 %9.3f" % (lab, *pct(A[k])))
+    sens = spearman_table(X, A, ["bg", "P_net", "mlss", "fos"])
+    # ---------------------------------------------------------------- E. final balance
     E_nom = plant_energy(F_nom, TH, des, J_nom, chp)
     S, chk, mtot = mass_balance(TH, F_nom, des, d_nom, y_nom, g_nom, E_nom)
     rows = stream_table(S)
     c = E_nom["chp"]; gt = E_nom["gt"]
-    print("\n[E] plant energy balance (design basis)")
-    print("   fuel %.0f kW(LHV) | CHP %d of %d units at %.0f %% load, eta_el %.1f %% | gross %.0f kWe | parasitic %.0f kWe (%.1f %%) | net %.0f kWe"
-          % (gt["lhv_kW"], c["n_run"], chp["N_gen"], c["load"] * 100, c["eta_el"] * 100, E_nom["P_gross"], E_nom["P_par"], E_nom["P_par"] / E_nom["P_gross"] * 100, E_nom["P_net"]))
-    print("   mill demand %.0f kW -> self-sufficiency %.0f %%, surplus %.0f kWe | heat: CHP %.0f kWth, digester %.0f kWth, export %.0f kWth | POME cooling %.0f kWth"
-          % (E_nom["P_mill"], E_nom["self_suff"] * 100, E_nom["P_export"], E_nom["Q_heat_avail"], E_nom["Q_dig"], E_nom["Q_heat_export"], F_nom["Qcool_kW"]))
-    print("   engine exhaust T from energy balance: %.0f C | fuel H2S %.0f ppm | CH4 in fuel %.1f %%" % (c["T_exh"], gt["h2s_ppm_fuel"], gt["ch4_frac_fuel"] * 100))
-    print("   closure checks (relative error):  " + "  ".join("%s %.1e" % (k, v) for k, v in chk.items() if v is not None and k in
-          ("digester_mass", "digester_C", "digester_H", "digester_O", "digester_N", "digester_S", "plant_mass", "chp_mass", "COD_digester")))
-    # ---------------------------------------------------------------- F. emissions and economics
-    v = g_nom["v"]; Qn = F_nom["Q"]
-    bio_deg = Qn * ((1 - EQ["press_capture"]) * sum(v[k] for k in ("ch", "pr", "li", "cel", "hem")) + sum(v[k] for k in ("su", "aa", "fa", "pro", "ac")))
-    em = emissions(TH, F_nom, des, g_nom, E_nom, bio_deg)
-    ec = econ_screen(TH, des, chp, E_nom, em, g_nom)
-    print("\n[F] methane avoidance (IPCC defaults): baseline %.0f tCO2e/y -> project %.0f -> avoided %.0f tCO2e/y" % (em["base_t"], em["proj_t"], em["avoided_t"]))
-    print("    screening economics (placeholder unit costs): CAPEX %.2f MUSD | revenue %.2f MUSD/y | payback %.1f y | LCOE %.3f USD/kWh"
-          % (ec["capex"] / 1e6, ec["revenue"] / 1e6, ec["payback"], ec["lcoe"]))
-    # ---------------------------------------------------------------- G. tiers (scalability)
+    print("\n[E] energy: fuel %.0f kW | CHP %d/%d units %.0f %% load eta %.1f %% | gross %.0f | parasitic %.0f (%.1f %%) | net %.0f kWe | mill %.0f kW -> %.0f %%"
+          % (gt["lhv_kW"], c["n_run"], chp["N_gen"], c["load"] * 100, c["eta_el"] * 100, E_nom["P_gross"], E_nom["P_par"], E_nom["P_par"] / E_nom["P_gross"] * 100,
+             E_nom["P_net"], E_nom["P_mill"], E_nom["self_suff"] * 100))
+    print("   heat: POME cooling %.0f kWth (hot POME also covers reactor losses %.0f kWth) | CHP hot water %.0f kWth available" % (E_nom["Q_pome_cool"], E_nom["Q_dig"], E_nom["Q_heat_avail"]))
+    print("   closure: " + "  ".join("%s %.1e" % (k, v) for k, v in chk.items() if k in ("reactor_mass", "reactor_C", "reactor_N", "reactor_S", "membrane_loop_mass", "dewatering_mass", "chp_mass", "plant_mass", "COD_reactor")))
+    v = g_nom["v"]
+    eff_biodeg = F_nom["Q"] * sum(v[k] for k in ("su", "aa", "fa", "pro", "ac")) + Qw * (1 - EQ["press_capture"]) * sum(v[k] for k in ("ch", "pr", "li"))
+    em = emissions(TH, F_nom, des, g_nom, E_nom, eff_biodeg)
+    ec = econ_screen(TH, des, chp, E_nom, em)
+    print("\n[F] methane avoided %.0f tCO2e/y | screening CAPEX %.2f MUSD, payback %.1f y, LCOE %.3f USD/kWh (placeholder costs)"
+          % (em["avoided_t"], ec["capex"] / 1e6, ec["payback"], ec["lcoe"]))
+    # ---------------------------------------------------------------- G. tiers
     tiers = {}
-    for f in (20.0, 45.0, 70.0):
+    for f in EQ["tiers"]:
         t_ = dict(TH); t_["ffb_tph"] = f
-        F_ = build_feed(t_, share=share); n_ = mod["N"][f]
-        d_, y_, g_, ok_ = run_steady(t_, F_, n_, Vm); J_ = {k: x * n_ for k, x in g_["Jgas"].items()}
-        gt_ = gas_train(J_, t_); chp_ = chp_select(gt_["lhv_kW"] * (lhv95 / gas_train(J_nom, TH)["lhv_kW"]))
-        geo_ = tank_geometry(Vm, t_, gas_summary(J_)["Nm3d"] * (bg95 / gs_nom["Nm3d"]) / n_)
-        E_ = plant_energy(F_, t_, dict(N=n_, V_mod=Vm, geo=geo_), J_, chp_)
+        F_ = build_feed(t_); n_ = ves["N"][f]
+        d_, y_, g_, ok_ = run_steady(t_, F_, n_, Vm, nhrt=6.0); J_ = {k: x * n_ for k, x in g_["Jgas"].items()}
+        gt_ = gas_train(J_, t_); chp_ = chp_select(gt_["lhv_kW"] * (lhv95 / gt["lhv_kW"]))
+        mem_ = membrane_design(F_["Q"] - n_ * Vm / SRT)
+        E_ = plant_energy(F_, t_, dict(N=n_, V_mod=Vm, geo=geo, Qw=n_ * Vm / SRT, membrane=mem_), J_, chp_)
         tiers[str(int(f))] = dict(ffb_tph=f, N_modules=n_, V_total=n_ * Vm, HRT=n_ * Vm / F_["Q"], biogas_Nm3d=gas_summary(J_)["Nm3d"], ch4_Nm3d=J_["ch4"] * VN,
-                                  P_gross=E_["P_gross"], P_net=E_["P_net"], P_mill=E_["P_mill"], GWh_y=E_["P_net"] * 24 * t_["days_yr"] / 1e6,
-                                  chp=chp_, EFB_td=F_["M_efb"], POME_m3d=F_["Qp"], Q_blend=F_["Q"])
-    print("\n[G] tiers (same %.0f m3 module): " % Vm + " | ".join("%d t/h: %d mod, %.0f kWe net, %.1f GWh/y" % (k_, v_["N_modules"], v_["P_net"], v_["GWh_y"]) for k_, v_ in ((int(float(a)), b_) for a, b_ in tiers.items())))
+                                  P_gross=E_["P_gross"], P_net=E_["P_net"], P_mill=E_["P_mill"], GWh_y=E_["P_net"] * 24 * t_["days_yr"] / 1e6, chp=chp_,
+                                  membrane=mem_, POME_m3d=F_["Qp"])
+    print("\n[G] tiers: " + " | ".join("%s t/h: %d vessels, %.0f kWe net" % (k_, v_["N_modules"], v_["P_net"]) for k_, v_ in tiers.items()))
     # ---------------------------------------------------------------- H. dynamics
     print("\n[H] start-up and annual dynamic simulation ...")
+    su = startup_sim(TH, dict(N=N, V_mod=Vm, share=0.0), days=120.0)
     TH_y = dict(TH); TH_y["util"] = pmed("util")
-    su = startup_sim(TH, dict(N=N, V_mod=Vm, share=share), days=150.0)
     yr = year_sim(TH_y, des, chp, y_mc0, np.random.default_rng(SEED + 7))
     yr_GWh = float(np.sum(yr["P_net"]) * 24 / 1e6)
-    print("   one-year simulation (seasonal + noise + 14 d shutdown): net %.2f GWh/y | min pH %.2f | max FOS/TAC %.2f | flared energy %.1f MWh"
-          % (yr_GWh, yr["pH"].min(), yr["fos"].max(), yr["flare"].sum() * 24 / 1e3))
-    # ---------------------------------------------------------------- I. export JSON
-    cod_r = cod_routing(F_nom, des, g_nom, y_nom)
+    print("   one year: net %.2f GWh/y | min pH %.2f | max FOS/TAC %.2f" % (yr_GWh, yr["pH"].min(), yr["fos"].max()))
+    # ---------------------------------------------------------------- I. export
+    cod_r = cod_routing(F_nom, des, g_nom)
     equip = dict(
-        digester_module=dict(count=N, V_liq_m3=Vm, D_m=geo["D"], H_liq_m=geo["H_liq"], H_wall_m=geo["H_wall"], roof_dome_h_m=geo["dome_h"],
-                             V_gas_m3=geo["V_gas"], mixer_kW=geo["mixer_kW"], heat_loss_kW=geo["Q_loss_kW"], T_C=TH["T_dig"], material="baja / GFS, insulasi 100 mm, atap membran ganda"),
-        blend_tank=dict(V_m3=F_nom["Q"] * 4.0 / 24.0, hold_h=4.0), efb_shredder=dict(cap_t_h=F_nom["M_efb"] / 20.0, power_kW=E_nom["P"]["shredder"], product_mm=dp_sel),
-        pome_cooler=dict(duty_kW=F_nom["Qcool_kW"], T_in=TH["T_pome_in"], T_out=F_nom["T_p_out"]),
+        reactor_vessel=dict(count=N, V_liq_m3=Vm, D_m=geo["D"], H_liq_m=geo["H_liq"], H_shell_m=geo["H_shell"], mixer_kW=geo["mixer_kW"], heat_loss_kW=geo["Q_loss_kW"],
+                            T_C=55.0, hrt_d=HRT_act, srt_d=SRT, transport=geo["transport"], material="CS + epoksi, insulasi 100 mm, pencampuran jet (resirkulasi)"),
+        screen=dict(flow_m3h=F_nom["Qp"] / 24.0), desander=dict(flow_m3h=F_nom["Qp"] / 24.0, grit_removal=TH["e_grit"]),
+        pome_cooler=dict(duty_kW=E_nom["Q_pome_cool"], T_in=TH["T_pome_in"], T_out=S[4]["T"]),
+        feed_tank=dict(V_m3=F_nom["Q"] * EQ["feed_tank_h"] / 24.0, hold_h=EQ["feed_tank_h"]),
         feed_pump=dict(flow_m3_h=F_nom["Q"] / 24.0, head_m=EQ["H_feed"], kW=E_nom["P"]["feed_pumps"]),
-        bio_desulfurizer=dict(gas_Nm3_h=gs_nom["Nm3d"] / 24.0, V_m3=gs_nom["Nm3d"] / 24.0 * EQ["ebct_s"] / 3600.0 * 1.0, eff=EQ["btf_eff"], air_Nm3_h=gt["n_air_btf"] * VN / 24.0),
+        membrane=mem, permeate_tank=dict(V_m3=F_nom["Q"] * EQ["perm_tank_h"] / 24.0, hold_h=EQ["perm_tank_h"]),
+        waste_sludge=dict(Qw_m3d=Qw, cake_t_d=(sum(S[12]["sp"].values()) + S[12]["water"]) / 1000.0),
+        gas_holder=dict(V_m3=bg95 / 24.0 * EQ["gh_hours"], hours=EQ["gh_hours"]),
+        bio_desulfurizer=dict(gas_Nm3_h=gs_nom["Nm3d"] / 24.0, V_m3=gs_nom["Nm3d"] / 24.0 * EQ["ebct_s"] / 3600.0, eff=EQ["btf_eff"], air_Nm3_h=gt["n_air_btf"] * VN / 24.0),
         gas_chiller=dict(duty_kW=gt["Q_chill_kW"], T_C=EQ["chill_T"]), gas_blower=dict(flow_m3_h=gt["V_gas_actual_m3s"] * 3600.0, dP_kPa=EQ["blower_dP_kPa"], kW=gt["P_blow_kW"]),
-        carbon_filter=dict(h2s_kg_d=gt["ac_h2s"] * MWG["h2s"], eff=EQ["ac_eff"]),
-        flare=dict(cap_Nm3_h=EQ["flare_margin"] * bg95 / 24.0), chp=dict(N=chp["N_gen"], unit_kWe=chp["P_unit"], installed_kWe=chp["P_inst"], eta_el_nom=EQ["eta_el_nom"], fuel_P95_kW=lhv95),
-        screw_press=dict(feed_m3_h=F_nom["Q"] / 24.0, cake_t_d=sum(S[19]["sp"].values()) / 1000.0 + S[19]["water"] / 1000.0, kW=E_nom["P"]["screw_press"]),
+        carbon_filter=dict(h2s_kg_d=gt["ac_h2s"] * MWG["h2s"], eff=EQ["ac_eff"]), flare=dict(cap_Nm3_h=EQ["flare_margin"] * bg95 / 24.0),
+        chp=dict(N=chp["N_gen"], unit_kWe=chp["P_unit"], installed_kWe=chp["P_inst"], eta_el_nom=EQ["eta_el_nom"], fuel_P95_kW=lhv95),
         cooling_tower=dict(duty_kW=E_nom["Q_cool"], kW=E_nom["P"]["cooling_tower"]),
-        nutrient_dosing=dict(N_kg_d_nominal=g_nom["doseN"] * Vm * N * 14.007, N_kg_d_P95=float(np.percentile(A["doseN"], 95)), setpoint_mgN_L=TH["IN_sp"] * 14007.0),
+        nutrient_dosing=dict(N_kg_d_P95=float(np.percentile(A["doseN"], 95)), setpoint_mgN_L=TH["IN_sp"] * 14007.0),
         alkali_dosing=dict(NaOH_kg_d_P95=float(np.percentile(A["dose"], 95)) * 40.0))
     R.update(dict(
-        meta=dict(title="Modular POME+EFB biogas generator - mass & energy balance", seed=SEED, N_MC=N_MC, quick=QUICK, runtime_s=time.time() - t_script0, sto_residual=STO_MAXRES),
-        design_basis=dict(ffb_tph=TH["ffb_tph"], hrs_day=TH["hrs_day"], days_yr=TH["days_yr"], pome_m3d=F_nom["Qp"], efb_ad_td=F_nom["M_efb"], blend_m3d=F_nom["Q"], TS_blend=F_nom["TS"],
-                          T_dig=TH["T_dig"], cod_blend=g_nom["cod_in"]),
-        nominal=dict(pH=g_nom["pH"], vfa_mgL=g_nom["vfa_mgL"], fos_tac=g_nom["fos_tac"], tan_mgN=g_nom["tan_mgN"], biogas_Nm3d=gs_nom["Nm3d"], ch4_Nm3d=J_nom["ch4"] * VN,
-                     ch4_frac=gs_nom["y"]["ch4"], h2s_ppm_raw=gt["h2s_ppm_raw"], h2s_ppm_fuel=gt["h2s_ppm_fuel"], cod_conv=64 * J_nom["ch4"] / (Qn * g_nom["cod_in"]), cod_routing_kgd=cod_r,
-                     states={k: float(val) for k, val in zip(NAMES, y_nom)}),
+        meta=dict(title="Portable thermophilic AnMBR biogas generator - mass & energy balance", seed=SEED, N_MC=N_MC, quick=QUICK, runtime_s=time.time() - t_script0, sto_residual=STO_MAXRES, revision=1),
+        design_basis=dict(ffb_tph=TH["ffb_tph"], hrs_day=TH["hrs_day"], days_yr=TH["days_yr"], pome_m3d=F_nom["Qp"], blend_m3d=F_nom["Q"], T_dig=55.0, cod_blend=g_nom["cod_in"], efb_ad_td=0.0),
+        nominal=dict(pH=g_nom["pH"], vfa_mgL=g_nom["vfa_mgL"], fos_tac=g_nom["fos_tac"], tan_mgN=g_nom["tan_mgN"], mlss=g_nom["mlss"], biogas_Nm3d=gs_nom["Nm3d"], ch4_Nm3d=J_nom["ch4"] * VN,
+                     ch4_frac=gs_nom["y"]["ch4"], h2s_ppm_raw=gt["h2s_ppm_raw"], h2s_ppm_fuel=gt["h2s_ppm_fuel"], cod_rem=g_nom["cod_removed_frac"], cod_routing_kgd=cod_r,
+                     olr=F_nom["Q"] * g_nom["cod_in"] / (N * Vm), states={k: float(val) for k, val in zip(NAMES, y_nom)}),
         energy=dict(P_gross=E_nom["P_gross"], P_net=E_nom["P_net"], P_par=E_nom["P_par"], parasitic=E_nom["P"], P_mill=E_nom["P_mill"], P_export=E_nom["P_export"],
                     chp={k: (float(vv) if not isinstance(vv, dict) else vv) for k, vv in c.items()}, Q_heat_avail=E_nom["Q_heat_avail"], Q_dig=E_nom["Q_dig"],
-                    Q_heat_export=E_nom["Q_heat_export"], Q_cool=E_nom["Q_cool"], fuel_kW=gt["lhv_kW"]),
+                    Q_heat_export=E_nom["Q_heat_export"], Q_cool=E_nom["Q_cool"], Q_pome_cool=E_nom["Q_pome_cool"], fuel_kW=gt["lhv_kW"]),
         equipment=equip, streams=rows, closure=chk, tiers=tiers, emissions=em, economics_screen=ec,
-        monte_carlo=dict(N=N_MC, upset_probability=upset_p, **{k: dict(zip(("P5", "P50", "P95"), pct(A[k]))) for k in
-                         ("bg", "ch4", "ch4_frac", "cod_rem", "cod_conv", "P_gross", "P_net", "P_export", "pH", "fos", "tan", "nh3", "share", "TS", "h2s_ppm_raw", "load", "eta_el", "doseN")},
+        monte_carlo=dict(N=N_MC, upset_probability=float(A["upset"].mean()), **{k: dict(zip(("P5", "P50", "P95"), pct(A[k]))) for k in
+                         ("bg", "ch4", "ch4_frac", "cod_rem", "P_gross", "P_net", "P_export", "pH", "fos", "tan", "nh3", "mlss", "olr", "h2s_ppm_raw", "load", "eta_el", "doseN")},
                          spearman=sens),
         year=dict(GWh_net=yr_GWh, min_pH=float(yr["pH"].min()), max_fos=float(yr["fos"].max()), monthly_net_MWh=[float(yr["P_net"][i:i + 30].sum() * 24 / 1e3) for i in range(0, 360, 30)]),
         assumptions={k: dict(value=(v_[0] if not isinstance(v_[0], np.ndarray) else v_[0].tolist()), dist=str(v_[1]), source=v_[2]) for k, v_ in PAR.items()},
@@ -1420,61 +1414,64 @@ def main():
     return R
 
 def make_figures(L):
-    TH, F_nom, des, A, X, sens, sw_share, sw_dp, sw_hrt, hinfo, HRT = (L[k] for k in ("TH", "F_nom", "des", "A", "X", "sens", "sw_share", "sw_dp", "sw_hrt", "hinfo", "HRT"))
-    E_nom, gt, c, chp, em, ec, tiers, su, yr, cod_r, mod, share = (L[k] for k in ("E_nom", "gt", "c", "chp", "em", "ec", "tiers", "su", "yr", "cod_r", "mod", "share"))
-    # ---- Fig 1 feedstock model + uncertainty
+    TH, F_nom, A, X, sens, techs, grid, sel, ves = (L[k] for k in ("TH", "F_nom", "A", "X", "sens", "techs", "grid", "sel", "ves"))
+    E_nom, gt, c, tiers, su, yr, cod_r = (L[k] for k in ("E_nom", "gt", "c", "tiers", "su", "yr", "cod_r"))
+    # ---- Fig 1 feedstock
     g0 = np.random.default_rng(SEED + 3); ths = draw_thetas(1500, dict(TH, util=pmed("util")), g0)
-    Fs = [build_feed(t, share=share) for t in ths]
+    Fs = [build_feed(t) for t in ths]
     fig, ax = plt.subplots(2, 3, figsize=(12, 6.4)); ax = ax.ravel()
-    hist(ax[0], np.array([f["Qp"] for f in Fs]), CC[0], "POME, m3/d"); ax[0].set_title("POME flow")
+    hist(ax[0], np.array([f["Qp"] for f in Fs]), CC[0], "POME, m3/d"); ax[0].set_title("POME flow (45 t FFB/h mill)")
     hist(ax[1], np.array([t["cod_pome"] for t in ths]), CC[1], "POME COD, kg/m3"); ax[1].set_title("POME COD (lognormal, [LIT-S] 51)")
-    hist(ax[2], np.array([f["TS"] for f in Fs]) * 100, CC[2], "blend TS, % wet"); ax[2].axvline(TH["TS_max"] * 100, color=CC[7], lw=1.6)
-    ax[2].set_title("Blend TS at fixed EFB share"); ax[2].text(TH["TS_max"] * 100 - 0.05, ax[2].get_ylim()[1] * 0.55, "limit 8 %", color=CC[7], fontsize=8, ha="right")
-    fp = np.array([t["fr_pome"] for t in ths]); fe = np.array([t["fr_efb"] for t in ths])
+    hist(ax[2], np.array([t["T_pome_in"] for t in ths]), CC[3], "POME temperature, degC"); ax[2].set_title("POME arrives hot: thermophilic for free")
+    fp = np.array([t["fr_pome"] for t in ths])
     bp = ax[3].boxplot(fp, patch_artist=True, showfliers=False, medianprops=dict(color=INK, lw=1.4)); ax[3].set_xticks(range(1, len(POME_KEYS) + 1)); ax[3].set_xticklabels(POME_KEYS)
     for b_ in bp["boxes"]: b_.set(facecolor=CC[0], alpha=0.5, edgecolor=CC[0])
     ax[3].set_title("POME COD fractions (logistic-normal)"); ax[3].set_ylabel("fraction of COD")
-    bp = ax[4].boxplot(fe, patch_artist=True, showfliers=False, medianprops=dict(color=INK, lw=1.4)); ax[4].set_xticks(range(1, len(EFB_KEYS) + 1)); ax[4].set_xticklabels(EFB_KEYS)
-    for b_ in bp["boxes"]: b_.set(facecolor=CC[1], alpha=0.5, edgecolor=CC[1])
-    ax[4].set_title("EFB dry-basis composition"); ax[4].set_ylabel("mass fraction (dry)")
-    hist(ax[5], np.array([f["M_efb"] for f in Fs]), CC[4], "EFB to AD, t/d"); ax[5].set_title("EFB fed (TS-capped)")
-    fig.suptitle("Fig 1  Feedstock model and input uncertainty (n=1500, Latin hypercube)", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig1_feedstock")
-    # ---- Fig 2 calibration / validation
+    hist(ax[4], A["olr"], CC[2], "OLR, kg COD/m3.d"); ax[4].axvline(EQ["olr_max"], color=CC[7], lw=1.4); ax[4].set_title("Organic loading in operation (MC)")
+    hist(ax[5], A["mlss"], CC[4], "MLSS, g/L"); ax[5].axvline(EQ["mlss_max"], color=CC[7], lw=1.4); ax[5].set_title("Membrane solids in operation (MC)")
+    fig.suptitle("Fig 1  Feedstock model and input uncertainty", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig1_feedstock")
+    # ---- Fig 2 calibration + temperature effect
     fig, ax = plt.subplots(1, 3, figsize=(12, 3.8))
     for a_, sub, col, tg in ((ax[0], "pome", CC[0], CAL_TARGETS["pome"]), (ax[1], "efb", CC[1], CAL_TARGETS["efb"])):
         t_, cu = bmp_test(TH, sub); a_.plot(t_, cu, color=col); a_.scatter([30], [tg], color=INK, zorder=5, s=28); a_.text(30, tg, "  literature\n  %d" % tg, fontsize=8, va="top")
         a_.set_title("BMP, %s (model vs literature 30 d)" % sub.upper()); a_.set_xlabel("day"); a_.set_ylabel("NmL CH4 / g VS")
-    ok_ = [r for r in sw_hrt if r["ph_ok"]]; ax[2].plot([r["hrt"] for r in ok_], [r["cod_conv"] * EQ_CH4_PER_COD() / r["cod_rem"] for r in ok_], color=CC[2], marker="o", ms=4)
-    ax[2].axhline(0.34, color=INK, lw=1.0, ls="--"); ax[2].text(max(r["hrt"] for r in sw_hrt), 0.34, "literature POME CSTR 0.34 L/g COD removed ", ha="right", va="bottom", fontsize=7.5)
-    logx_ticks(ax[2], [3, 5, 10, 20, 40]); ax[2].set_xlabel("HRT, d"); ax[2].set_ylabel("Nm3 CH4 / kg COD removed"); ax[2].set_ylim(0, 0.45); ax[2].set_title("CSTR methane yield vs HRT")
-    fig.suptitle("Fig 2  Calibration targets and continuous-reactor check", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig2_calibration")
-    # ---- Fig 3 process decisions
-    fig, ax = plt.subplots(2, 3, figsize=(12, 6.6)); ax = ax.ravel()
-    ax[0].plot([r["share"] * 100 for r in sw_share], [r["ch4"] for r in sw_share], color=CC[0], marker="o", ms=4)
-    ax[0].axvline(share * 100, color=INK, ls="--", lw=1); ax[0].set_title("Methane vs EFB share (HRT 20 d)"); ax[0].set_xlabel("EFB to AD, % of EFB"); ax[0].set_ylabel("Nm3 CH4/d")
-    ax[1].plot([r["share"] * 100 for r in sw_share], [r["TS"] * 100 for r in sw_share], color=CC[1], marker="o", ms=4)
-    ax[1].axhline(TH["TS_max"] * 100, color=CC[7], lw=1.4); ax[1].axvline(share * 100, color=INK, ls="--", lw=1); ax[1].set_title("Blend TS vs EFB share"); ax[1].set_xlabel("EFB to AD, % of EFB"); ax[1].set_ylabel("TS, % wet")
-    ax[2].bar([str(r["dp"]) for r in sw_dp], [r["net"] / 1000 for r in sw_dp], color=CC[2], width=0.6); ax[2].set_title("Net energy vs shredder size"); ax[2].set_xlabel("product size, mm"); ax[2].set_ylabel("MWh_e/d (gas - shredding)")
-    ax[2].set_ylim(min(r["net"] for r in sw_dp) / 1000 * 0.98, max(r["net"] for r in sw_dp) / 1000 * 1.01)
-    sw = sorted(sw_hrt, key=lambda r: r["hrt"])
-    ax[3].plot([r["hrt"] for r in sw], [r["ch4"] for r in sw], color=CC[0], marker="o", ms=4); ax[3].axvline(HRT, color=INK, ls="--", lw=1)
-    ax[3].axvspan(0, hinfo["h_wash"], color=CC[7], alpha=0.12, lw=0); ax[3].text(hinfo["h_wash"] * 0.97, ax[3].get_ylim()[1] * 0.45, "washout ", rotation=90, color=CC[7], ha="right", fontsize=8)
-    logx_ticks(ax[3], [3, 5, 10, 20, 40]); ax[3].set_title("Methane vs HRT"); ax[3].set_xlabel("HRT, d"); ax[3].set_ylabel("Nm3 CH4/d")
-    ax[4].plot([r["hrt"] for r in sw], [max(r["fos"], 1e-3) for r in sw], color=CC[1], marker="o", ms=4); ax[4].axhline(0.4, color=CC[7], lw=1.2)
-    ax[4].set_yscale("log"); logx_ticks(ax[4], [3, 5, 10, 20, 40]); ax[4].set_title("FOS/TAC vs HRT (limit 0.4)"); ax[4].set_xlabel("HRT, d"); ax[4].set_ylabel("VFA / alkalinity")
-    ax[5].bar(["N=%d" % mod["N"][k] for k in (20.0, 45.0, 70.0)], [mod["N"][k] * mod["V_mod"] / 1000 for k in (20.0, 45.0, 70.0)], color=[CC[0], CC[1], CC[2]], width=0.55)
-    for i, k in enumerate((20.0, 45.0, 70.0)): ax[5].text(i, mod["N"][k] * mod["V_mod"] / 1000, "%d t/h\n+%.0f%%" % (k, mod["over"][k] * 100), ha="center", va="bottom", fontsize=8)
-    ax[5].set_title("Numbering up: one %.0f m3 module" % mod["V_mod"]); ax[5].set_ylabel("installed digester volume, 1000 m3"); ax[5].set_ylim(0, ax[5].get_ylim()[1] * 1.15)
-    fig.suptitle("Fig 3  Process decisions: EFB share, shredder size, HRT, standard module", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig3_process_decisions")
+    for T_, col, lab in ((38.0, CC[0], "mesophilic 38 C"), (55.0, CC[1], "thermophilic 55 C")):
+        hh = [3, 4, 5, 6, 8, 10, 15, 20]; ys = [config_run(TH, T_, h, 0.0)["ch4"] for h in hh]
+        ax[2].plot(hh, ys, color=col, marker="o", ms=4, label=lab)
+    ax[2].legend(); logx_ticks(ax[2], [3, 5, 10, 20]); ax[2].set_xlabel("HRT (= SRT), d"); ax[2].set_ylabel("Nm3 CH4/d"); ax[2].set_title("Plain CSTR on POME: temperature effect")
+    fig.suptitle("Fig 2  Calibration targets and temperature effect", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig2_calibration")
+    # ---- Fig 3 technology selection + AnMBR design map
+    fig, ax = plt.subplots(2, 3, figsize=(12, 6.8)); ax = ax.ravel()
+    names = [n_.split("  ")[0] for n_, _ in techs]; cols = [CC[6], CC[0], CC[1], CC[2]]
+    ax[0].bar(names, [r["V"] / 1000 for _, r in techs], color=cols, width=0.6)
+    for i, (_, r) in enumerate(techs): ax[0].text(i, r["V"] / 1000, "%.1f" % (r["V"] / 1000), ha="center", va="bottom", fontsize=8)
+    ax[0].set_title("Reactor volume, 1000 m3"); ax[0].set_ylim(0, max(r["V"] for _, r in techs) / 1000 * 1.15)
+    ax[1].bar(names, [r["ch4"] for _, r in techs], color=cols, width=0.6); ax[1].set_title("Methane, Nm3/d")
+    ax[2].bar(names, [r["prod"] for _, r in techs], color=cols, width=0.6); ax[2].set_title("Volumetric productivity, Nm3 CH4/m3.d")
+    for a_ in ax[:3]: a_.set_xlabel("A meso+EFB | B meso | C thermo | D thermo AnMBR", fontsize=7.5)
+    srts = sorted(set(r["srt"] for r in grid))
+    for i, s_ in enumerate([s for s in srts if s in (10, 15, 20, 30)]):
+        rr = sorted([r for r in grid if r["srt"] == s_], key=lambda r: r["hrt"])
+        ax[3].plot([r["hrt"] for r in rr], [r["ch4"] for r in rr], color=CC[i], marker="o", ms=3, label="SRT %d d" % s_)
+        ax[4].plot([r["hrt"] for r in rr], [r["mlss"] for r in rr], color=CC[i], marker="o", ms=3, label="SRT %d d" % s_)
+    ax[3].scatter([sel["hrt"]], [sel["ch4"]], s=70, facecolor="none", edgecolor=INK, lw=1.6, zorder=6); ax[3].legend(); ax[3].set_title("AnMBR: methane vs HRT"); ax[3].set_xlabel("HRT, d"); ax[3].set_ylabel("Nm3 CH4/d")
+    ax[4].axhline(EQ["mlss_max"], color=CC[7], lw=1.3); ax[4].scatter([sel["hrt"]], [sel["mlss"]], s=70, facecolor="none", edgecolor=INK, lw=1.6, zorder=6)
+    ax[4].set_title("AnMBR: membrane solids (limit %.0f g/L)" % EQ["mlss_max"]); ax[4].set_xlabel("HRT, d"); ax[4].set_ylabel("MLSS, g/L"); ax[4].legend()
+    kk = [str(int(f)) for f in EQ["tiers"]]
+    ax[5].bar(kk, [tiers[k]["N_modules"] for k in kk], color=CC[0], width=0.55)
+    for i, k in enumerate(kk): ax[5].text(i, tiers[k]["N_modules"], "%d" % tiers[k]["N_modules"], ha="center", va="bottom", fontsize=8)
+    ax[5].set_title("Transportable vessels (%.0f m3 each)" % ves["V_mod"]); ax[5].set_xlabel("mill size, t FFB/h")
+    fig.suptitle("Fig 3  Technology selection and AnMBR design (portable)", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig3_process_decisions")
     # ---- Fig 4 COD routing + start-up
     fig, ax = plt.subplots(2, 2, figsize=(12, 6.6)); ax = ax.ravel()
     tot = sum(cod_r.values()); ks = list(cod_r.keys())[::-1]
-    ax[0].barh(ks, [cod_r[k] / 1000 for k in ks], color=[CC[3], CC[1], CC[4], CC[6], CC[7], CC[0]][::-1][: len(ks)] if False else CC[0], height=0.55)
+    ax[0].barh(ks, [cod_r[k] / 1000 for k in ks], color=CC[0], height=0.55)
     for i, k in enumerate(ks): ax[0].text(cod_r[k] / 1000, i, "  %.1f t/d (%.0f%%)" % (cod_r[k] / 1000, cod_r[k] / tot * 100), va="center", fontsize=8)
-    ax[0].set_xlim(0, max(cod_r.values()) / 1000 * 1.35); ax[0].set_title("Where the COD goes (design basis, t COD/d)"); ax[0].set_xlabel("t COD/d")
-    m_ = su["t"] >= 2; ax[1].plot(su["t"][m_], su["ch4"][m_], color=CC[0], label="CH4"); ax[1].plot(su["t"][m_], su["bg"][m_], color=CC[1], label="biogas"); ax[1].legend(); ax[1].set_title("Cold start-up from inoculum"); ax[1].set_xlabel("day"); ax[1].set_ylabel("Nm3/d")
-    ax[2].plot(su["t"][m_], su["pH"][m_], color=CC[2]); ax[2].set_title("pH during start-up"); ax[2].set_xlabel("day"); ax[2].set_ylabel("pH")
-    ax[3].plot(su["t"][m_], su["vfa"][m_], color=CC[7], label="VFA mg/L"); ax[3].plot(su["t"][m_], su["tan"][m_], color=CC[6], label="TAN mg N/L"); ax[3].legend(); ax[3].set_title("VFA and TAN during start-up"); ax[3].set_xlabel("day"); ax[3].set_ylabel("mg/L")
+    ax[0].set_xlim(0, max(cod_r.values()) / 1000 * 1.35); ax[0].set_title("Where the COD goes (t COD/d)")
+    m_ = su["t"] >= 2
+    ax[1].plot(su["t"][m_], su["ch4"][m_], color=CC[0], label="CH4"); ax[1].plot(su["t"][m_], su["bg"][m_], color=CC[1], label="biogas"); ax[1].legend(); ax[1].set_title("Cold start-up"); ax[1].set_xlabel("day"); ax[1].set_ylabel("Nm3/d")
+    ax[2].plot(su["t"][m_], su["pH"][m_], color=CC[2]); ax[2].set_title("pH during start-up"); ax[2].set_xlabel("day")
+    ax[3].plot(su["t"][m_], su["vfa"][m_], color=CC[7], label="VFA mg/L"); ax[3].plot(su["t"][m_], su["tan"][m_], color=CC[6], label="TAN mg N/L"); ax[3].legend(); ax[3].set_title("VFA and TAN"); ax[3].set_xlabel("day")
     fig.suptitle("Fig 4  Conversion pathways and dynamics", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig4_cod_dynamics")
     # ---- Fig 5 energy
     fig, ax = plt.subplots(2, 2, figsize=(12, 6.6)); ax = ax.ravel()
@@ -1486,21 +1483,21 @@ def make_figures(L):
     P = sorted(E_nom["P"].items(), key=lambda kv: kv[1]); ax[1].barh([k.replace("_", " ") for k, _ in P], [v for _, v in P], color=CC[0], height=0.55)
     for i, (k, v) in enumerate(P): ax[1].text(v, i, " %.0f" % v, va="center", fontsize=8)
     ax[1].set_title("Parasitic load, kWe (total %.0f)" % E_nom["P_par"]); ax[1].set_xlim(0, max(v for _, v in P) * 1.2)
-    names = ["gross", "parasitic", "net", "mill demand", "surplus"]; vals = [E_nom["P_gross"], E_nom["P_par"], E_nom["P_net"], E_nom["P_mill"], E_nom["P_export"]]
-    ax[2].bar(names, vals, color=[CC[0], CC[7], CC[2], CC[3], CC[4]], width=0.6)
-    for i, v in enumerate(vals): ax[2].text(i, v, "%.0f" % v, ha="center", va="bottom", fontsize=8)
-    ax[2].set_title("Electricity balance, kWe"); ax[2].set_ylim(0, max(vals) * 1.15)
-    names = ["POME cooling\n(rejected)", "CHP heat\navailable", "digester\nheating", "heat to mill\n(export)"]; vals = [F_nom["Qcool_kW"], E_nom["Q_heat_avail"], E_nom["Q_dig"], E_nom["Q_heat_export"]]
-    ax[3].bar(names, vals, color=[CC[6], CC[1], CC[7], CC[2]], width=0.6)
+    nm = ["gross", "parasitic", "net", "mill demand", "surplus"]; vals = [E_nom["P_gross"], E_nom["P_par"], E_nom["P_net"], E_nom["P_mill"], E_nom["P_export"]]
+    ax[2].bar(nm, vals, color=[CC[0], CC[7], CC[2], CC[3], CC[4]], width=0.6)
+    for i, v in enumerate(vals): ax[2].text(i, v, "%.0f" % v, ha="center", va="bottom" if v >= 0 else "top", fontsize=8)
+    ax[2].set_title("Electricity balance, kWe")
+    nm = ["POME cooling\n(rejected)", "reactor losses\n(by hot feed)", "CHP hot water\navailable"]; vals = [E_nom["Q_pome_cool"], E_nom["Q_dig"], E_nom["Q_heat_avail"]]
+    ax[3].bar(nm, vals, color=[CC[6], CC[7], CC[1]], width=0.6)
     for i, v in enumerate(vals): ax[3].text(i, v, "%.0f" % v, ha="center", va="bottom", fontsize=8)
     ax[3].set_title("Heat balance, kWth"); ax[3].set_ylim(0, max(vals) * 1.15)
     fig.suptitle("Fig 5  Plant energy balance (design basis)", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig5_energy")
     # ---- Fig 6 Monte Carlo
     fig, ax = plt.subplots(2, 3, figsize=(12, 6.2)); ax = ax.ravel()
     for a_, k, col, lab, f_ in ((ax[0], "bg", CC[0], "biogas, Nm3/d", 1), (ax[1], "ch4_frac", CC[1], "CH4 in raw biogas, %", 100), (ax[2], "P_net", CC[2], "net electricity, kWe", 1),
-                                (ax[3], "cod_rem", CC[3], "COD removal, fraction", 1), (ax[4], "fos", CC[7], "log10 FOS/TAC (stability limit: -0.4)", 1), (ax[5], "P_export", CC[6], "surplus after mill demand, kWe", 1)):
-        hist(a_, (np.log10(np.maximum(A[k], 1e-4)) if k == "fos" else A[k] * f_), col, lab); a_.set_title(lab)
-    fig.suptitle("Fig 6  Monte Carlo outputs (n=%d)  band = P5-P95, line = median;  upset probability %.1f %%" % (len(A["bg"]), A["upset"].mean() * 100), x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig6_montecarlo")
+                                (ax[3], "cod_rem", CC[3], "COD removal, fraction", 1), (ax[4], "mlss", CC[7], "reactor MLSS, g/L", 1), (ax[5], "P_export", CC[6], "surplus after mill demand, kWe", 1)):
+        hist(a_, A[k] * f_, col, lab); a_.set_title(lab)
+    fig.suptitle("Fig 6  Monte Carlo outputs (n=%d); band P5-P95, line median; upset probability %.1f %%" % (len(A["bg"]), A["upset"].mean() * 100), x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig6_montecarlo")
     # ---- Fig 7 sensitivity
     fig, ax = plt.subplots(1, 2, figsize=(12, 4.8))
     for a_, o, ttl in ((ax[0], "bg", "Biogas flow"), (ax[1], "P_net", "Net electricity")):
@@ -1510,21 +1507,18 @@ def make_figures(L):
     fig.suptitle("Fig 7  Sensitivity (inputs ranked by |rho|)", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig7_sensitivity")
     # ---- Fig 8 year
     fig, ax = plt.subplots(3, 1, figsize=(12, 7.4), sharex=True)
-    ax[0].plot(yr["day"], yr["bg"], color=CC[0]); ax[0].set_ylabel("biogas, Nm3/d"); ax[0].set_title("Annual dynamic simulation: seasonal FFB, daily noise, 14 d shutdown")
+    ax[0].plot(yr["day"], yr["bg"], color=CC[0]); ax[0].set_ylabel("biogas, Nm3/d"); ax[0].set_title("Seasonal FFB, daily noise, 14 d shutdown")
     ax[1].plot(yr["day"], yr["P_net"], color=CC[2], label="net electricity"); ax[1].plot(yr["day"], yr["P_mill"], color=CC[3], label="mill demand"); ax[1].legend(ncol=2, loc="lower right"); ax[1].set_ylabel("kW")
-    ax[2].plot(yr["day"], yr["pH"], color=CC[1], label="pH"); ax[2].set_ylabel("pH"); ax[2].set_xlabel("day of year")
-    fig.suptitle("Fig 8  One-year behaviour of the digester bank", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig8_year")
+    ax[2].plot(yr["day"], yr["pH"], color=CC[1]); ax[2].set_ylabel("pH"); ax[2].set_xlabel("day of year")
+    fig.suptitle("Fig 8  One-year behaviour of the reactor bank", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig8_year")
     # ---- Fig 9 tiers
-    fig, ax = plt.subplots(1, 3, figsize=(12, 3.8)); kk = ["20", "45", "70"]
-    ax[0].bar(kk, [tiers[k]["N_modules"] for k in kk], color=CC[0], width=0.55); ax[0].set_title("Modules (one standard size)"); ax[0].set_xlabel("mill size, t FFB/h")
+    fig, ax = plt.subplots(1, 3, figsize=(12, 3.8)); kk = [str(int(f)) for f in EQ["tiers"]]
+    ax[0].bar(kk, [tiers[k]["N_modules"] for k in kk], color=CC[0], width=0.55); ax[0].set_title("Transportable reactor vessels")
     ax[1].bar(kk, [tiers[k]["P_net"] for k in kk], color=CC[2], width=0.55); ax[1].plot(kk, [tiers[k]["P_mill"] for k in kk], color=CC[3], marker="o", label="mill demand"); ax[1].legend(); ax[1].set_title("Net electricity, kWe")
     ax[2].bar(kk, [tiers[k]["GWh_y"] for k in kk], color=CC[1], width=0.55); ax[2].set_title("Net energy, GWh/y (300 d)")
     for a_ in ax: a_.set_xlabel("mill size, t FFB/h")
-    fig.suptitle("Fig 9  Scalability: numbering up", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig9_tiers")
+    fig.suptitle("Fig 9  Scalability across Sumatra mill sizes", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig9_tiers")
     plt.show()
-
-def EQ_CH4_PER_COD():                    # Nm3 CH4 per kg COD (stoichiometric, from ideal-gas molar volume and CH4 COD)
-    return VN / SPX["ch4"].cod
 
 if not NO_MAIN:
     RESULTS = main()
