@@ -92,7 +92,7 @@ def equipment():
       nz={'in': (0, .5, 'L'), 'ret': (1, .25, 'R'), 'perm': (.9, 1, 'D'), 'cip': (.28, 1, 'D')})
     E('ftank2', 'TK-302', 204, 128, 10, 13, lab=(215.5, 139.2, 'l'), nz={'out': (.5, 0, 'U')})
     E('pump2', 'P-302', 238, 124, 7, 7, lab=(241.5, 137.6, 'm'))
-    E('pd_pump2', 'P-303', 190, 150, 7, 7, lab=(186.6, 159, 'r'))
+    E('pd_pump2', 'P-303', 190, 150, 7, 7, lab=(193.5, 163.4, 'm'))
     E('spress2', 'PR-501', 212, 172, 32, 12, lab=(214, 190.4, 'l'), nz={'in': (.23, -.16, 'U'), 'poly': (.40, -.16, 'U'), 'cake': (0, .6, 'L'), 'f': (.625, 1.12, 'D')})
     E('vtank2', 'TK-301', 256, VY, VW, VH, lab=(264, 149.6, 'm'), hitbox=vbox, nz={'in': (0, .16, 'L'), 'fi': (0, .85, 'L'), 'out': (1, .9, 'R')})
     E('pump2', 'P-501', 276, 133.5, 7, 7, lab=(279.5, 147, 'm'))
@@ -102,7 +102,7 @@ def equipment():
     E('btf2', 'BTF-301', 196, 18, 12, 54, lab=(194, 32, 'r'), hitbox=[(0, 0, 1, 1.04)],
       nz={'in': (0, (59.2 - 18) / 54, 'L'), 'top': (.5, 0, 'U'), 'sump': (1, (68 - 18) / 54, 'R'), 'dist': (1, (27 - 18) / 54, 'R')})
     E('pump2', 'P-305', 212, 64.5, 7, 7, lab=(221, 70.5, 'l'))
-    E('blower2', 'K-301', 180, 60, 7, 7, lab=(184.5, 75.4, 'r'), nz={'in': (.25, 0, 'U'), 'out': (.75, 1, 'D')})
+    E('blower2', 'K-301', 180, 60, 7, 7, lab=None, nz={'in': (.25, 0, 'U'), 'out': (.75, 1, 'D')})
     E('shtx2', 'HX-301', 226, 9, 24, 8, lab=(222.5, 22, 'r'), nz={'in': (0, .5, 'L'), 'out': (1, .5, 'R'), 'cs': (.3, 1, 'D'), 'cr': (.7, 1, 'D')})
     E('box', 'CH-301', 228, 25, 20, 7, lab=(238, 29.6, 'm'), inner_label=True, nz={'s': (.26, 0, 'U'), 'r': (.74, 0, 'U')})
     E('kopot2', 'V-301', 258, 8, 9, 24, lab=(256, 26, 'r'), nz={'in': (0, (13 - 8) / 24, 'L'), 'out': (1, .12, 'R'), 'dr': (.5, 1, 'D')})
@@ -112,7 +112,7 @@ def equipment():
     # A-500 CHP
     E('genset2', 'GE-401', 330, 94, 62, 24, lab=None, inner_label=True, hitbox=[(0, 0, 1, 1), (.6, -.12, .94, 0)],
       nz={'gas': (0, .6, 'L'), 'air': (.1, 0, 'U'), 'ex': (.97, 0, 'U'), 'jo': (1, .3, 'R'), 'ji': (1, .7, 'R'), 'el': (.3, 1, 'D')})
-    E('wherb2', 'HX-401', 382.1, 52, 16, 26, lab=(380, 62, 'r'), nz={'in': (.5, 1, 'D'), 'out': (.5, 0, 'U'), 'ho': (1, .3, 'R'), 'hi': (1, .7, 'R')})
+    E('wherb2', 'HX-401', 382.1, 52, 16, 26, lab=(403, 52, 'l'), nz={'in': (.5, 1, 'D'), 'out': (.5, 0, 'U'), 'ho': (1, .3, 'R'), 'hi': (1, .7, 'R')})
     E('stack2', 'ST-401', 430, 22, 10, 44, lab=(435, 18.6, 'm'), hitbox=[(.2, 0, .8, 1.03)], nz={'in': (.125, .5, 'L')})
 
 # =====================================================================================================
@@ -132,7 +132,7 @@ def streams():
     so = P('SC-101.out'); pl = P('P-101.l'); L('s3a', [so, (so[0], pl[1]), pl])
     pt = P('P-101.t'); hi = P('HC-101.in'); L('s3b', [pt, (pt[0], hi[1]), hi], 3, dseg=0, dpos=.4)
     of = P('HC-101.of'); ei = P('E-101.in'); L('s3c', [of, (of[0], 76), (61, 76), (61, ei[1]), ei])
-    eo = P('E-101.out'); ti = P('TK-101.in'); L('s4', [eo, (ti[0], eo[1]), ti], 4, dseg=0, dpos=.25)
+    eo = P('E-101.out'); ti = P('TK-101.in'); L('s4', [eo, (ti[0], eo[1]), ti], 4, dseg=0, dpos=.28)
     sc = P('SC-101.scr'); uf = P('HC-101.uf')
     fr = flag("Residu", 24, 134, 'l', 'out')
     L('s2', [uf, (uf[0], 134), fr['pt'][:2]], 2, dseg=1, dpos=.6)
@@ -169,7 +169,8 @@ def streams():
     L('s15b', [g2, (g2[0], YG), (gi[0], YG)], 15, dseg=1, dpos=.4, arrow=False)
     L('s15', [(gi[0], YG), gi]); J(gi[0], YG)
     go = P('GH-301.out'); bi = P('BTF-301.in')
-    L('s16', [go, (go[0], 78), (190, 78), (190, bi[1]), bi], 16, dseg=2, dpos=.5)
+    L('s16', [go, (go[0], 78), (193.5, 78), (193.5, bi[1]), bi], 16, dseg=1, dpos=.5)
+    d.text(186.5, 73.4, "K-301", 2.0, 'l', True)
     ko = P('K-301.out'); L('s17', [ko, (ko[0], 78)], arrow=True); J(ko[0], 78)
     fa = flag("Udara", 176, 46, 'r', 'in')
     ki = P('K-301.in'); L('s17a', [fa['pt'][:2], (ki[0], 46), ki], 17, dseg=1, dpos=.5)
@@ -220,8 +221,8 @@ def cv(x, y, vert=False): return d.cvalve(x, y, vert)[:2]
 
 def instruments():
     b = P('E-101.cr'); vx, vy = cv(b[0], 56, True)
-    loop('TIC', 102, 88, 66, [(88, 66), (88, 85)], [(88, 66), (88, vy), (vx, vy)])
-    loop('LIC', 103, 110, 100, [(110, 100), (104, 100)], [(110, 100), (110, 158.4)])
+    loop('TIC', 102, 90.5, 66, [(90.5, 66), (90.5, 85)], [(90.5, 66), (90.5, vy), (vx, vy)])
+    loop('LIC', 103, 110, 120, [(110, 120), (104, 120)], [(110, 120), (110, 158.4)])
     loop('TIC', 206, 116, 113, [(116, 113), (124, 113)])
     loop('LI', 204, 119, 178, [(119, 178), (124, 178)])
     loop('LI', 205, 151, 178, [(151, 178), (156, 178)])
@@ -246,6 +247,19 @@ def instruments():
     mk = P('CT-601.mk'); vx, vy = cv(18.2, mk[1])
     loop('LIC', 601, 12, 30, [(12, 30), (23.6, 30)], [(12, 30), (12, 40), (vx, 40), (vx, vy)])
 
+def modules():
+    """batas modul portabel (garis putus-titik) + label PM"""
+    dash = [2.4, .8, .5, .8]
+    B = [((17, 77, 81.6, 131), "PM-1", (18, 80.6, 'l')), ((86.9, 87, 106.7, 153), "PM-2", (106, 90.4, 'r')),
+         ((113.3, 85, 184, 153), "PM-3 (\u00d7%d)" % NR, (114, 88.4, 'l')), ((185, 103, 250, 148), "PM-4", (249, 146.8, 'r')),
+         ((104, 156, 187, 203), "PM-5", (105, 201.8, 'l')), ((177, 6.5, 311, 77), "PM-6", (178, 9.9, 'l')),
+         ((125, 43, 176.5, 77), "PM-7", (126, 46.4, 'l')), ((329, 13, 351, 67), "PM-7", (330, 65.8, 'l')),
+         ((326, 88, 396, 128), "PM-8 (\u00d72)", (327, 126.8, 'l')), ((374, 44, 414, 82), "PM-9", (375, 80.8, 'l')),
+         ((17, 13.5, 66, 58), "PM-9", (18, 56.8, 'l')), ((252, 87, 291, 153), "PM-10", (253, 90.4, 'l')), ((189, 149, 249, 195), "PM-10", (190, 193.8, 'l'))]
+    for (x0, y0, x1, y1), t, (lx, ly, la) in B:
+        d.poly([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], .3, None, '#000000', 'frame', dash)
+        d.text(lx, ly, t, 1.8, la, True, layer='frame', chk=True)
+
 def areas():
     area(8, 10.5, "A-600 UTILITAS")
     area(8, 76, "A-100 PRAOLAH")
@@ -265,12 +279,12 @@ def head(x0, x1, title):
     return Y0 + 5.2
 
 EQL = [("SC-101", "Saringan drum putar"), ("P-101", "Pompa desander"), ("HC-101", "Hidrosiklon desander"), ("E-101", "Pendingin POME (PHE)"),
-       ("TK-101", "Tangki penyangga umpan"), ("P-201", "Pompa umpan reaktor"), ("R-201..2%02d" % NR, "Reaktor AnMBR ×%d" % NR), ("P-202", "Pompa jet mixing"),
+       ("TK-101", "Tangki penyangga umpan"), ("P-201", "Pompa umpan reaktor"), ("R-201..2%02d" % NR, "Reaktor AnMBR \u00d7%d" % NR), ("P-202", "Pompa jet mixing"),
        ("TK/P-201..204", "Dosing NaOH dan urea"), ("P-301", "Pompa cross-flow"), ("MB-301", "Membran UF tubular"), ("P-302", "Pompa permeat"),
        ("TK-302", "Tangki CIP"), ("P-303", "Pompa lumpur buangan"), ("PR-501", "Screw press"), ("TK-301", "Tangki permeat"),
-       ("P-501", "Pompa efluen"), ("GH-301", "Penampung gas"), ("BTF-301", "Bio-trickling filter H₂S"), ("P-305", "Pompa resirkulasi BTF"),
-       ("K-301", "Blower udara BTF"), ("HX-301", "Pendingin gas 5 °C"), ("CH-301", "Chiller paket"), ("V-301", "KO pot kondensat"),
-       ("K-302", "Blower biogas"), ("AC-301", "Filter karbon aktif"), ("FL-301", "Flare tertutup"), ("GE-401/402", "Genset biogas 2 × 800 kWe"),
+       ("P-501", "Pompa efluen"), ("GH-301", "Penampung gas"), ("BTF-301", "Bio-trickling filter H\u2082S"), ("P-305", "Pompa resirkulasi BTF"),
+       ("K-301", "Blower udara BTF"), ("HX-301", "Pendingin gas 5 \u00b0C"), ("CH-301", "Chiller paket"), ("V-301", "KO pot kondensat"),
+       ("K-302", "Blower biogas"), ("AC-301", "Filter karbon aktif"), ("FL-301", "Flare tertutup"), ("GE-401/402", "Genset biogas 2 \u00d7 800 kWe"),
        ("HX-401", "Pemulih panas"), ("ST-401", "Cerobong"), ("CT-601", "Menara pendingin"), ("P-601", "Pompa air pendingin")]
 
 def ribbon():
@@ -296,43 +310,50 @@ def ribbon():
     tc(x0 + 1.5 + cw, y + 4 * 5.6 + .7, "L level, T suhu, F laju, P tekanan,", 1.45)
     tc(x0 + 1.5 + cw, y + 4 * 5.6 + 3.0, "A analisis, J daya; C kendali, I indikasi", 1.45)
     # ---- daftar peralatan
-    x0, x1 = 92, 330; y = head(x0, x1, "DAFTAR PERALATAN") + .6
+    x0, x1 = 92, 300; y = head(x0, x1, "DAFTAR PERALATAN") + .6
     nc = 4; nr = (len(EQL) + nc - 1) // nc; cw = (x1 - x0) / nc; rh = (Y1 - y - .6) / nr
     for k, (tg, nm) in enumerate(EQL):
         c, r = divmod(k, nr)
         xx = x0 + c * cw; yy = y + rh * (r + .72)
-        tc(xx + 1.5, yy, tg, 1.85, 'l', True); tc(xx + 21.5, yy, nm, 1.85)
+        tc(xx + 1.2, yy, tg, 1.75, 'l', True); tc(xx + 17.2, yy, nm, 1.7)
         if r: hl(xx, xx + cw, y + rh * r - .1, .08)
     for c in range(1, nc): vl(x0 + c * cw, Y0 + 5.2, Y1, .3)
     # ---- data utama
-    x0, x1 = 330, 404; y = head(x0, x1, "DATA UTAMA (45 t TBS/jam)") + .4
-    rows = [("POME", "%s m³/hari, 85 °C" % idn(R["design_basis"]["pome_m3d"])),
-            ("Reaktor", "%d × %s m³, 55 °C" % (NR, idn(RV["V_liq_m3"]))),
+    x0, x1 = 300, 362; y = head(x0, x1, "DATA UTAMA (45 t TBS/jam)") + .4
+    rows = [("POME", "%s m³/hari, 85 \u00b0C" % idn(R["design_basis"]["pome_m3d"])),
+            ("Reaktor", "%d \u00d7 %s m³, 55 \u00b0C" % (NR, idn(RV["V_liq_m3"]))),
             ("Biogas", "%s Nm³/hari" % idn(NOM["biogas_Nm3d"])),
-            ("CH₄ / H₂S", "%s %% / %s ppm" % (idn(NOM["ch4_frac"] * 100, 1), idn(NOM["h2s_ppm_fuel"]))),
+            ("CH\u2084 / H\u2082S", "%s %% / %s ppm" % (idn(NOM["ch4_frac"] * 100, 1), idn(NOM["h2s_ppm_fuel"]))),
             ("Listrik", "%s / %s kWe neto" % (idn(EN["P_gross"]), idn(EN["P_net"]))),
             ("Panas", "%s kWth air panas" % idn(EN["Q_heat_avail"])),
-            ("Modul", "%d truk, ± %s ha" % (PM["ship_units_total"], idn(PM["plot_area_m2_estimate"]["total"] / 1e4, 2))),
-            ("Emisi", "−%s tCO₂e/tahun" % idn(R["emissions"]["avoided_t"]))]
+            ("Modul", "%d truk, \u00b1 %s ha" % (PM["ship_units_total"], idn(PM["plot_area_m2_estimate"]["total"] / 1e4, 2))),
+            ("Emisi", "\u2212%s tCO\u2082e/tahun" % idn(R["emissions"]["avoided_t"]))]
     rh = (Y1 - y - .4) / len(rows)
     for k, (a, b) in enumerate(rows):
-        yy = y + rh * (k + .72); tc(x0 + 1.5, yy, a, 1.85, 'l', True); tc(x0 + 20, yy, b, 1.85)
+        yy = y + rh * (k + .72); tc(x0 + 1.2, yy, a, 1.7, 'l', True); tc(x0 + 17, yy, b, 1.7)
+    # ---- catatan
+    x0, x1 = 362, 412; y = head(x0, x1, "CATATAN") + 1.0
+    NOTES = ["Neraca per nomor aliran: lihat", "  Tabel Aliran (slide berikut).", "R-202..R-2%02d identik, paralel;" % (NR - 1),
+             "  loop membran digambar sekali.", "Kotak putus-titik = modul", "  portabel PM-1..PM-10.", "Pompa A/B: 1 operasi + 1 cadangan.",
+             "Simbol ISO 10628-2; ISA-5.1."]
+    rh = (Y1 - y - .6) / len(NOTES)
+    for k, t in enumerate(NOTES): tc(x0 + 1.2, y + rh * (k + .72), t, 1.55)
     # ---- blok judul
-    x0, x1 = 404, W - 5; xm = (x0 + x1) / 2
+    x0, x1 = 412, W - 5; xm = (x0 + x1) / 2
     tc(xm, Y0 + 5.0, TEAM, 3.0, 'm', True); tc(xm, Y0 + 9.0, UNIV, 1.8, 'm')
     hl(x0, x1, Y0 + 10.8, .35)
     tc(xm, Y0 + 15.6, "PROCESS FLOW DIAGRAM", 3.1, 'm', True)
-    tc(xm, Y0 + 19.6, "Generator Biogas Portabel", 2.0, 'm', True); tc(xm, Y0 + 22.9, "AnMBR termofilik 55 °C dari POME", 1.8, 'm')
+    tc(xm, Y0 + 19.6, "Generator Biogas Portabel", 2.0, 'm', True); tc(xm, Y0 + 22.9, "AnMBR 55 \u00b0C dari POME", 1.8, 'm')
     hl(x0, x1, Y0 + 25.0, .35)
     tc(xm, Y0 + 28.6, "ASPEBINDO EIC 2026", 1.9, 'm', True); tc(xm, Y0 + 31.6, "Business Plan Competition", 1.6, 'm')
     hl(x0, x1, Y0 + 33.4, .35)
-    xs = [x0, x0 + 30, x0 + 52, x1]
+    xs = [x0, x0 + 26, x0 + 40, x1]
     for xx in xs[1:-1]: vl(xx, Y0 + 33.4, Y1)
     for i, (h_, v_) in enumerate((("No. gambar", DWG_NO), ("Rev.", REV), ("Tanggal", DWG_DATE))):
         tc(xs[i] + 1.2, Y0 + 36.6, h_, 1.4); tc((xs[i] + xs[i + 1]) / 2, Y0 + 42.4, v_, 2.1, 'm', True)
 
 if __name__ == "__main__":
-    frame(); equipment(); streams(); instruments(); areas(); ribbon()
+    frame(); modules(); equipment(); streams(); instruments(); areas(); ribbon()
     d.finalize()
     base = os.path.join(OUT, "PFD_BG-002_Rev3_deck")
     d.pdf(base + ".pdf"); d.svg(base + ".svg"); d.dxf(base + ".dxf")
