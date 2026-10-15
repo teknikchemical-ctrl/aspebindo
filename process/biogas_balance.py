@@ -42,7 +42,7 @@
    - ADM1 + sulfate reduction: Fedorovich, Lens & Kalyuzhnyi (2003)
 ===============================================================================
 """
-import os, sys, re, json, math, time, warnings
+import os, re, json, math, time, warnings
 import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.optimize import brentq, least_squares
@@ -550,9 +550,7 @@ class Digester:
         Jgas = dict(co2=x["j_co2"] * V, ch4=x["j_ch4"] * V, h2=x["j_h2"] * V, h2s=x["j_h2s"] * V)   # kmol/d per module
         cod_gas = 64 * Jgas["ch4"] + 16 * Jgas["h2"] + 64 * Jgas["h2s"]
         cod_bal_err = (Qm * cod_in - Qm * cod_out - cod_gas)
-        degr = ("su", "aa", "fa", "pro", "ac", "ch", "pr", "li", "cel", "hem")
         vfa = v["ac"] + v["pro"]
-        alk = (v["IC"] * s.c["K1"] / (x["h"] + s.c["K1"]) - 0) * 61.0 * 0 + 0.0
         # bicarbonate alkalinity (kmol/m3) and FOS/TAC-type ratio (mg HAc-eq / mg CaCO3 style)
         hco3 = v["IC"] * s.c["K1"] / (x["h"] + s.c["K1"])
         alk_mgL = hco3 * 50000.0                                   # mg/L as CaCO3
@@ -586,16 +584,13 @@ def bmp_test(th, substrate, days=30.0, vs_loading=4.0, isr=2.0):
     if substrate == "pome":
         fp = th["fr_pome"]
         ccod = dict(su=fp[0], aa=fp[1], ac=fp[2], sI=fp[3], ch=fp[4], pr=fp[5], li=fp[6], inert=fp[7])
-        scale = 1.0
         for k, v in ccod.items(): y[IX[k]] += v * 1.0
         vs_g = sum(mass_of(ccod[k], STATE_SP[k]) for k in ccod)          # g VS per g COD-unit
-        sub_cod_total = sum(ccod.values())
         # scale substrate so that VS added = vs_loading g/L
         k_s = vs_loading / vs_g
         for k, v in ccod.items(): y[IX[k]] = y[IX[k]] - v + v * k_s
     else:
         w = th["fr_efb"]; frc = efb_frec(th)
-        DM = 1.0
         parts = dict(cel=cod_of(w[0] * (1 - frc), "ch"), rc=cod_of(w[0] * frc, "ch"), hem=cod_of(w[1], "hem"),
                      lig=cod_of(w[2], "lig"), li=cod_of(w[4], "li"), pr=cod_of(w[5], "pr"), su=cod_of(w[6], "su"))
         vs_g = sum(mass_of(parts[k], STATE_SP[k]) for k in parts)         # VS per g DM  (ash excluded)
@@ -1029,7 +1024,6 @@ def mass_balance(th, F, des, d, y, g, E):
     S[10] = dict(name="Digestat dari digester", sp=sp10, water=w10, T=th["T_dig"], P=1.5, ph="CP")
     # --- dewatering: 19 cake, 20 filtrate, 21 polymer
     solid_keys = list(PART_STATES) + ["ash"]
-    sol_mass = sum(sp10[k] for k in solid_keys)
     capt = {k: sp10[k] * EQ["press_capture"] for k in solid_keys}
     sol_cake = sum(capt.values())
     poly = EQ["polymer_kg_tDS"] * sol_cake / 1000.0
@@ -1055,7 +1049,6 @@ def mass_balance(th, F, des, d, y, g, E):
     S[15] = dict(name="Biogas bersih ke CHP (5 C)", sp=gas_kg(fuel_all), water=0.0, T=EQ["chill_T"] + 15, P=1.15, ph="G")
     S[16] = dict(name="Karbon aktif jenuh (H2S)", sp={"chem": gt["ac_h2s"] * MWG["h2s"]}, water=0.0, T=th["T_amb"], P=1.01, ph="P")
     # --- CHP: split fuel between burned (17 air, 18 exhaust) and flare (22)
-    fb = {k: v for k, v in ch["fuel_burned"].items()}
     ex, n_air = ch["exhaust"], ch["n_air"]
     air_ch = dict(o2=n_air * 0.2095, n2=n_air * (0.7808 + 0.0093), co2=n_air * 0.0004)
     S[17] = dict(name="Udara pembakaran CHP", sp=gas_kg(air_ch), water=0.0, T=th["T_amb"], P=1.1, ph="G")
@@ -1451,9 +1444,8 @@ def make_figures(L):
     for a_, sub, col, tg in ((ax[0], "pome", CC[0], CAL_TARGETS["pome"]), (ax[1], "efb", CC[1], CAL_TARGETS["efb"])):
         t_, cu = bmp_test(TH, sub); a_.plot(t_, cu, color=col); a_.scatter([30], [tg], color=INK, zorder=5, s=28); a_.text(30, tg, "  literature\n  %d" % tg, fontsize=8, va="top")
         a_.set_title("BMP, %s (model vs literature 30 d)" % sub.upper()); a_.set_xlabel("day"); a_.set_ylabel("NmL CH4 / g VS")
-    ys = [r["ch4"] for r in sw_hrt]; hh = [r["hrt"] for r in sw_hrt]
     ok_ = [r for r in sw_hrt if r["ph_ok"]]; ax[2].plot([r["hrt"] for r in ok_], [r["cod_conv"] * EQ_CH4_PER_COD() / r["cod_rem"] for r in ok_], color=CC[2], marker="o", ms=4)
-    ax[2].axhline(0.34, color=INK, lw=1.0, ls="--"); ax[2].text(max(hh), 0.34, "literature POME CSTR 0.34 L/g COD removed ", ha="right", va="bottom", fontsize=7.5)
+    ax[2].axhline(0.34, color=INK, lw=1.0, ls="--"); ax[2].text(max(r["hrt"] for r in sw_hrt), 0.34, "literature POME CSTR 0.34 L/g COD removed ", ha="right", va="bottom", fontsize=7.5)
     logx_ticks(ax[2], [3, 5, 10, 20, 40]); ax[2].set_xlabel("HRT, d"); ax[2].set_ylabel("Nm3 CH4 / kg COD removed"); ax[2].set_ylim(0, 0.45); ax[2].set_title("CSTR methane yield vs HRT")
     fig.suptitle("Fig 2  Calibration targets and continuous-reactor check", x=0.01, ha="left", fontweight="bold"); fig.tight_layout(); savefig(fig, "fig2_calibration")
     # ---- Fig 3 process decisions

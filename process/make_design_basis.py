@@ -46,8 +46,9 @@ rows = [
  ("P-201", "Digester feed pumps (progressive cavity)", "%d+1" % N, "%s m3/h total, %s m head" % (f1(eq["feed_pump"]["flow_m3_h"]), f0(eq["feed_pump"]["head_m"]))),
  ("R-201..R-20%d" % N, "Digester modules (CSTR, insulated, membrane roof)", N, "%s m3 liquid, D %.1f m, H %.1f m, dome %.1f m, gas buffer %s m3" % (f0(Vm), eq["digester_module"]["D_m"], eq["digester_module"]["H_liq_m"], eq["digester_module"]["roof_dome_h_m"], f0(eq["digester_module"]["V_gas_m3"]))),
  ("MX-201..", "Side-entry / top-entry mixers", "2 per module", "%.0f kW per module (6 W/m3)" % eq["digester_module"]["mixer_kW"]),
- ("TK-201", "NaOH dosing tank + pump", 1, "P95 %s kg NaOH/d" % f0(eq["alkali_dosing"]["NaOH_kg_d_P95"])),
- ("TK-202", "Urea-N dosing tank + pump", 1, "P95 %s kg N/d" % f0(eq["nutrient_dosing"]["N_kg_d_P95"])),
+ ("TK-201 / P-203", "NaOH dosing tank + pump", 1, "P95 %s kg NaOH/d" % f0(eq["alkali_dosing"]["NaOH_kg_d_P95"])),
+ ("TK-202 / P-204", "Urea-N dosing tank + pump", 1, "P95 %s kg N/d" % f0(eq["nutrient_dosing"]["N_kg_d_P95"])),
+ ("P-202", "Digestate transfer pump (to screw press)", "1+1", "%s m3/h, %s m head" % (f1(eq["screw_press"]["feed_m3_h"]), f0(15))),
  ("BTF-301", "Bio-trickling filter (desulfurizer)", 1, "%s Nm3/h gas, %.0f m3 packing (120 s EBCT), air %.1f Nm3/h" % (f0(eq["bio_desulfurizer"]["gas_Nm3_h"]), eq["bio_desulfurizer"]["V_m3"], eq["bio_desulfurizer"]["air_Nm3_h"])),
  ("K-301", "Air blower to BTF", 1, "%.1f Nm3/h" % eq["bio_desulfurizer"]["air_Nm3_h"]),
  ("HX-301", "Gas chiller + condensate pot", 1, "%.0f kWth, 5 C dew point" % eq["gas_chiller"]["duty_kW"]),
@@ -57,9 +58,24 @@ rows = [
  ("GE-401/402", "CHP gas engine-generators (containerised)", eq["chp"]["N"], "%s kWe each" % f0(eq["chp"]["unit_kWe"])),
  ("HX-401", "Exhaust heat recovery boiler / hot-water exchanger", 1, "exhaust to 150 C"),
  ("PR-501", "Screw press (digestate dewatering)", 1, "%s m3/h, %.0f t/d cake" % (f1(eq["screw_press"]["feed_m3_h"]), eq["screw_press"]["cake_t_d"])),
- ("CT-601", "Cooling tower", 1, "%s kWth" % f0(eq["cooling_tower"]["duty_kW"])),
+ ("CT-601", "Cooling tower (modular cells)", 1, "%s kWth" % f0(eq["cooling_tower"]["duty_kW"])),
 ]
 for t, n_, q, k in rows: A("| %s | %s | %s | %s |" % (t, n_, q, k))
+A("")
+A("")
+A("## 3b. Portable-module architecture (shipping kit)")
+A("The digestion volume of a mill (V = Q x HRT = 14,000 m3 at 45 t FFB/h) cannot be moved as one unit, so *portable* is achieved as a **kit of transportable modules**; planning estimates only (see `portable_modules.py`).")
+A("")
+A("| Module | Content | Qty | Mass t (total) | ISO-sized units |")
+A("|---|---|---|---|---|")
+try:
+    PMj = json.load(open(os.path.join(D, "outputs", "portable_modules.json"), encoding="utf-8"))
+    for pm_ in PMj["modules"]:
+        A("| %s %s | %s | %d | %s | %d |" % (pm_["id"], pm_["name"], pm_["note"], pm_["qty"], f1(pm_["mass_t_total"]), pm_["iso_units_total"]))
+    A("")
+    A("**Total for the 45 t FFB/h plant: %d ISO-sized units, about %s t shipped, plot about %.2f ha.** Digester kits ship flat-pack and are re-locatable; only the floor slab and civil works are site-built." % (PMj["iso_units_total"], f0(PMj["mass_t_total"]), PMj["plot_area_m2_estimate"]["total"] / 1e4))
+except FileNotFoundError:
+    A("(run portable_modules.py first)")
 A("")
 A("## 4. Design-basis operating point (45 t FFB/h x 20 h, nameplate)")
 A("| Item | Value |")

@@ -1,0 +1,143 @@
+{
+ "modules": [
+  {
+   "id": "PM-A",
+   "name": "Skid persiapan umpan",
+   "tags": [
+    "SC-101",
+    "SH-101",
+    "CV-101"
+   ],
+   "qty": 1,
+   "mass_t_each": 10.5,
+   "note": "rotary screen, hammer mill 10 mm, conveyor, MCC",
+   "iso_units_each": 1,
+   "iso_units_total": 1,
+   "mass_t_total": 10.5
+  },
+  {
+   "id": "PM-B",
+   "name": "Skid pendingin POME",
+   "tags": [
+    "E-101",
+    "CT-601"
+   ],
+   "qty": 1,
+   "mass_t_each": 12.0,
+   "note": "plate cooler 1300 kWth + 2 modular cooling-tower cells",
+   "iso_units_each": 1,
+   "iso_units_total": 1,
+   "mass_t_total": 12.0
+  },
+  {
+   "id": "PM-C",
+   "name": "Kit modul digester",
+   "tags": [
+    "R-201 .. R-207",
+    "MX-201 .."
+   ],
+   "qty": 7,
+   "mass_t_each": 23.138666085180994,
+   "vol_m3_each": 56.254571204699225,
+   "note": "2000 m3 liquid, D 16.7 m, H 9.2 m, bolted panels + membrane roof + 2 mixers; floor slab poured on site",
+   "iso_units_each": 2,
+   "iso_units_total": 14,
+   "mass_t_total": 161.97066259626695
+  },
+  {
+   "id": "PM-D",
+   "name": "Skid pengolahan gas",
+   "tags": [
+    "BTF-301",
+    "K-301",
+    "HX-301",
+    "K-302",
+    "AC-301"
+   ],
+   "qty": 1,
+   "mass_t_each": 14.5,
+   "note": "755 Nm3/h; bio-trickling filter shipped as a separate vessel",
+   "extra_units": 1,
+   "iso_units_each": 2,
+   "iso_units_total": 2,
+   "mass_t_total": 14.5
+  },
+  {
+   "id": "PM-D2",
+   "name": "Flare tertutup",
+   "tags": [
+    "FL-301"
+   ],
+   "qty": 1,
+   "mass_t_each": 3.0,
+   "note": "900 Nm3/h enclosed flare",
+   "extra_units": 0,
+   "iso_units_each": 1,
+   "iso_units_total": 1,
+   "mass_t_total": 3.0
+  },
+  {
+   "id": "PM-E",
+   "name": "Kontainer CHP",
+   "tags": [
+    "GE-401",
+    "GE-402",
+    "HX-401"
+   ],
+   "qty": 2,
+   "mass_t_each": 28.0,
+   "note": "1000 kWe gas engine-generator per 40 ft HC container; plus 5 t heat-recovery skid",
+   "extra_mass_t": 5.0,
+   "iso_units_each": 1,
+   "iso_units_total": 3,
+   "mass_t_total": 61.0
+  },
+  {
+   "id": "PM-F",
+   "name": "Skid dewatering dan dosing",
+   "tags": [
+    "PR-501",
+    "TK-201",
+    "TK-202"
+   ],
+   "qty": 1,
+   "mass_t_each": 11.0,
+   "note": "screw press 26.6 m3/h, polymer unit, NaOH and urea-N dosing",
+   "iso_units_each": 1,
+   "iso_units_total": 1,
+   "mass_t_total": 11.0
+  }
+ ],
+ "iso_units_total": 23,
+ "mass_t_total": 273.97066259626695,
+ "iso": {
+  "L": 12.19,
+  "W": 2.44,
+  "H": 2.9,
+  "payload_t": 26.0,
+  "vol_m3": 67.0
+ },
+ "plot_area_m2_estimate": {
+  "digesters": 2707.5542517751655,
+  "skids_and_roads": 1200.0,
+  "total": 3907.5542517751655
+ },
+ "scaling": {
+  "20": {
+   "digester_kits": 3,
+   "chp_units": 2,
+   "chp_kWe": 500.0
+  },
+  "45": {
+   "digester_kits": 7,
+   "chp_units": 2,
+   "chp_kWe": 1000.0
+  },
+  "70": {
+   "digester_kits": 10,
+   "chp_units": 3,
+   "chp_kWe": 1000.0
+  }
+ },
+ "assumptions": "masses, shipping units and footprint are planning estimates [ASSUME]"
+}

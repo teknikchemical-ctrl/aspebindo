@@ -31,8 +31,9 @@ A **numbered-up bank of identical mesophilic CSTR digester modules** that co-dig
 | P-201 | Digester feed pumps (progressive cavity) | 7+1 | 26.6 m3/h total, 25 m head |
 | R-201..R-207 | Digester modules (CSTR, insulated, membrane roof) | 7 | 2,000 m3 liquid, D 16.7 m, H 9.2 m, dome 4.0 m, gas buffer 467 m3 |
 | MX-201.. | Side-entry / top-entry mixers | 2 per module | 12 kW per module (6 W/m3) |
-| TK-201 | NaOH dosing tank + pump | 1 | P95 207 kg NaOH/d |
-| TK-202 | Urea-N dosing tank + pump | 1 | P95 57 kg N/d |
+| TK-201 / P-203 | NaOH dosing tank + pump | 1 | P95 207 kg NaOH/d |
+| TK-202 / P-204 | Urea-N dosing tank + pump | 1 | P95 57 kg N/d |
+| P-202 | Digestate transfer pump (to screw press) | 1+1 | 26.6 m3/h, 15 m head |
 | BTF-301 | Bio-trickling filter (desulfurizer) | 1 | 755 Nm3/h gas, 25 m3 packing (120 s EBCT), air 5.8 Nm3/h |
 | K-301 | Air blower to BTF | 1 | 5.8 Nm3/h |
 | HX-301 | Gas chiller + condensate pot | 1 | 23 kWth, 5 C dew point |
@@ -42,7 +43,23 @@ A **numbered-up bank of identical mesophilic CSTR digester modules** that co-dig
 | GE-401/402 | CHP gas engine-generators (containerised) | 2 | 1,000 kWe each |
 | HX-401 | Exhaust heat recovery boiler / hot-water exchanger | 1 | exhaust to 150 C |
 | PR-501 | Screw press (digestate dewatering) | 1 | 26.6 m3/h, 77 t/d cake |
-| CT-601 | Cooling tower | 1 | 1,330 kWth |
+| CT-601 | Cooling tower (modular cells) | 1 | 1,330 kWth |
+
+
+## 3b. Portable-module architecture (shipping kit)
+The digestion volume of a mill (V = Q x HRT = 14,000 m3 at 45 t FFB/h) cannot be moved as one unit, so *portable* is achieved as a **kit of transportable modules**; planning estimates only (see `portable_modules.py`).
+
+| Module | Content | Qty | Mass t (total) | ISO-sized units |
+|---|---|---|---|---|
+| PM-A Skid persiapan umpan | rotary screen, hammer mill 10 mm, conveyor, MCC | 1 | 10.5 | 1 |
+| PM-B Skid pendingin POME | plate cooler 1300 kWth + 2 modular cooling-tower cells | 1 | 12.0 | 1 |
+| PM-C Kit modul digester | 2000 m3 liquid, D 16.7 m, H 9.2 m, bolted panels + membrane roof + 2 mixers; floor slab poured on site | 7 | 162.0 | 14 |
+| PM-D Skid pengolahan gas | 755 Nm3/h; bio-trickling filter shipped as a separate vessel | 1 | 14.5 | 2 |
+| PM-D2 Flare tertutup | 900 Nm3/h enclosed flare | 1 | 3.0 | 1 |
+| PM-E Kontainer CHP | 1000 kWe gas engine-generator per 40 ft HC container; plus 5 t heat-recovery skid | 2 | 61.0 | 3 |
+| PM-F Skid dewatering dan dosing | screw press 26.6 m3/h, polymer unit, NaOH and urea-N dosing | 1 | 11.0 | 1 |
+
+**Total for the 45 t FFB/h plant: 23 ISO-sized units, about 274 t shipped, plot about 0.39 ha.** Digester kits ship flat-pack and are re-locatable; only the floor slab and civil works are site-built.
 
 ## 4. Design-basis operating point (45 t FFB/h x 20 h, nameplate)
 | Item | Value |

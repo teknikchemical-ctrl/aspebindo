@@ -45,7 +45,8 @@ def runs(s):
     return m
 SUBF=0.70; SUBD=0.28
 TEXT_STROKE=0.028
-DOC_TITLE='Kiln Rotari R-01'
+DOC_TITLE='Process Flow Diagram'
+DOC_AUTHOR=''
 CAPC=0.345
 TM=0.35       # jarak bebas minimum teks terhadap garis/alat pada pemeriksa   # baseline = pusat kotak + CAPC*ukuran -> teks tepat di tengah vertikal
 pdfmetrics.registerFont(TTFont('LSBI',FD+'LiberationSans-BoldItalic.ttf'))
@@ -335,7 +336,7 @@ class Doc:
         from reportlab.pdfgen import canvas
         k=72/25.4
         c=canvas.Canvas(path,pagesize=(W*k,H*k))
-        c.setTitle(DOC_TITLE); c.setAuthor('Tim Lagi Pengen')
+        c.setTitle(DOC_TITLE); c.setAuthor(DOC_AUTHOR)
         def col(cc):
             h=cc.lstrip('#'); return tuple(int(h[i:i+2],16)/255 for i in (0,2,4))
         for L in LAYERS:
@@ -885,3 +886,147 @@ class Sym:
     def valve(d,x,y,vert=False,layer='equip',s=1.3):
         if vert: d.poly([(x-s/2,y-s/2),(x+s/2,y-s/2),(x-s/2,y+s/2),(x+s/2,y+s/2)],.25,'#ffffff',K,layer)
         else: d.poly([(x-s/2,y-s/2),(x+s/2,y+s/2),(x+s/2,y-s/2),(x-s/2,y+s/2)],.25,'#ffffff',K,layer)
+
+
+# =====================================================================================================
+#  EKSTENSI (EIC 2026): simbol modul biogas, gelembung instrumen, katup kendali, keluaran DXF
+# =====================================================================================================
+def _sym_digester(d,e):
+    """digester CSTR: dinding silinder berinsulasi + atap membran ganda (kubah) + mixer samping + koil pemanas"""
+    x,y,w,h=e.x,e.y,e.w,e.h; cx=x+w/2; dh=min(w*.24,h*.3)
+    d.poly(d.arcpts(cx,y+dh,w/2,dh,180,0)+[(x+w,y+h),(x,y+h)],.45,Sym.WF)            # badan + kubah luar
+    d.line(d.arcpts(cx,y+dh+.2,w/2-1.0,dh-1.1,180,0),.2,[1.0,.6])                      # membran dalam
+    d.line([(x+.5,y+dh+.2),(x+w-.5,y+dh+.2)],.15,[.8,.5])                              # batas gas/cair
+    d.line([(x+.4,y+dh+(h-dh)*.2),(x+w-.4,y+dh+(h-dh)*.2)],.12)                        # muka cairan
+    for f in (.36,.60):                                                                # mixer samping
+        yy=y+dh+(h-dh)*f
+        d.rect(x-3.4,yy-1.1,2.4,2.2,.3,Sym.WF); d.line([(x-1.0,yy),(x+w*.30,yy)],.3)
+        d.line([(x+w*.30,yy-1.5),(x+w*.30,yy+1.5)],.55)
+    zz=[(x+w*.15+i*(w*.7)/10,y+h-3.2-(1.6 if i%2 else 0)) for i in range(11)]          # koil pemanas
+    d.line(zz,.22)
+    d.line([(x-2.2,y+h),(x+w+2.2,y+h)],.7)                                             # pondasi
+def _sym_chp(d,e):
+    """kontainer CHP: mesin gas + generator dalam kontainer"""
+    x,y,w,h=e.x,e.y,e.w,e.h
+    d.rect(x,y,w,h,.45,Sym.WF); d.rect(x+.9,y+.9,w-1.8,h-1.8,.15,None,dash=[1.2,.7])
+    r=h*.30; ex=x+w*.30; gx=x+w*.68; cy=y+h*.55
+    d.circ(ex,cy,r,.35,Sym.WF)
+    for a in range(0,360,60): d.line([(ex,cy),(ex+r*.75*math.cos(math.radians(a)),cy-r*.75*math.sin(math.radians(a)))],.18)
+    d.line([(ex+r,cy),(gx-r,cy)],.45)
+    d.circ(gx,cy,r,.35,Sym.WF); d.text(gx,cy+CAPC*2.4,'G',2.4,'m',True,owner=e.tag)
+    d.line([(ex,cy-r),(ex,y-2.2)],.35); d.line([(ex-1.3,y-2.2),(ex+1.3,y-2.2)],.35)     # knalpot
+def _sym_shredder(d,e):
+    """hammer mill: rumah + rotor berpalu + corong umpan + motor di atas"""
+    x,y,w,h=e.x,e.y,e.w,e.h; cx,cy=x+w*.46,y+h*.58; r=h*.30
+    d.rect(x,y+h*.18,w,h*.82,.4,Sym.WF)
+    d.poly([(cx-w*.20,y),(cx+w*.20,y),(cx+w*.10,y+h*.18),(cx-w*.10,y+h*.18)],.35,Sym.WF)
+    d.circ(cx,cy,r,.3,None)
+    for a in range(0,360,45): d.line([(cx,cy),(cx+r*.95*math.cos(math.radians(a)),cy-r*.95*math.sin(math.radians(a)))],.2)
+    d.rect(x+w*.74,y-1.8,w*.22,1.8,.3,Sym.WF); d.line([(x+w*.85,y),(x+w*.85,y+h*.34),(cx+r*.6,cy-r*.6)],.2)
+    d.line([(x+w*.1,y+h*.9),(x+w*.9,y+h*.9)],.15,[.8,.5])
+def _sym_screen(d,e):
+    """saringan drum putar (fine screen)"""
+    x,y,w,h=e.x,e.y,e.w,e.h
+    d.rect(x,y+h*.2,w,h*.8,.4,Sym.WF)
+    n=int(w/1.6)
+    for i in range(1,n): d.line([(x+w*i/n,y+h*.2),(x+w*i/n+h*.3,y+h)],.12)
+    d.poly([(x+w*.12,y),(x+w*.42,y),(x+w*.34,y+h*.2),(x+w*.20,y+h*.2)],.3,Sym.WF)
+    d.line([(x+w*.7,y+h),(x+w*.7,y+h+1.4)],.25)
+def _sym_phx(d,e):
+    """penukar panas pelat"""
+    x,y,w,h=e.x,e.y,e.w,e.h
+    d.rect(x,y,1.4,h,.3,Sym.WF); d.rect(x+w-1.4,y,1.4,h,.3,Sym.WF)
+    n=max(5,int((w-3)/1.1))
+    for i in range(n): d.line([(x+1.4+(w-2.8)*(i+.5)/n,y+.5),(x+1.4+(w-2.8)*(i+.5)/n,y+h-.5)],.22)
+    d.line([(x+.7,y-.5),(x+w-.7,y-.5)],.2); d.line([(x+.7,y+h+.5),(x+w-.7,y+h+.5)],.2)
+def _sym_spress(d,e):
+    """screw press: badan miring berulir + saringan + motor"""
+    x,y,w,h=e.x,e.y,e.w,e.h
+    d.poly([(x,y+h*.2),(x+w*.86,y),(x+w*.86,y+h*.72),(x,y+h*.92)],.4,Sym.WF)
+    for i in range(1,9):
+        xx=x+w*.86*i/9; d.line([(xx,y+h*.2-(h*.2)*i/9+.3),(xx+w*.04,y+h*.92-(h*.2)*i/9-.3)],.2)
+    d.rect(x+w*.86,y+h*.12,w*.14,h*.5,.35,Sym.WF)
+    d.poly([(x+w*.1,y-2.4),(x+w*.36,y-2.4),(x+w*.30,y+h*.19),(x+w*.16,y+h*.21)],.3,Sym.WF)
+    d.poly([(x+w*.55,y+h*.74),(x+w*.7,y+h*.74),(x+w*.66,y+h+1.8),(x+w*.59,y+h+1.8)],.25,Sym.WF)
+def _sym_flare(d,e):
+    """flare tertutup"""
+    x,y,w,h=e.x,e.y,e.w,e.h; cx=x+w/2
+    d.rect(x,y+h*.12,w,h*.88,.4,Sym.WF); d.line([(x,y+h*.4),(x+w,y+h*.4)],.15)
+    d.poly([(cx-w*.3,y+h*.12),(cx-w*.1,y-1.8),(cx,y+h*.02),(cx+w*.12,y-3.0),(cx+w*.3,y+h*.12)],.25,Sym.WF)
+def _sym_gasfilter(d,e):
+    """bejana adsorpsi karbon aktif"""
+    Sym.vessel(d,e); x,y,w,h=e.x,e.y,e.w,e.h
+    d.line([(x,y+h*.28),(x+w,y+h*.28)],.2,[1,.6]); d.line([(x,y+h*.78),(x+w,y+h*.78)],.2,[1,.6])
+    for i in range(6):
+        d.circ(x+w*(.2+.12*i),y+h*.52,.35,.12,None)
+def _sym_dtank(d,e):
+    """tangki dosis kecil + agitator"""
+    Sym.ctank(d,e)
+Sym.digester=staticmethod(_sym_digester); Sym.chp=staticmethod(_sym_chp); Sym.shredder=staticmethod(_sym_shredder)
+Sym.screen=staticmethod(_sym_screen); Sym.phx=staticmethod(_sym_phx); Sym.spress=staticmethod(_sym_spress)
+Sym.flare=staticmethod(_sym_flare); Sym.gasfilter=staticmethod(_sym_gasfilter); Sym.dtank=staticmethod(_sym_dtank)
+
+def _inst(s,x,y,fn,loop,r=2.55,layer='inst'):
+    """gelembung instrumen (ISA-5.1): huruf fungsi di atas, nomor loop di bawah. Mengembalikan titik sambungan sinyal."""
+    s.circ(x,y,r,.28,'#ffffff',layer)
+    s.text(x,y-.25,fn,1.5,'m',True,layer=layer,owner=('inst',fn+str(loop)))
+    s.text(x,y+1.55,str(loop),1.5,'m',False,layer=layer,owner=('inst',fn+str(loop)))
+    return dict(pt=(x,y,None),x=x,y=y,r=r)
+def _cvalve(s,x,y,vert=False,sz=1.5):
+    """katup kendali dengan aktuator diafragma (gambar di atas jalur)"""
+    Sym.valve(s,x,y,vert,'equip',sz*1.0)
+    if not vert:
+        s.line([(x,y-sz*.5),(x,y-sz*1.5)],.22,None,K,'equip')
+        s.poly(s.arcpts(x,y-sz*1.5,sz*.8,sz*.8,0,180),.22,'#ffffff',K,'equip')
+        return (x,y-sz*2.3,'U')
+    s.line([(x+sz*.5,y),(x+sz*1.5,y)],.22,None,K,'equip')
+    s.poly(s.arcpts(x+sz*1.5,y,sz*.8,sz*.8,-90,90),.22,'#ffffff',K,'equip')
+    return (x+sz*2.3,y,'R')
+Doc.inst=_inst; Doc.cvalve=_cvalve
+
+_DXF_LAYERS={'frame':'PFD-BINGKAI','table':'PFD-TABEL','util':'PFD-UTILITAS','proc':'PFD-PROSES','sig':'PFD-SINYAL','equip':'PFD-PERALATAN','inst':'PFD-INSTRUMEN','label':'PFD-TEKS'}
+_SUBS=str.maketrans('0123456789','\u2080\u2081\u2082\u2083\u2084\u2085\u2086\u2087\u2088\u2089')
+def _dxf(s,path,title=None):
+    """tulis DXF R2010 (satuan mm, sumbu Y ke atas) satu lapisan per kelompok gambar. Isian putih/abu dibuang (CAD tanpa isian agar terbaca di latar gelap maupun terang); isian hitam -> HATCH ACI 7."""
+    import ezdxf
+    from ezdxf.enums import TextEntityAlignment as TA
+    doc=ezdxf.new('R2010',setup=True); doc.units=4
+    msp=doc.modelspace()
+    for L in LAYERS: doc.layers.add(_DXF_LAYERS[L],color=8 if L=='util' else 7)
+    doc.styles.add('PFD',font='arial.ttf')
+    valid=[0,5,9,13,15,18,20,25,30,35,40,50,53,60,70,80,90,100,106,120,140,158,200,211]
+    lw=lambda w:min(valid,key=lambda v:abs(v-w*100))
+    def rgb(cl): h=cl.lstrip('#'); return tuple(int(h[i:i+2],16) for i in (0,2,4))
+    Y=lambda y:H-y
+    for L in LAYERS:
+        ly=_DXF_LAYERS[L]
+        for it in s.items[L]:
+            t=it[0]
+            if t=='line':
+                _,pts,w,dash,cl,cap=it
+                at=dict(layer=ly,lineweight=lw(w),linetype='DASHED' if dash else 'Continuous',ltscale=0.35)
+                if cl!='#000000': at['true_color']=ezdxf.colors.rgb2int(rgb(cl))
+                msp.add_lwpolyline([(x,Y(y)) for x,y in pts],dxfattribs=at)
+            elif t=='poly':
+                _,pts,w,fill,cl,dash=it
+                P=[(x,Y(y)) for x,y in pts]
+                if fill and fill.lower()=='#000000':                                    # hanya isian hitam (kepala panah): warna ACI 7 (adaptif terang/gelap)
+                    hh=msp.add_hatch(color=7,dxfattribs=dict(layer=ly)); hh.paths.add_polyline_path(P,is_closed=True)
+                if w>0 or (fill and fill.lower()=='#000000' and w==0):
+                    at=dict(layer=ly,lineweight=lw(w),linetype='DASHED' if dash else 'Continuous',ltscale=0.35)
+                    if cl!='#000000': at['true_color']=ezdxf.colors.rgb2int(rgb(cl))
+                    msp.add_lwpolyline(P,close=True,dxfattribs=at)
+            elif t=='circ':
+                _,cx,cy,r,w,fill,cl=it
+                if fill and fill.lower()=='#000000':
+                    hh=msp.add_hatch(color=7,dxfattribs=dict(layer=ly))
+                    ep=hh.paths.add_edge_path(); ep.add_arc((cx,Y(cy)),r,0,360)
+                if w>0: msp.add_circle((cx,Y(cy)),r,dxfattribs=dict(layer=ly,lineweight=lw(w)))
+            elif t=='text':
+                _,x,y,tx,size,anchor,bold,rot,cl,ital=it
+                txt=''.join(r_.translate(_SUBS) if sb else r_ for r_,sb,_i in runs(tx))
+                e=msp.add_text(txt,height=size*.72,dxfattribs=dict(layer=ly,style='PFD',rotation=rot))
+                e.set_placement((x,Y(y)),align={'l':TA.LEFT,'m':TA.CENTER,'r':TA.RIGHT}[anchor])
+                if cl!='#000000': e.dxf.true_color=ezdxf.colors.rgb2int(rgb(cl))
+    doc.saveas(path)
+Doc.dxf=_dxf
