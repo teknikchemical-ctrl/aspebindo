@@ -48,6 +48,7 @@ TEXT_STROKE=0.028
 DOC_TITLE='Process Flow Diagram'
 DOC_AUTHOR=''
 CAPC=0.345
+LW_PROC=.5; LW_UTIL=.26; LW_SIG=.18; AH_PROC=(2.1,1.35); AH_UTIL=(1.6,1.0)
 TM=0.35       # jarak bebas minimum teks terhadap garis/alat pada pemeriksa   # baseline = pusat kotak + CAPC*ukuran -> teks tepat di tengah vertikal
 pdfmetrics.registerFont(TTFont('LSBI',FD+'LiberationSans-BoldItalic.ttf'))
 def font(bold,ital=False): return ('LSBI' if ital else 'LSB') if bold else ('LSI' if ital else 'LS')
@@ -206,9 +207,9 @@ class Doc:
         s.gaps=gaps
         for pi,p in enumerate(s.paths):
             cls=p['cls']
-            if cls=='proc': w=p['w'] or .5; col=K; layer='proc'; dash=p['dash']; ah=(2.1,1.35)
-            elif cls=='util': w=p['w'] or .26; col=UG; layer='util'; dash=p['dash']; ah=(1.6,1.0)
-            else: w=p['w'] or .18; col=K; layer='sig'; dash=p['dash'] or [.9,.6]; ah=None
+            if cls=='proc': w=p['w'] or LW_PROC; col=K; layer='proc'; dash=p['dash']; ah=AH_PROC
+            elif cls=='util': w=p['w'] or LW_UTIL; col=UG; layer='util'; dash=p['dash']; ah=AH_UTIL
+            else: w=p['w'] or LW_SIG; col=K; layer='sig'; dash=p['dash'] or [.9,.6]; ah=None
             P=list(p['pts'])
             if p['arrow'] and ah and len(P)>=2:
                 (x0,y0),(x1,y1)=P[-2],P[-1]
