@@ -48,6 +48,7 @@ TEXT_STROKE=0.028
 DOC_TITLE='Process Flow Diagram'
 DOC_AUTHOR=''
 CAPC=0.345
+TAG_FS=2.0; DIA_R=2.15; DIA_FS=1.55; INST_FS=1.45; FLAG_FS=1.75; FLAG_H=3.6
 LW_PROC=.5; LW_UTIL=.26; LW_SIG=.18; AH_PROC=(2.1,1.35); AH_UTIL=(1.6,1.0)
 TM=0.35       # jarak bebas minimum teks terhadap garis/alat pada pemeriksa   # baseline = pusat kotak + CAPC*ukuran -> teks tepat di tengah vertikal
 pdfmetrics.registerFont(TTFont('LSBI',FD+'LiberationSans-BoldItalic.ttf'))
@@ -91,7 +92,8 @@ class Doc:
         if lab: s.tag(e,lab,dx,dy)
         s.eqrange[tag]={L:(b0[L],len(s.items[L])) for L in LAYERS if len(s.items[L])>b0[L]}
         return e
-    def tag(s,e,lab,dx=0,dy=0,size=2.0):
+    def tag(s,e,lab,dx=0,dy=0,size=None):
+        size=size or TAG_FS
         x,y,w,h=e.x,e.y,e.w,e.h
         if lab=='b': s.text(x+w/2+dx,y+h+2.3+dy,e.tag,size,'m',True,owner=e.tag)
         elif lab=='t': s.text(x+w/2+dx,y-1.0+dy,e.tag,size,'m',True,owner=e.tag)
@@ -109,7 +111,8 @@ class Doc:
         tag,nz=ref.split('.',1)
         return s.eqs[tag].nozzle(nz)
     # -------------------------------------------------------- bendera batas
-    def flag(s,text,x,y,d='r',kind='in',size=1.75,w=None,h=3.6,layer='proc',util=False):
+    def flag(s,text,x,y,d='r',kind='in',size=None,w=None,h=None,layer='proc',util=False):
+        size=size or FLAG_FS; h=h or FLAG_H
         """bendera pentagon; (x,y)=pusat ujung yang tersambung garis.
         d = arah ujung lancip ('r' atau 'l'). kind 'in': garis keluar dari ujung lancip; 'out': garis masuk dari pangkal."""
         tw=twidth(text,size)
@@ -180,7 +183,7 @@ class Doc:
         dseg=max(0,min(dseg,len(P)-2))
         (x0,y0),(x1,y1)=P[dseg],P[dseg+1]
         x=x0+(x1-x0)*dpos; y=y0+(y1-y0)*dpos
-        d=dict(x=x,y=y,num=num,path=p,r=2.15 if num<100 else 2.45)
+        d=dict(x=x,y=y,num=num,path=p,r=DIA_R if num<100 else DIA_R*1.14)
         s.diamonds.append(d); p['dia']=d
         return d
     def junction(s,x,y): s.junc.append((x,y))
@@ -240,7 +243,7 @@ class Doc:
         for d in s.diamonds:
             r=d['r']; x,y=d['x'],d['y']
             s.poly([(x,y-r),(x+r,y),(x,y+r),(x-r,y)],.3,'#ffffff',K,'label')
-            fs=1.55 if d['num']<100 else 1.45; s.text(x,y+CAPC*fs,str(d['num']),fs,'m',True,owner=('dia',id(d)),chk=False)
+            fs=DIA_FS if d['num']<100 else DIA_FS*.93; s.text(x,y+CAPC*fs,str(d['num']),fs,'m',True,owner=('dia',id(d)),chk=False)
     # -------------------------------------------------------- pemeriksa
     def check(s,verbose=True):
         issues=[]
@@ -1096,8 +1099,8 @@ def _inst2(s,x,y,fn,loop,r=2.9,layer='inst'):
     """gelembung ISA-5.1 (instrumen pada panel/DCS yang dapat diakses operator): lingkaran dengan garis horizontal"""
     s.circ(x,y,r,.28,'#ffffff',layer)
     s.line([(x-r,y),(x+r,y)],.2,None,K,layer)
-    s.text(x,y-.55,fn,1.45,'m',True,layer=layer,chk=False)
-    s.text(x,y+1.95,str(loop),1.45,'m',False,layer=layer,chk=False)
+    s.text(x,y-r*.2,fn,INST_FS,'m',True,layer=layer,chk=False)
+    s.text(x,y+r*.2+INST_FS*.74,str(loop),INST_FS,'m',False,layer=layer,chk=False)
     q=r*.62; s.texts.append(dict(bb=(x-q,y-q,x+q,y+q),t='%s-%s'%(fn,loop),owner=('inst',fn,loop),layer=layer))
     return dict(x=x,y=y,r=r)
 Doc.stag=_stag; Doc.inst2=_inst2

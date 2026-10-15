@@ -1,0 +1,1002 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="480.0mm" height="270.0mm" viewBox="0 0 480.0 270.0" font-family="Arial, 'Liberation Sans', Helvetica, sans-serif">
+<rect width="594" height="420" fill="#ffffff"/>
+<g inkscape:groupmode="layer" inkscape:label="Bingkai dan Blok Judul" id="lapisan-frame">
+<polygon points="3.000,3.000 477.000,3.000 477.000,267.000 3.000,267.000" fill="none" stroke="#000000" stroke-width="0.3"/>
+<polygon points="5.000,5.000 475.000,5.000 475.000,265.000 5.000,265.000" fill="none" stroke="#000000" stroke-width="0.7"/>
+<polyline points="5.000,213.000 475.000,213.000" fill="none" stroke="#000000" stroke-width="0.7" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="8.000" y="10.500" font-size="2.4" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>A-600 UTILITAS</tspan></text>
+<polyline points="8.000,11.300 26.002,11.300" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="8.000" y="76.000" font-size="2.4" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>A-100 PRAOLAH</tspan></text>
+<polyline points="8.000,76.800 27.070,76.800" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="104.000" y="10.500" font-size="2.4" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>A-400 BIOGAS</tspan></text>
+<polyline points="104.000,11.300 120.671,11.300" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+</g>
+<g inkscape:groupmode="layer" inkscape:label="Tabel Aliran dan Panel" id="lapisan-table">
+<polygon points="5.000,213.000 92.000,213.000 92.000,218.200 5.000,218.200" fill="#e6e6e6" stroke="none"/>
+<polyline points="5.000,218.200 92.000,218.200" fill="none" stroke="#000000" stroke-width="0.4" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="48.500" y="216.900" font-size="2.3" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LEGENDA</tspan></text>
+<polyline points="92.000,213.000 92.000,265.000" fill="none" stroke="#000000" stroke-width="0.7" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="6.500,222.200 20.500,222.200" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="20.500,222.200 18.000,221.400 18.000,223.000" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<text x="22.500" y="222.900" font-size="1.75" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Proses</tspan></text>
+<polyline points="6.500,227.800 20.500,227.800" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="2.6 0.9"/>
+<text x="22.500" y="228.500" font-size="1.75" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Air pendingin CWS/CWR</tspan></text>
+<polyline points="6.500,233.400 20.500,233.400" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="3.4 0.9 0.6 0.9 0.6 0.9"/>
+<text x="22.500" y="234.100" font-size="1.75" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Air panas HWS/HWR</tspan></text>
+<polyline points="6.500,239.000 20.500,239.000" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.1 0.7"/>
+<text x="22.500" y="239.700" font-size="1.75" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Air baku (PW)</tspan></text>
+<polyline points="6.500,244.600 20.500,244.600" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.55 0.7"/>
+<text x="22.500" y="245.300" font-size="1.75" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Listrik</tspan></text>
+<polyline points="50.000,222.200 64.000,222.200" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<text x="66.000" y="222.900" font-size="1.75" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Sinyal instrumen</tspan></text>
+<polygon points="57.000,226.200 58.600,227.800 57.000,229.400 55.400,227.800" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="66.000" y="228.500" font-size="1.75" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Nomor aliran</tspan></text>
+<circle cx="57.000" cy="233.400" r="1.700" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polyline points="55.300,233.400 58.700,233.400" fill="none" stroke="#000000" stroke-width="0.18" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="66.000" y="234.100" font-size="1.75" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Instrumen (ISA-5.1)</tspan></text>
+<polygon points="56.400,239.100 57.600,240.300 57.600,239.100 56.400,240.300" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polyline points="57.000,239.100 57.000,238.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="57.800,238.400 57.795,238.310 57.780,238.222 57.755,238.136 57.721,238.053 57.677,237.974 57.625,237.901 57.566,237.834 57.499,237.775 57.426,237.723 57.347,237.679 57.264,237.645 57.178,237.620 57.090,237.605 57.000,237.600 56.910,237.605 56.822,237.620 56.736,237.645 56.653,237.679 56.574,237.723 56.501,237.775 56.434,237.834 56.375,237.901 56.323,237.974 56.279,238.053 56.245,238.136 56.220,238.222 56.205,238.310 56.200,238.400" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<text x="66.000" y="239.700" font-size="1.75" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Katup kendali</tspan></text>
+<text x="50.000" y="245.300" font-size="1.45" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>L level, T suhu, F laju, P tekanan,</tspan></text>
+<text x="50.000" y="247.600" font-size="1.45" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>A analisis, J daya; C kendali, I indikasi</tspan></text>
+<polygon points="92.000,213.000 330.000,213.000 330.000,218.200 92.000,218.200" fill="#e6e6e6" stroke="none"/>
+<polyline points="92.000,218.200 330.000,218.200" fill="none" stroke="#000000" stroke-width="0.4" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="211.000" y="216.900" font-size="2.3" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>DAFTAR PERALATAN</tspan></text>
+<polyline points="330.000,213.000 330.000,265.000" fill="none" stroke="#000000" stroke-width="0.7" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="93.500" y="222.904" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>SC-101</tspan></text>
+<text x="113.500" y="222.904" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Saringan drum putar</tspan></text>
+<text x="93.500" y="228.604" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-101</tspan></text>
+<text x="113.500" y="228.604" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pompa desander</tspan></text>
+<polyline points="92.000,224.400 151.500,224.400" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="93.500" y="234.304" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>HC-101</tspan></text>
+<text x="113.500" y="234.304" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Hidrosiklon desander</tspan></text>
+<polyline points="92.000,230.100 151.500,230.100" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="93.500" y="240.004" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>E-101</tspan></text>
+<text x="113.500" y="240.004" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pendingin POME (PHE)</tspan></text>
+<polyline points="92.000,235.800 151.500,235.800" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="93.500" y="245.704" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TK-101</tspan></text>
+<text x="113.500" y="245.704" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Tangki penyangga umpan</tspan></text>
+<polyline points="92.000,241.500 151.500,241.500" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="93.500" y="251.404" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-201</tspan></text>
+<text x="113.500" y="251.404" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pompa umpan reaktor</tspan></text>
+<polyline points="92.000,247.200 151.500,247.200" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="93.500" y="257.104" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>R-201..214</tspan></text>
+<text x="113.500" y="257.104" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Reaktor AnMBR ×14</tspan></text>
+<polyline points="92.000,252.900 151.500,252.900" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="93.500" y="262.804" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-202</tspan></text>
+<text x="113.500" y="262.804" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pompa jet mixing</tspan></text>
+<polyline points="92.000,258.600 151.500,258.600" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="153.000" y="222.904" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TK/P-201..204</tspan></text>
+<text x="173.000" y="222.904" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Dosing NaOH dan urea</tspan></text>
+<text x="153.000" y="228.604" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-301</tspan></text>
+<text x="173.000" y="228.604" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pompa cross-flow</tspan></text>
+<polyline points="151.500,224.400 211.000,224.400" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="153.000" y="234.304" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>MB-301</tspan></text>
+<text x="173.000" y="234.304" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Membran UF tubular</tspan></text>
+<polyline points="151.500,230.100 211.000,230.100" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="153.000" y="240.004" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-302</tspan></text>
+<text x="173.000" y="240.004" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pompa permeat</tspan></text>
+<polyline points="151.500,235.800 211.000,235.800" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="153.000" y="245.704" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TK-302</tspan></text>
+<text x="173.000" y="245.704" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Tangki CIP</tspan></text>
+<polyline points="151.500,241.500 211.000,241.500" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="153.000" y="251.404" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-303</tspan></text>
+<text x="173.000" y="251.404" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pompa lumpur buangan</tspan></text>
+<polyline points="151.500,247.200 211.000,247.200" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="153.000" y="257.104" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PR-501</tspan></text>
+<text x="173.000" y="257.104" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Screw press</tspan></text>
+<polyline points="151.500,252.900 211.000,252.900" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="153.000" y="262.804" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TK-301</tspan></text>
+<text x="173.000" y="262.804" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Tangki permeat</tspan></text>
+<polyline points="151.500,258.600 211.000,258.600" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="212.500" y="222.904" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-501</tspan></text>
+<text x="232.500" y="222.904" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pompa efluen</tspan></text>
+<text x="212.500" y="228.604" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>GH-301</tspan></text>
+<text x="232.500" y="228.604" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Penampung gas</tspan></text>
+<polyline points="211.000,224.400 270.500,224.400" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="212.500" y="234.304" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>BTF-301</tspan></text>
+<text x="232.500" y="234.304" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Bio-trickling filter H₂S</tspan></text>
+<polyline points="211.000,230.100 270.500,230.100" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="212.500" y="240.004" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-305</tspan></text>
+<text x="232.500" y="240.004" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pompa resirkulasi BTF</tspan></text>
+<polyline points="211.000,235.800 270.500,235.800" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="212.500" y="245.704" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>K-301</tspan></text>
+<text x="232.500" y="245.704" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Blower udara BTF</tspan></text>
+<polyline points="211.000,241.500 270.500,241.500" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="212.500" y="251.404" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>HX-301</tspan></text>
+<text x="232.500" y="251.404" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pendingin gas 5 °C</tspan></text>
+<polyline points="211.000,247.200 270.500,247.200" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="212.500" y="257.104" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>CH-301</tspan></text>
+<text x="232.500" y="257.104" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Chiller paket</tspan></text>
+<polyline points="211.000,252.900 270.500,252.900" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="212.500" y="262.804" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>V-301</tspan></text>
+<text x="232.500" y="262.804" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>KO pot kondensat</tspan></text>
+<polyline points="211.000,258.600 270.500,258.600" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="272.000" y="222.904" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>K-302</tspan></text>
+<text x="292.000" y="222.904" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Blower biogas</tspan></text>
+<text x="272.000" y="228.604" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AC-301</tspan></text>
+<text x="292.000" y="228.604" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Filter karbon aktif</tspan></text>
+<polyline points="270.500,224.400 330.000,224.400" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="272.000" y="234.304" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>FL-301</tspan></text>
+<text x="292.000" y="234.304" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Flare tertutup</tspan></text>
+<polyline points="270.500,230.100 330.000,230.100" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="272.000" y="240.004" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>GE-401/402</tspan></text>
+<text x="292.000" y="240.004" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Genset biogas 2 × 800 kWe</tspan></text>
+<polyline points="270.500,235.800 330.000,235.800" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="272.000" y="245.704" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>HX-401</tspan></text>
+<text x="292.000" y="245.704" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pemulih panas</tspan></text>
+<polyline points="270.500,241.500 330.000,241.500" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="272.000" y="251.404" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>ST-401</tspan></text>
+<text x="292.000" y="251.404" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Cerobong</tspan></text>
+<polyline points="270.500,247.200 330.000,247.200" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="272.000" y="257.104" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>CT-601</tspan></text>
+<text x="292.000" y="257.104" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Menara pendingin</tspan></text>
+<polyline points="270.500,252.900 330.000,252.900" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="272.000" y="262.804" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-601</tspan></text>
+<text x="292.000" y="262.804" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Pompa air pendingin</tspan></text>
+<polyline points="270.500,258.600 330.000,258.600" fill="none" stroke="#000000" stroke-width="0.08" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="151.500,218.200 151.500,265.000" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="211.000,218.200 211.000,265.000" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="270.500,218.200 270.500,265.000" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="330.000,213.000 404.000,213.000 404.000,218.200 330.000,218.200" fill="#e6e6e6" stroke="none"/>
+<polyline points="330.000,218.200 404.000,218.200" fill="none" stroke="#000000" stroke-width="0.4" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="367.000" y="216.900" font-size="2.3" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>DATA UTAMA (45 t TBS/jam)</tspan></text>
+<polyline points="404.000,213.000 404.000,265.000" fill="none" stroke="#000000" stroke-width="0.7" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="331.500" y="222.740" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>POME</tspan></text>
+<text x="350.000" y="222.740" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>585 m³/hari, 85 °C</tspan></text>
+<text x="331.500" y="228.490" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>Reaktor</tspan></text>
+<text x="350.000" y="228.490" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>14 × 194 m³, 55 °C</tspan></text>
+<text x="331.500" y="234.240" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>Biogas</tspan></text>
+<text x="350.000" y="234.240" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>11.815 Nm³/hari</tspan></text>
+<text x="331.500" y="239.990" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>CH₄ / H₂S</tspan></text>
+<text x="350.000" y="239.990" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>58,5 % / 34 ppm</tspan></text>
+<text x="331.500" y="245.740" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>Listrik</tspan></text>
+<text x="350.000" y="245.740" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>1.088 / 961 kWe neto</tspan></text>
+<text x="331.500" y="251.490" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>Panas</tspan></text>
+<text x="350.000" y="251.490" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>1.439 kWth air panas</tspan></text>
+<text x="331.500" y="257.240" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>Modul</tspan></text>
+<text x="350.000" y="257.240" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>28 truk, ± 0,16 ha</tspan></text>
+<text x="331.500" y="262.990" font-size="1.85" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>Emisi</tspan></text>
+<text x="350.000" y="262.990" font-size="1.85" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>−36.777 tCO₂e/tahun</tspan></text>
+<text x="439.500" y="218.000" font-size="3" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>NAMA TIM</tspan></text>
+<text x="439.500" y="222.000" font-size="1.8" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>UNIVERSITAS</tspan></text>
+<polyline points="404.000,223.800 475.000,223.800" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="439.500" y="228.600" font-size="3.1" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PROCESS FLOW DIAGRAM</tspan></text>
+<text x="439.500" y="232.600" font-size="2" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>Generator Biogas Portabel</tspan></text>
+<text x="439.500" y="235.900" font-size="1.8" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>AnMBR termofilik 55 °C dari POME</tspan></text>
+<polyline points="404.000,238.000 475.000,238.000" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="439.500" y="241.600" font-size="1.9" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>ASPEBINDO EIC 2026</tspan></text>
+<text x="439.500" y="244.600" font-size="1.6" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Business Plan Competition</tspan></text>
+<polyline points="404.000,246.400 475.000,246.400" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="434.000,246.400 434.000,265.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="456.000,246.400 456.000,265.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="405.200" y="249.600" font-size="1.4" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>No. gambar</tspan></text>
+<text x="419.000" y="255.400" font-size="2.1" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PFD-BG-002</tspan></text>
+<text x="435.200" y="249.600" font-size="1.4" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Rev.</tspan></text>
+<text x="445.000" y="255.400" font-size="2.1" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>3</tspan></text>
+<text x="457.200" y="249.600" font-size="1.4" text-anchor="start" fill="#000000" xml:space="preserve"><tspan>Tanggal</tspan></text>
+<text x="465.500" y="255.400" font-size="2.1" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>15-10-2026</tspan></text>
+</g>
+<g inkscape:groupmode="layer" inkscape:label="Aliran Utilitas" id="lapisan-util">
+<polygon points="56.000,45.400 54.007,46.048 53.993,44.799" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="52.600,45.440 54.300,45.420" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="2.6 0.9"/>
+<polygon points="68.800,80.000 68.175,78.000 69.425,78.000" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="59.500,41.900 59.500,36.000 68.800,36.000 68.800,78.300" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="2.6 0.9"/>
+<polygon points="49.870,27.520 51.870,26.895 51.870,28.145" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="75.200,80.000 75.200,27.520 51.570,27.520" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="2.6 0.9 0.6 0.9"/>
+<polygon points="21.400,46.400 19.400,47.025 19.400,45.775" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="15.000,46.400 19.700,46.400" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.1 0.7"/>
+<polygon points="233.200,17.000 233.825,19.000 232.575,19.000" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="233.200,25.000 233.200,18.700" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="2.6 0.9"/>
+<polygon points="242.800,25.000 242.175,23.000 243.425,23.000" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="242.800,17.000 242.800,23.300" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="2.6 0.9 0.6 0.9"/>
+<polygon points="398.100,70.200 400.100,69.575 400.100,70.825" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="392.000,101.200 400.000,101.200 400.000,70.200 399.800,70.200" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="3.4 0.9 0.6 0.9 0.6 0.9"/>
+<polygon points="392.000,110.800 394.000,110.175 394.000,111.425" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="404.000,128.000 412.000,128.000 412.000,110.800 393.700,110.800" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="3.4 0.9 0.6 0.9 0.6 0.9"/>
+<polygon points="416.000,140.000 418.000,139.375 418.000,140.625" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="398.100,59.800 420.000,59.800 420.000,140.000 417.700,140.000" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="3.4 0.9 0.6 0.9 0.6 0.9"/>
+<polygon points="352.000,134.000 350.000,134.625 350.000,133.375" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="348.600,118.000 348.600,134.000 350.300,134.000" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.55 0.7"/>
+<polygon points="156.000,185.600 154.000,186.225 154.000,184.975" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="15.000,204.000 153.500,204.000 153.500,185.600 154.300,185.600" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.1 0.7"/>
+<polygon points="124.000,185.600 122.000,186.225 122.000,184.975" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="121.000,204.000 121.000,185.600 122.300,185.600" fill="none" stroke="#000000" stroke-width="0.36" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.1 0.7"/>
+</g>
+<g inkscape:groupmode="layer" inkscape:label="Aliran Material" id="lapisan-proc">
+<polygon points="20.000,97.260 17.500,98.035 17.500,96.485" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="16.000,97.260 17.875,97.260" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="40.000,119.500 37.500,120.275 37.500,118.725" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="32.000,110.000 32.000,119.500 37.875,119.500" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="48.000,85.760 45.500,86.535 45.500,84.985" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="43.500,116.000 43.500,85.760 45.875,85.760" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="64.000,85.000 61.500,85.775 61.500,84.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="53.940,82.966 53.940,76.000 61.000,76.000 61.000,85.000 61.875,85.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="92.000,92.000 91.225,89.500 92.775,89.500" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="80.880,85.000 92.000,85.000 92.000,89.875" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="24.000,134.000 26.500,133.225 26.500,134.775" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="52.500,106.000 52.500,134.000 26.125,134.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="29.000,110.000 29.000,134.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="108.000,161.500 105.500,162.275 105.500,160.725" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="104.000,137.000 106.000,137.000 106.000,161.500 105.875,161.500" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="111.500,158.000 111.500,154.000 161.000,154.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="124.000,128.000 121.500,128.775 121.500,127.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="119.000,154.000 119.000,128.000 121.875,128.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="166.000,128.000 163.500,128.775 163.500,127.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="161.000,154.000 161.000,128.000 163.875,128.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="125.000,154.000 125.775,156.500 124.225,156.500" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="143.500,180.000 143.500,166.000 125.000,166.000 125.000,156.125" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="130.000,154.000 130.775,156.500 129.225,156.500" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="175.500,180.000 175.500,162.000 130.000,162.000 130.000,156.125" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="140.000,183.500 137.500,184.275 137.500,182.725" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="136.000,183.500 137.875,183.500" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="172.000,183.500 169.500,184.275 169.500,182.725" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="168.000,183.500 169.875,183.500" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="146.000,135.000 143.500,135.775 143.500,134.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="140.000,135.000 143.875,135.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="140.000,120.000 142.500,119.225 142.500,120.775" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="149.500,131.500 149.500,120.000 142.125,120.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="186.000,135.000 183.500,135.775 183.500,134.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="182.000,135.000 183.875,135.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="200.000,113.000 197.500,113.775 197.500,112.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="189.500,131.500 189.500,113.000 197.875,113.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="182.000,104.000 184.500,103.225 184.500,104.775" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="232.000,110.500 236.000,110.500 236.000,104.000 184.125,104.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="238.000,127.500 235.500,128.275 235.500,126.725" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="228.800,118.000 228.800,127.500 235.875,127.500" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="256.000,100.000 253.500,100.775 253.500,99.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="241.500,124.000 241.500,100.000 253.875,100.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="208.960,118.000 209.745,120.497 208.195,120.503" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="209.000,128.000 208.969,120.125" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.5 0.7"/>
+<polygon points="190.000,153.500 187.500,154.275 187.500,152.725" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="182.000,139.500 185.000,139.500 185.000,153.500 187.875,153.500" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="219.360,170.080 218.585,167.580 220.135,167.580" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="193.500,150.000 193.500,146.000 219.360,146.000 219.360,167.955" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="224.800,170.080 224.025,167.580 225.575,167.580" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="236.000,160.000 224.800,160.000 224.800,167.955" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="208.000,179.200 210.500,178.425 210.500,179.975" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="212.000,179.200 210.125,179.200" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="256.000,134.500 253.500,135.275 253.500,133.725" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="232.000,185.440 232.000,196.000 252.000,196.000 252.000,134.500 253.875,134.500" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="276.000,137.000 273.500,137.775 273.500,136.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="272.000,137.000 273.875,137.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="292.000,126.000 289.500,126.775 289.500,125.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="279.500,133.500 279.500,126.000 289.875,126.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="132.000,92.000 132.000,82.000 142.000,82.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="174.000,92.000 174.000,82.000 142.000,82.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="142.000,74.000 142.775,76.500 141.225,76.500" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="142.000,82.000 142.000,76.125" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="196.000,59.200 193.500,59.975 193.500,58.425" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="158.000,74.000 158.000,78.000 190.000,78.000 190.000,59.200 193.875,59.200" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="185.250,78.000 184.475,75.500 186.025,75.500" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="185.250,67.000 185.250,75.875" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="181.750,60.000 180.975,57.500 182.525,57.500" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="176.000,46.000 181.750,46.000 181.750,57.875" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="212.000,68.000 209.500,68.775 209.500,67.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="208.000,68.000 209.875,68.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="208.000,27.000 210.500,26.225 210.500,27.775" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="215.500,64.500 215.500,27.000 210.125,27.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="232.000,40.000 229.500,40.775 229.500,39.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="215.500,40.000 229.875,40.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="226.000,13.000 223.500,13.775 223.500,12.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="202.000,18.000 202.000,13.000 223.875,13.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="258.000,13.000 255.500,13.775 255.500,12.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="250.000,13.000 255.875,13.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="266.000,46.000 263.500,46.775 263.500,45.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="262.500,32.000 262.500,46.000 263.875,46.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="276.000,14.000 275.225,11.500 276.775,11.500" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="267.000,10.880 276.000,10.880 276.000,11.875" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="296.000,28.000 293.500,28.775 293.500,27.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="280.000,22.000 280.000,28.000 293.875,28.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="314.000,16.800 311.500,17.575 311.500,16.025" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="308.000,16.800 311.875,16.800" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="308.000,39.920 312.000,39.920 312.000,48.120" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="336.000,48.120 333.500,48.895 333.500,47.345" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="312.000,48.120 333.875,48.120" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="330.000,108.400 327.500,109.175 327.500,107.625" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="312.000,48.120 312.000,108.400 327.875,108.400" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="336.200,94.000 335.425,91.500 336.975,91.500" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="332.000,86.000 336.200,86.000 336.200,91.875" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="390.100,78.000 390.881,80.498 389.331,80.502" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="390.140,94.000 390.105,80.125" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="431.250,44.000 428.750,44.775 428.750,43.225" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<polyline points="390.100,52.000 390.100,44.000 429.125,44.000" fill="none" stroke="#000000" stroke-width="0.62" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="29.000" cy="134.000" r="0.620" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<circle cx="119.000" cy="154.000" r="0.620" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<circle cx="125.000" cy="154.000" r="0.620" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<circle cx="130.000" cy="154.000" r="0.620" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<circle cx="142.000" cy="82.000" r="0.620" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<circle cx="185.250" cy="78.000" r="0.620" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<circle cx="215.500" cy="40.000" r="0.620" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<circle cx="312.000" cy="48.120" r="0.620" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+<circle cx="121.000" cy="204.000" r="0.620" fill="#000000" stroke="#000000" stroke-width="0.05"/>
+</g>
+<g inkscape:groupmode="layer" inkscape:label="Sinyal Instrumen" id="lapisan-sig">
+<polyline points="88.000,69.000 88.000,85.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="88.000,63.000 88.000,56.000 78.650,56.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="107.000,100.000 104.000,100.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="110.000,103.000 110.000,158.400" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="119.000,113.000 124.000,113.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="122.000,178.000 124.000,178.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="154.000,178.000 156.000,178.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="151.000,195.000 151.000,183.500 147.000,183.500" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="183.000,195.000 183.000,183.500 179.000,183.500" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="187.000,96.000 182.000,96.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="193.000,96.000 250.000,96.000 250.000,127.500 245.000,127.500" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="193.000,122.000 189.500,122.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="196.000,125.000 196.000,135.000 193.000,135.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="216.000,131.000 214.000,131.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="201.000,150.500 201.000,146.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="198.000,153.500 197.000,153.500" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="275.000,100.000 272.000,100.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="281.000,100.000 286.000,100.000 286.000,137.000 283.000,137.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="125.000,60.000 130.800,60.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="221.000,52.000 208.000,52.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="221.000,52.000 221.000,36.550" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="268.000,30.000 267.000,30.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="271.000,33.000 271.000,37.000 265.950,37.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="285.000,31.000 285.000,28.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="282.000,34.000 276.000,34.000 276.000,21.600" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="316.000,70.000 312.000,70.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="317.000,34.000 312.000,34.000 312.000,39.900" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="320.000,37.000 320.000,44.670" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="320.000,100.000 320.000,104.950" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="15.000,30.000 23.600,30.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+<polyline points="12.000,33.000 12.000,40.000 18.200,40.000 18.200,42.950" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.9 0.6"/>
+</g>
+<g inkscape:groupmode="layer" inkscape:label="Peralatan" id="lapisan-equip">
+<polygon points="25.000,21.120 49.000,21.120 52.000,42.880 22.000,42.880" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="21.200,42.880 52.800,42.880 52.800,48.000 21.200,48.000" fill="#ffffff" stroke="#000000" stroke-width="0.45"/>
+<polyline points="22.600,45.440 51.400,45.440" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1 0.5"/>
+<polygon points="44.500,44.140 46.300,44.140 45.400,45.340" fill="#ffffff" stroke="#000000" stroke-width="0.15"/>
+<polyline points="44.800,45.940 46.000,45.940" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="45.050,46.340 45.750,46.340" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="31.000,21.120 32.200,16.000 41.800,16.000 43.000,21.120" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<polyline points="32.800,18.560 41.200,18.560" fill="none" stroke="#000000" stroke-width="0.5" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="37.000" cy="18.560" r="0.500" fill="#000000" stroke="#000000" stroke-width="0.1"/>
+<polyline points="26.200,24.320 47.800,24.320" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="26.200,30.400 28.000,38.400" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="29.200,30.400 31.000,38.400" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="32.200,30.400 34.000,38.400" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="35.200,30.400 37.000,38.400" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="38.200,30.400 40.000,38.400" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="41.200,30.400 43.000,38.400" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="44.200,30.400 46.000,38.400" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="25.000,30.400 49.000,30.400" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="23.800,38.400 50.200,38.400" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="26.200,27.520 47.800,27.520" fill="none" stroke="#000000" stroke-width="0.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="29.000,27.520 30.000,27.520 29.500,28.800" fill="#000000" stroke="#000000" stroke-width="0.1"/>
+<polygon points="35.000,27.520 36.000,27.520 35.500,28.800" fill="#000000" stroke="#000000" stroke-width="0.1"/>
+<polygon points="41.000,27.520 42.000,27.520 41.500,28.800" fill="#000000" stroke="#000000" stroke-width="0.1"/>
+<polygon points="45.500,27.520 46.500,27.520 46.000,28.800" fill="#000000" stroke="#000000" stroke-width="0.1"/>
+<circle cx="59.500" cy="45.400" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="57.330,46.975 59.500,42.600 61.670,46.975" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polygon points="56.700,49.800 62.300,49.800 61.425,48.270 57.575,48.270" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="20.000,98.520 40.000,98.520 40.000,107.480 20.000,107.480" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="21.000,107.480 39.000,107.480 35.000,110.000 25.000,110.000" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<polygon points="23.600,99.500 36.400,99.500 36.400,106.500 23.600,106.500" fill="none" stroke="#000000" stroke-width="0.3"/>
+<polyline points="25.200,99.500 25.200,106.500" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.4 0.4"/>
+<polyline points="26.800,99.500 26.800,106.500" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.4 0.4"/>
+<polyline points="28.400,99.500 28.400,106.500" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.4 0.4"/>
+<polyline points="30.000,99.500 30.000,106.500" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.4 0.4"/>
+<polyline points="31.600,99.500 31.600,106.500" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.4 0.4"/>
+<polyline points="33.200,99.500 33.200,106.500" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.4 0.4"/>
+<polyline points="34.800,99.500 34.800,106.500" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.4 0.4"/>
+<polygon points="19.900,96.000 23.500,96.000 23.500,98.520 19.900,98.520" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="36.000,96.280 39.200,96.280 39.200,98.520 36.000,98.520" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<circle cx="43.500" cy="119.500" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="41.330,121.075 43.500,116.700 45.670,121.075" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polygon points="40.700,123.900 46.300,123.900 45.425,122.370 41.575,122.370" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="48.000,84.000 57.000,84.000 57.000,89.280 53.400,104.680 51.600,104.680 48.000,89.280" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="51.420,104.680 53.580,104.680 53.580,106.000 51.420,106.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polyline points="51.060,82.600 51.060,90.600" fill="none" stroke="#000000" stroke-width="0.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="53.940,82.600 53.940,90.600" fill="none" stroke="#000000" stroke-width="0.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="48.000,89.280 57.000,89.280" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="64.000,80.000 65.800,80.000 65.800,90.000 64.000,90.000" fill="#ffffff" stroke="#000000" stroke-width="0.45"/>
+<polygon points="78.200,80.600 80.000,80.600 80.000,89.400 78.200,89.400" fill="#ffffff" stroke="#000000" stroke-width="0.45"/>
+<polyline points="65.800,80.800 81.200,80.800" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="65.800,89.200 81.200,89.200" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="81.200,80.000 81.200,90.000" fill="none" stroke="#000000" stroke-width="0.45" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="66.646,81.600 66.646,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="67.538,81.600 67.538,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="68.431,81.600 68.431,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="69.323,81.600 69.323,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="70.215,81.600 70.215,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="71.108,81.600 71.108,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="72.000,81.600 72.000,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="72.892,81.600 72.892,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="73.785,81.600 73.785,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="74.677,81.600 74.677,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="75.569,81.600 75.569,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="76.462,81.600 76.462,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="77.354,81.600 77.354,88.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="89.600,140.600 89.600,145.000" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="102.400,140.600 102.400,145.000" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="86.500,145.000 105.500,145.000" fill="none" stroke="#000000" stroke-width="0.6" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="87.000,145.000 86.000,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="90.600,145.000 89.600,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="94.200,145.000 93.200,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="97.800,145.000 96.800,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="101.400,145.000 100.400,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="105.000,145.000 104.000,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="88.000,96.000 88.050,95.552 88.201,95.110 88.449,94.679 88.792,94.264 89.226,93.872 89.745,93.506 90.343,93.172 91.012,92.873 91.744,92.613 92.529,92.396 93.358,92.224 94.220,92.100 95.104,92.025 96.000,92.000 96.896,92.025 97.780,92.100 98.642,92.224 99.471,92.396 100.256,92.613 100.988,92.873 101.657,93.172 102.255,93.506 102.774,93.872 103.208,94.264 103.551,94.679 103.799,95.110 103.950,95.552 104.000,96.000 104.000,138.000 103.950,138.448 103.799,138.890 103.551,139.321 103.208,139.736 102.774,140.128 102.255,140.494 101.657,140.828 100.988,141.127 100.256,141.387 99.471,141.604 98.642,141.776 97.780,141.900 96.896,141.975 96.000,142.000 95.104,141.975 94.220,141.900 93.358,141.776 92.529,141.604 91.744,141.387 91.012,141.127 90.343,140.828 89.745,140.494 89.226,140.128 88.792,139.736 88.449,139.321 88.201,138.890 88.050,138.448 88.000,138.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="88.000,96.000 104.000,96.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="88.000,138.000 104.000,138.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="88.600,107.000 103.400,107.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1 0.5"/>
+<polygon points="99.580,105.700 101.380,105.700 100.480,106.900" fill="#ffffff" stroke="#000000" stroke-width="0.15"/>
+<polyline points="99.880,107.500 101.080,107.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="100.130,107.900 100.830,107.900" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="91.520" cy="122.000" r="1.100" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<circle cx="91.520" cy="122.000" r="0.605" fill="none" stroke="#000000" stroke-width="0.12"/>
+<circle cx="111.500" cy="161.500" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="109.330,163.075 111.500,158.700 113.670,163.075" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polygon points="108.700,165.900 114.300,165.900 113.425,164.370 109.575,164.370" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="123.000,96.000 123.057,95.440 123.226,94.887 123.505,94.349 123.891,93.831 124.379,93.340 124.964,92.883 125.636,92.464 126.389,92.091 127.212,91.766 128.095,91.495 129.027,91.281 129.997,91.125 130.992,91.031 132.000,91.000 133.008,91.031 134.003,91.125 134.973,91.281 135.905,91.495 136.788,91.766 137.611,92.091 138.364,92.464 139.036,92.883 139.621,93.340 140.109,93.831 140.495,94.349 140.774,94.887 140.943,95.440 141.000,96.000 141.000,138.000 140.943,138.560 140.774,139.113 140.495,139.651 140.109,140.169 139.621,140.660 139.036,141.117 138.364,141.536 137.611,141.909 136.788,142.234 135.905,142.505 134.973,142.719 134.003,142.875 133.008,142.969 132.000,143.000 130.992,142.969 129.997,142.875 129.027,142.719 128.095,142.505 127.212,142.234 126.389,141.909 125.636,141.536 124.964,141.117 124.379,140.660 123.891,140.169 123.505,139.651 123.226,139.113 123.057,138.560 123.000,138.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-dasharray="0.8 0.5"/>
+<polyline points="125.600,140.600 125.600,144.500" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="138.400,140.600 138.400,144.500" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="122.500,144.500 141.500,144.500" fill="none" stroke="#000000" stroke-width="0.6" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="123.000,144.500 122.000,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="126.600,144.500 125.600,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="130.200,144.500 129.200,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="133.800,144.500 132.800,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="137.400,144.500 136.400,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="141.000,144.500 140.000,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="124.000,96.000 124.050,95.552 124.201,95.110 124.449,94.679 124.792,94.264 125.226,93.872 125.745,93.506 126.343,93.172 127.012,92.873 127.744,92.613 128.529,92.396 129.358,92.224 130.220,92.100 131.104,92.025 132.000,92.000 132.896,92.025 133.780,92.100 134.642,92.224 135.471,92.396 136.256,92.613 136.988,92.873 137.657,93.172 138.255,93.506 138.774,93.872 139.208,94.264 139.551,94.679 139.799,95.110 139.950,95.552 140.000,96.000 140.000,138.000 139.950,138.448 139.799,138.890 139.551,139.321 139.208,139.736 138.774,140.128 138.255,140.494 137.657,140.828 136.988,141.127 136.256,141.387 135.471,141.604 134.642,141.776 133.780,141.900 132.896,141.975 132.000,142.000 131.104,141.975 130.220,141.900 129.358,141.776 128.529,141.604 127.744,141.387 127.012,141.127 126.343,140.828 125.745,140.494 125.226,140.128 124.792,139.736 124.449,139.321 124.201,138.890 124.050,138.448 124.000,138.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="124.000,96.000 140.000,96.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="124.000,138.000 140.000,138.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="124.600,103.000 139.400,103.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1 0.5"/>
+<polygon points="135.580,101.700 137.380,101.700 136.480,102.900" fill="#ffffff" stroke="#000000" stroke-width="0.15"/>
+<polyline points="135.880,103.500 137.080,103.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="136.130,103.900 136.830,103.900" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="125.920,135.800 138.080,135.800" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="126.550,135.800 127.850,135.800 127.200,137.100" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<polygon points="129.750,135.800 131.050,135.800 130.400,137.100" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<polygon points="132.950,135.800 134.250,135.800 133.600,137.100" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<polygon points="136.150,135.800 137.450,135.800 136.800,137.100" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<circle cx="127.520" cy="119.500" r="1.100" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<circle cx="127.520" cy="119.500" r="0.605" fill="none" stroke="#000000" stroke-width="0.12"/>
+<polyline points="136.480,92.686 136.480,90.886" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="135.280,89.086 137.680,89.086 137.680,90.886 135.280,90.886" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polyline points="135.780,90.486 137.180,89.486" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="165.000,96.000 165.057,95.440 165.226,94.887 165.505,94.349 165.891,93.831 166.379,93.340 166.964,92.883 167.636,92.464 168.389,92.091 169.212,91.766 170.095,91.495 171.027,91.281 171.997,91.125 172.992,91.031 174.000,91.000 175.008,91.031 176.003,91.125 176.973,91.281 177.905,91.495 178.788,91.766 179.611,92.091 180.364,92.464 181.036,92.883 181.621,93.340 182.109,93.831 182.495,94.349 182.774,94.887 182.943,95.440 183.000,96.000 183.000,138.000 182.943,138.560 182.774,139.113 182.495,139.651 182.109,140.169 181.621,140.660 181.036,141.117 180.364,141.536 179.611,141.909 178.788,142.234 177.905,142.505 176.973,142.719 176.003,142.875 175.008,142.969 174.000,143.000 172.992,142.969 171.997,142.875 171.027,142.719 170.095,142.505 169.212,142.234 168.389,141.909 167.636,141.536 166.964,141.117 166.379,140.660 165.891,140.169 165.505,139.651 165.226,139.113 165.057,138.560 165.000,138.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-dasharray="0.8 0.5"/>
+<polyline points="167.600,140.600 167.600,144.500" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="180.400,140.600 180.400,144.500" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="164.500,144.500 183.500,144.500" fill="none" stroke="#000000" stroke-width="0.6" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="165.000,144.500 164.000,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="168.600,144.500 167.600,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="172.200,144.500 171.200,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="175.800,144.500 174.800,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="179.400,144.500 178.400,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="183.000,144.500 182.000,145.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="166.000,96.000 166.050,95.552 166.201,95.110 166.449,94.679 166.792,94.264 167.226,93.872 167.745,93.506 168.343,93.172 169.012,92.873 169.744,92.613 170.529,92.396 171.358,92.224 172.220,92.100 173.104,92.025 174.000,92.000 174.896,92.025 175.780,92.100 176.642,92.224 177.471,92.396 178.256,92.613 178.988,92.873 179.657,93.172 180.255,93.506 180.774,93.872 181.208,94.264 181.551,94.679 181.799,95.110 181.950,95.552 182.000,96.000 182.000,138.000 181.950,138.448 181.799,138.890 181.551,139.321 181.208,139.736 180.774,140.128 180.255,140.494 179.657,140.828 178.988,141.127 178.256,141.387 177.471,141.604 176.642,141.776 175.780,141.900 174.896,141.975 174.000,142.000 173.104,141.975 172.220,141.900 171.358,141.776 170.529,141.604 169.744,141.387 169.012,141.127 168.343,140.828 167.745,140.494 167.226,140.128 166.792,139.736 166.449,139.321 166.201,138.890 166.050,138.448 166.000,138.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="166.000,96.000 182.000,96.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="166.000,138.000 182.000,138.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="166.600,103.000 181.400,103.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1 0.5"/>
+<polygon points="177.580,101.700 179.380,101.700 178.480,102.900" fill="#ffffff" stroke="#000000" stroke-width="0.15"/>
+<polyline points="177.880,103.500 179.080,103.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="178.130,103.900 178.830,103.900" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="167.920,135.800 180.080,135.800" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="168.550,135.800 169.850,135.800 169.200,137.100" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<polygon points="171.750,135.800 173.050,135.800 172.400,137.100" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<polygon points="174.950,135.800 176.250,135.800 175.600,137.100" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<polygon points="178.150,135.800 179.450,135.800 178.800,137.100" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<circle cx="169.520" cy="119.500" r="1.100" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<circle cx="169.520" cy="119.500" r="0.605" fill="none" stroke="#000000" stroke-width="0.12"/>
+<polyline points="178.480,92.686 178.480,90.886" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="177.280,89.086 179.680,89.086 179.680,90.886 177.280,90.886" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polyline points="177.780,90.486 179.180,89.486" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="149.500" cy="135.000" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="147.330,136.575 149.500,132.200 151.670,136.575" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polygon points="146.700,139.400 152.300,139.400 151.425,137.870 147.575,137.870" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="124.000,172.000 136.000,172.000 136.000,188.000 124.000,188.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="128.800,169.600 131.200,169.600 131.200,172.000 128.800,172.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polyline points="130.000,172.000 130.000,184.480" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="127.120,183.840 129.520,184.480 127.120,185.120" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<polygon points="132.880,183.840 130.480,184.480 132.880,185.120" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<polyline points="124.600,176.000 135.400,176.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1 0.5"/>
+<polygon points="132.460,174.700 134.260,174.700 133.360,175.900" fill="#ffffff" stroke="#000000" stroke-width="0.15"/>
+<polyline points="132.760,176.500 133.960,176.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="133.010,176.900 133.710,176.900" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="143.500" cy="183.500" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<circle cx="143.500" cy="183.500" r="1.470" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polyline points="142.030,183.500 144.970,183.500" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="140.700,187.900 146.300,187.900 145.425,186.370 141.575,186.370" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="156.000,172.000 168.000,172.000 168.000,188.000 156.000,188.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="160.800,169.600 163.200,169.600 163.200,172.000 160.800,172.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polyline points="162.000,172.000 162.000,184.480" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="159.120,183.840 161.520,184.480 159.120,185.120" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<polygon points="164.880,183.840 162.480,184.480 164.880,185.120" fill="#000000" stroke="#000000" stroke-width="0.15"/>
+<polyline points="156.600,176.000 167.400,176.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1 0.5"/>
+<polygon points="164.460,174.700 166.260,174.700 165.360,175.900" fill="#ffffff" stroke="#000000" stroke-width="0.15"/>
+<polyline points="164.760,176.500 165.960,176.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="165.010,176.900 165.710,176.900" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="175.500" cy="183.500" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<circle cx="175.500" cy="183.500" r="1.470" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polyline points="174.030,183.500 176.970,183.500" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="172.700,187.900 178.300,187.900 177.425,186.370 173.575,186.370" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<circle cx="189.500" cy="135.000" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="187.330,136.575 189.500,132.200 191.670,136.575" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polygon points="186.700,139.400 192.300,139.400 191.425,137.870 187.575,137.870" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="200.000,108.000 202.400,108.000 202.400,118.000 200.000,118.000" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<polygon points="229.600,108.000 232.000,108.000 232.000,118.000 229.600,118.000" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<polygon points="202.400,108.800 229.600,108.800 229.600,117.200 202.400,117.200" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="202.400,111.000 229.600,111.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.2 0.6"/>
+<polyline points="202.400,113.000 229.600,113.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.2 0.6"/>
+<polyline points="202.400,115.000 229.600,115.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.2 0.6"/>
+<polyline points="202.400,117.200 229.600,108.800" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="204.000,129.560 209.000,128.000 214.000,129.560 214.000,141.000 204.000,141.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="204.600,132.420 213.400,132.420" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1 0.5"/>
+<polygon points="210.900,131.120 212.700,131.120 211.800,132.320" fill="#ffffff" stroke="#000000" stroke-width="0.15"/>
+<polyline points="211.200,132.920 212.400,132.920" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="211.450,133.320 212.150,133.320" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="214.000,137.660 207.000,137.660 207.000,139.660 214.000,139.660" fill="none" stroke="#000000" stroke-width="0.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="241.500" cy="127.500" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="239.330,129.075 241.500,124.700 243.670,129.075" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polygon points="238.700,131.900 244.300,131.900 243.425,130.370 239.575,130.370" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<circle cx="193.500" cy="153.500" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<circle cx="193.500" cy="153.500" r="1.470" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polyline points="192.030,153.500 194.970,153.500" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="190.700,157.900 196.300,157.900 195.425,156.370 191.575,156.370" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="212.000,174.400 238.240,172.000 238.240,180.640 212.000,183.040" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="214.624,174.560 215.744,182.400" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="217.248,174.320 218.368,182.160" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="219.872,174.080 220.992,181.920" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="222.496,173.840 223.616,181.680" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="225.120,173.600 226.240,181.440" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="227.744,173.360 228.864,181.200" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="230.368,173.120 231.488,180.960" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="232.992,172.880 234.112,180.720" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="235.616,172.640 236.736,180.480" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="212.000,178.720 238.240,176.320" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.6 0.4"/>
+<polygon points="238.240,173.200 241.120,173.200 241.120,179.440 238.240,179.440" fill="#ffffff" stroke="#000000" stroke-width="0.35"/>
+<polygon points="241.120,174.160 244.000,174.160 244.000,178.480 241.120,178.480" fill="#ffffff" stroke="#000000" stroke-width="0.35"/>
+<polygon points="215.200,169.600 223.520,169.600 221.600,173.800 217.120,174.040" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="228.000,181.600 233.120,180.880 232.480,185.800 229.920,185.800" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polyline points="257.600,140.600 257.600,145.000" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="270.400,140.600 270.400,145.000" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="254.500,145.000 273.500,145.000" fill="none" stroke="#000000" stroke-width="0.6" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="255.000,145.000 254.000,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="258.600,145.000 257.600,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="262.200,145.000 261.200,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="265.800,145.000 264.800,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="269.400,145.000 268.400,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="273.000,145.000 272.000,146.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="256.000,96.000 256.050,95.552 256.201,95.110 256.449,94.679 256.792,94.264 257.226,93.872 257.745,93.506 258.343,93.172 259.012,92.873 259.744,92.613 260.529,92.396 261.358,92.224 262.220,92.100 263.104,92.025 264.000,92.000 264.896,92.025 265.780,92.100 266.642,92.224 267.471,92.396 268.256,92.613 268.988,92.873 269.657,93.172 270.255,93.506 270.774,93.872 271.208,94.264 271.551,94.679 271.799,95.110 271.950,95.552 272.000,96.000 272.000,138.000 271.950,138.448 271.799,138.890 271.551,139.321 271.208,139.736 270.774,140.128 270.255,140.494 269.657,140.828 268.988,141.127 268.256,141.387 267.471,141.604 266.642,141.776 265.780,141.900 264.896,141.975 264.000,142.000 263.104,141.975 262.220,141.900 261.358,141.776 260.529,141.604 259.744,141.387 259.012,141.127 258.343,140.828 257.745,140.494 257.226,140.128 256.792,139.736 256.449,139.321 256.201,138.890 256.050,138.448 256.000,138.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="256.000,96.000 272.000,96.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="256.000,138.000 272.000,138.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="256.600,107.000 271.400,107.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1 0.5"/>
+<polygon points="267.580,105.700 269.380,105.700 268.480,106.900" fill="#ffffff" stroke="#000000" stroke-width="0.15"/>
+<polyline points="267.880,107.500 269.080,107.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="268.130,107.900 268.830,107.900" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="259.520" cy="122.000" r="1.100" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<circle cx="259.520" cy="122.000" r="0.605" fill="none" stroke="#000000" stroke-width="0.12"/>
+<circle cx="279.500" cy="137.000" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="277.330,138.575 279.500,134.200 281.670,138.575" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polygon points="276.700,141.400 282.300,141.400 281.425,139.870 277.575,139.870" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="128.000,69.840 128.126,67.395 128.501,64.980 129.122,62.627 129.981,60.364 131.066,58.220 132.363,56.223 133.858,54.397 135.530,52.765 137.359,51.348 139.322,50.163 141.394,49.226 143.550,48.548 145.761,48.137 148.000,48.000 150.239,48.137 152.450,48.548 154.606,49.226 156.678,50.163 158.641,51.348 160.470,52.765 162.142,54.397 163.637,56.223 164.934,58.220 166.019,60.364 166.878,62.627 167.499,64.980 167.874,67.395 168.000,69.840" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="129.400,69.840 129.517,67.619 129.866,65.425 130.444,63.287 131.242,61.232 132.251,59.284 133.458,57.470 134.848,55.811 136.403,54.328 138.104,53.041 139.930,51.965 141.857,51.113 143.861,50.497 145.917,50.125 148.000,50.000 150.083,50.125 152.139,50.497 154.143,51.113 156.070,51.965 157.896,53.041 159.597,54.328 161.152,55.811 162.542,57.470 163.749,59.284 164.758,61.232 165.556,63.287 166.134,65.425 166.483,67.619 166.600,69.840" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.2 0.6"/>
+<polyline points="131.000,69.840 131.107,68.740 131.426,67.653 131.954,66.594 132.684,65.576 133.606,64.611 134.709,63.712 135.979,62.891 137.401,62.156 138.955,61.518 140.624,60.985 142.385,60.564 144.217,60.258 146.097,60.074 148.000,60.012 149.903,60.074 151.783,60.258 153.615,60.564 155.376,60.985 157.045,61.518 158.599,62.156 160.021,62.891 161.291,63.712 162.394,64.611 163.316,65.576 164.046,66.594 164.574,67.653 164.893,68.740 165.000,69.840" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.5 0.5"/>
+<polygon points="127.200,69.840 168.800,69.840 168.800,74.000 127.200,74.000" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<polyline points="133.000,70.240 132.000,73.600" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="138.000,70.240 137.000,73.600" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="143.000,70.240 142.000,73.600" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="148.000,70.240 147.000,73.600" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="153.000,70.240 152.000,73.600" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="158.000,70.240 157.000,73.600" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="163.000,70.240 162.000,73.600" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="171.200" cy="66.840" r="2.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polyline points="169.200,66.840 166.800,66.840" fill="none" stroke="#000000" stroke-width="0.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="170.000,65.840 172.400,67.840" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="170.000,67.840 172.400,65.840" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="197.200,70.950 197.200,74.500" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="206.800,70.950 206.800,74.500" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="194.500,74.500 209.500,74.500" fill="none" stroke="#000000" stroke-width="0.6" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="195.000,74.500 194.000,75.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="197.800,74.500 196.800,75.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="200.600,74.500 199.600,75.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="203.400,74.500 202.400,75.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="206.200,74.500 205.200,75.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="209.000,74.500 208.000,75.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="196.000,21.000 196.038,20.664 196.150,20.332 196.337,20.009 196.594,19.698 196.920,19.404 197.309,19.130 197.757,18.879 198.259,18.655 198.808,18.460 199.397,18.297 200.018,18.168 200.665,18.075 201.328,18.019 202.000,18.000 202.672,18.019 203.335,18.075 203.982,18.168 204.603,18.297 205.192,18.460 205.741,18.655 206.243,18.879 206.691,19.130 207.080,19.404 207.406,19.698 207.663,20.009 207.850,20.332 207.962,20.664 208.000,21.000 208.000,69.000 207.962,69.336 207.850,69.668 207.663,69.991 207.406,70.302 207.080,70.596 206.691,70.870 206.243,71.121 205.741,71.345 205.192,71.540 204.603,71.703 203.982,71.832 203.335,71.925 202.672,71.981 202.000,72.000 201.328,71.981 200.665,71.925 200.018,71.832 199.397,71.703 198.808,71.540 198.259,71.345 197.757,71.121 197.309,70.870 196.920,70.596 196.594,70.302 196.337,69.991 196.150,69.668 196.038,69.336 196.000,69.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="196.000,21.000 208.000,21.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="196.000,69.000 208.000,69.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="196.500,23.400 207.500,23.400 207.500,25.290 196.500,25.290" fill="none" stroke="#000000" stroke-width="0.15"/>
+<polyline points="196.800,23.400 197.840,25.290" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="198.533,23.400 199.573,25.290" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="200.267,23.400 201.307,25.290" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="202.000,23.400 203.040,25.290" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="203.733,23.400 204.773,25.290" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="205.467,23.400 206.507,25.290" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="197.440,28.260 206.560,28.260" fill="none" stroke="#000000" stroke-width="0.28" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="199.000,28.260 198.100,29.760" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="199.000,28.260 199.900,29.760" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="202.000,28.260 201.100,29.760" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="202.000,28.260 202.900,29.760" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="205.000,28.260 204.100,29.760" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="205.000,28.260 205.900,29.760" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="196.000,31.500 208.000,31.500 208.000,43.380 196.000,43.380" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polyline points="196.000,31.500 208.000,43.380" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="208.000,31.500 196.000,43.380" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="196.000,46.620 208.000,46.620 208.000,58.500 196.000,58.500" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polyline points="196.000,46.620 208.000,58.500" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="208.000,46.620 196.000,58.500" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="196.600,63.900 207.400,63.900" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1 0.5"/>
+<polygon points="204.460,62.600 206.260,62.600 205.360,63.800" fill="#ffffff" stroke="#000000" stroke-width="0.15"/>
+<polyline points="204.760,64.400 205.960,64.400" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="205.010,64.800 205.710,64.800" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="215.500" cy="68.000" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="213.330,69.575 215.500,65.200 217.670,69.575" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polygon points="212.700,72.400 218.300,72.400 217.425,70.870 213.575,70.870" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<circle cx="183.500" cy="63.500" r="3.500" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="181.645,60.532 186.468,61.645" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="181.645,66.468 186.468,65.355" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="230.400,9.000 229.907,9.025 229.421,9.100 228.947,9.224 228.491,9.396 228.059,9.613 227.657,9.873 227.289,10.172 226.960,10.506 226.674,10.872 226.436,11.264 226.247,11.679 226.110,12.110 226.028,12.552 226.000,13.000 226.028,13.448 226.110,13.890 226.247,14.321 226.436,14.736 226.674,15.128 226.960,15.494 227.289,15.828 227.657,16.127 228.059,16.387 228.491,16.604 228.947,16.776 229.421,16.900 229.907,16.975 230.400,17.000 230.400,17.000 230.400,9.000" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<polygon points="230.400,9.000 245.600,9.000 245.600,17.000 230.400,17.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="245.600,17.000 246.093,16.975 246.579,16.900 247.053,16.776 247.509,16.604 247.941,16.387 248.343,16.127 248.711,15.828 249.040,15.494 249.326,15.128 249.564,14.736 249.753,14.321 249.890,13.890 249.972,13.448 250.000,13.000 249.972,12.552 249.890,12.110 249.753,11.679 249.564,11.264 249.326,10.872 249.040,10.506 248.711,10.172 248.343,9.873 247.941,9.613 247.509,9.396 247.053,9.224 246.579,9.100 246.093,9.025 245.600,9.000 245.600,9.000 245.600,17.000" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<polyline points="230.400,9.000 230.400,17.000" fill="none" stroke="#000000" stroke-width="0.45" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="245.600,9.000 245.600,17.000" fill="none" stroke="#000000" stroke-width="0.45" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="230.400,11.400 245.600,11.400" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="230.400,13.000 245.600,13.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="230.400,14.600 245.600,14.600" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="234.960,9.000 234.960,13.800" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="238.760,9.000 238.760,17.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="242.560,9.000 242.560,13.800" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="228.000,25.000 248.000,25.000 248.000,32.000 228.000,32.000" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<polygon points="258.000,10.250 258.028,9.998 258.113,9.749 258.253,9.507 258.446,9.274 258.690,9.053 258.982,8.847 259.318,8.659 259.694,8.491 260.106,8.345 260.548,8.223 261.014,8.126 261.499,8.056 261.996,8.014 262.500,8.000 263.004,8.014 263.501,8.056 263.986,8.126 264.452,8.223 264.894,8.345 265.306,8.491 265.682,8.659 266.018,8.847 266.310,9.053 266.554,9.274 266.747,9.507 266.887,9.749 266.972,9.998 267.000,10.250 267.000,29.750 266.972,30.002 266.887,30.251 266.747,30.493 266.554,30.726 266.310,30.947 266.018,31.153 265.682,31.341 265.306,31.509 264.894,31.655 264.452,31.777 263.986,31.874 263.501,31.944 263.004,31.986 262.500,32.000 261.996,31.986 261.499,31.944 261.014,31.874 260.548,31.777 260.106,31.655 259.694,31.509 259.318,31.341 258.982,31.153 258.690,30.947 258.446,30.726 258.253,30.493 258.113,30.251 258.028,30.002 258.000,29.750" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="258.000,10.250 267.000,10.250" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="258.000,29.750 267.000,29.750" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="258.000,12.800 267.000,12.800 267.000,15.200 258.000,15.200" fill="none" stroke="#000000" stroke-width="0.2"/>
+<polyline points="258.000,12.800 259.800,15.200" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="259.800,12.800 258.000,15.200" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="259.800,12.800 261.600,15.200" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="261.600,12.800 259.800,15.200" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="261.600,12.800 263.400,15.200" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="263.400,12.800 261.600,15.200" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="263.400,12.800 265.200,15.200" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="265.200,12.800 263.400,15.200" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="265.200,12.800 267.000,15.200" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="267.000,12.800 265.200,15.200" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="258.600,26.000 266.400,26.000" fill="none" stroke="#000000" stroke-width="0.15" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1 0.5"/>
+<polygon points="264.120,24.700 265.920,24.700 265.020,25.900" fill="#ffffff" stroke="#000000" stroke-width="0.15"/>
+<polyline points="264.420,26.500 265.620,26.500" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="264.670,26.900 265.370,26.900" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="278.000" cy="18.000" r="4.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="275.880,14.608 281.392,15.880" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="275.880,21.392 281.392,20.120" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="297.200,42.950 297.200,46.000" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="306.800,42.950 306.800,46.000" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="294.500,46.000 309.500,46.000" fill="none" stroke="#000000" stroke-width="0.6" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="295.000,46.000 294.000,47.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="297.800,46.000 296.800,47.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="300.600,46.000 299.600,47.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="303.400,46.000 302.400,47.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="306.200,46.000 305.200,47.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="309.000,46.000 308.000,47.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="296.000,13.000 296.038,12.664 296.150,12.332 296.337,12.009 296.594,11.698 296.920,11.404 297.309,11.130 297.757,10.879 298.259,10.655 298.808,10.460 299.397,10.297 300.018,10.168 300.665,10.075 301.328,10.019 302.000,10.000 302.672,10.019 303.335,10.075 303.982,10.168 304.603,10.297 305.192,10.460 305.741,10.655 306.243,10.879 306.691,11.130 307.080,11.404 307.406,11.698 307.663,12.009 307.850,12.332 307.962,12.664 308.000,13.000 308.000,41.000 307.962,41.336 307.850,41.668 307.663,41.991 307.406,42.302 307.080,42.596 306.691,42.870 306.243,43.121 305.741,43.345 305.192,43.540 304.603,43.703 303.982,43.832 303.335,43.925 302.672,43.981 302.000,44.000 301.328,43.981 300.665,43.925 300.018,43.832 299.397,43.703 298.808,43.540 298.259,43.345 297.757,43.121 297.309,42.870 296.920,42.596 296.594,42.302 296.337,41.991 296.150,41.668 296.038,41.336 296.000,41.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="296.000,13.000 308.000,13.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="296.000,41.000 308.000,41.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="296.000,20.200 308.000,20.200" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="296.000,34.480 308.000,34.480" fill="none" stroke="#000000" stroke-width="0.35" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="297.800" cy="22.342" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="298.760" cy="25.626" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="297.800" cy="28.911" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="298.760" cy="32.195" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="299.900" cy="22.342" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="300.860" cy="25.626" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="299.900" cy="28.911" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="300.860" cy="32.195" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="302.000" cy="22.342" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="302.960" cy="25.626" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="302.000" cy="28.911" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="302.960" cy="32.195" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="304.100" cy="22.342" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="305.060" cy="25.626" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="304.100" cy="28.911" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="305.060" cy="32.195" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="306.200" cy="22.342" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="307.160" cy="25.626" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="306.200" cy="28.911" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<circle cx="307.160" cy="32.195" r="0.320" fill="none" stroke="#000000" stroke-width="0.1"/>
+<polyline points="297.800,16.120 306.200,16.120" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="336.000,25.320 346.000,25.320 346.000,58.000 336.000,58.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="336.900,25.320 336.900,58.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.6 0.4"/>
+<polyline points="345.100,25.320 345.100,58.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.6 0.4"/>
+<polyline points="338.000,51.160 344.000,51.160" fill="none" stroke="#000000" stroke-width="0.3" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="338.500,51.160 339.500,51.160 339.000,49.640" fill="#000000" stroke="#000000" stroke-width="0.1"/>
+<polygon points="340.500,51.160 341.500,51.160 341.000,49.640" fill="#000000" stroke="#000000" stroke-width="0.1"/>
+<polygon points="342.500,51.160 343.500,51.160 343.000,49.640" fill="#000000" stroke="#000000" stroke-width="0.1"/>
+<polygon points="337.800,25.320 339.800,19.000 341.000,22.280 342.400,17.600 344.200,25.320" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polygon points="335.000,52.480 336.000,52.480 336.000,52.880 335.000,52.880" fill="none" stroke="#000000" stroke-width="0.1"/>
+<polygon points="335.000,53.430 336.000,53.430 336.000,53.830 335.000,53.830" fill="none" stroke="#000000" stroke-width="0.1"/>
+<polygon points="335.000,54.380 336.000,54.380 336.000,54.780 335.000,54.780" fill="none" stroke="#000000" stroke-width="0.1"/>
+<polygon points="335.000,55.330 336.000,55.330 336.000,55.730 335.000,55.730" fill="none" stroke="#000000" stroke-width="0.1"/>
+<polygon points="330.000,94.000 392.000,94.000 392.000,118.000 330.000,118.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polygon points="330.900,94.900 391.100,94.900 391.100,117.100 330.900,117.100" fill="none" stroke="#000000" stroke-width="0.15" stroke-dasharray="1.2 0.7"/>
+<polygon points="336.200,102.400 362.240,102.400 362.240,112.480 336.200,112.480" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<polygon points="337.068,100.000 339.672,100.000 339.672,102.400 337.068,102.400" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<polygon points="341.408,100.000 344.012,100.000 344.012,102.400 341.408,102.400" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<polygon points="345.748,100.000 348.352,100.000 348.352,102.400 345.748,102.400" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<polygon points="350.088,100.000 352.692,100.000 352.692,102.400 350.088,102.400" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<polygon points="354.428,100.000 357.032,100.000 357.032,102.400 354.428,102.400" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<polygon points="358.768,100.000 361.372,100.000 361.372,102.400 358.768,102.400" fill="#ffffff" stroke="#000000" stroke-width="0.2"/>
+<polygon points="362.240,104.920 364.100,104.920 364.100,109.960 362.240,109.960" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polyline points="364.100,107.440 370.422,107.440" fill="none" stroke="#000000" stroke-width="0.45" stroke-linecap="butt" stroke-linejoin="miter"/>
+<circle cx="375.260" cy="107.440" r="4.838" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<polygon points="368.440,91.400 387.040,91.400 387.040,94.000 368.440,94.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polyline points="371.540,91.400 371.540,94.000" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="374.640,91.400 374.640,94.000" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="377.740,91.400 377.740,94.000" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="380.840,91.400 380.840,94.000" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="383.940,91.400 383.940,94.000" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="382.100,52.000 398.100,52.000 398.100,78.000 382.100,78.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="384.500,56.680 395.700,56.680" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="385.300,55.980 385.300,57.380" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="387.060,55.980 387.060,57.380" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="388.820,55.980 388.820,57.380" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="390.580,55.980 390.580,57.380" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="392.340,55.980 392.340,57.380" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="394.100,55.980 394.100,57.380" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="384.500,60.840 395.700,60.840" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="385.300,60.140 385.300,61.540" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="387.060,60.140 387.060,61.540" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="388.820,60.140 388.820,61.540" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="390.580,60.140 390.580,61.540" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="392.340,60.140 392.340,61.540" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="394.100,60.140 394.100,61.540" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="384.500,65.000 395.700,65.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="385.300,64.300 385.300,65.700" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="387.060,64.300 387.060,65.700" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="388.820,64.300 388.820,65.700" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="390.580,64.300 390.580,65.700" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="392.340,64.300 392.340,65.700" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="394.100,64.300 394.100,65.700" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="384.500,69.160 395.700,69.160" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="385.300,68.460 385.300,69.860" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="387.060,68.460 387.060,69.860" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="388.820,68.460 388.820,69.860" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="390.580,68.460 390.580,69.860" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="392.340,68.460 392.340,69.860" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="394.100,68.460 394.100,69.860" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="384.500,73.320 395.700,73.320" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="385.300,72.620 385.300,74.020" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="387.060,72.620 387.060,74.020" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="388.820,72.620 388.820,74.020" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="390.580,72.620 390.580,74.020" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="392.340,72.620 392.340,74.020" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="394.100,72.620 394.100,74.020" fill="none" stroke="#000000" stroke-width="0.1" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="395.700,56.680 395.700,73.320" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="384.500,60.840 384.500,69.160" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="432.500,22.000 437.500,22.000 440.000,66.000 430.000,66.000" fill="#ffffff" stroke="#000000" stroke-width="0.5"/>
+<polyline points="431.800,26.400 438.200,26.400" fill="none" stroke="#000000" stroke-width="0.25" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polyline points="432.000,44.000 438.000,44.000" fill="none" stroke="#000000" stroke-width="0.12" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="0.6 0.4"/>
+<polygon points="429.000,66.000 441.000,66.000 441.000,67.200 429.000,67.200" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<polygon points="74.450,55.250 75.950,55.250 74.450,56.750 75.950,56.750" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polyline points="75.950,56.000 77.450,56.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="77.450,57.200 77.584,57.192 77.717,57.170 77.846,57.133 77.971,57.081 78.088,57.016 78.198,56.938 78.299,56.849 78.388,56.748 78.466,56.638 78.531,56.521 78.583,56.396 78.620,56.267 78.642,56.134 78.650,56.000 78.642,55.866 78.620,55.733 78.583,55.604 78.531,55.479 78.466,55.362 78.388,55.252 78.299,55.151 78.198,55.062 78.088,54.984 77.971,54.919 77.846,54.867 77.717,54.830 77.584,54.808 77.450,54.800" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+<polygon points="220.250,39.250 221.750,40.750 221.750,39.250 220.250,40.750" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polyline points="221.000,39.250 221.000,37.750" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="222.200,37.750 222.192,37.616 222.170,37.483 222.133,37.354 222.081,37.229 222.016,37.112 221.938,37.002 221.849,36.901 221.748,36.812 221.638,36.734 221.521,36.669 221.396,36.617 221.267,36.580 221.134,36.558 221.000,36.550 220.866,36.558 220.733,36.580 220.604,36.617 220.479,36.669 220.362,36.734 220.252,36.812 220.151,36.901 220.062,37.002 219.984,37.112 219.919,37.229 219.867,37.354 219.830,37.483 219.808,37.616 219.800,37.750" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+<polygon points="261.750,36.250 263.250,36.250 261.750,37.750 263.250,37.750" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polyline points="263.250,37.000 264.750,37.000" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="264.750,38.200 264.884,38.192 265.017,38.170 265.146,38.133 265.271,38.081 265.388,38.016 265.498,37.938 265.599,37.849 265.688,37.748 265.766,37.638 265.831,37.521 265.883,37.396 265.920,37.267 265.942,37.134 265.950,37.000 265.942,36.866 265.920,36.733 265.883,36.604 265.831,36.479 265.766,36.362 265.688,36.252 265.599,36.151 265.498,36.062 265.388,35.984 265.271,35.919 265.146,35.867 265.017,35.830 264.884,35.808 264.750,35.800" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+<polygon points="319.250,47.370 320.750,48.870 320.750,47.370 319.250,48.870" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polyline points="320.000,47.370 320.000,45.870" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="321.200,45.870 321.192,45.736 321.170,45.603 321.133,45.474 321.081,45.349 321.016,45.232 320.938,45.122 320.849,45.021 320.748,44.932 320.638,44.854 320.521,44.789 320.396,44.737 320.267,44.700 320.134,44.678 320.000,44.670 319.866,44.678 319.733,44.700 319.604,44.737 319.479,44.789 319.362,44.854 319.252,44.932 319.151,45.021 319.062,45.122 318.984,45.232 318.919,45.349 318.867,45.474 318.830,45.603 318.808,45.736 318.800,45.870" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+<polygon points="319.250,107.650 320.750,109.150 320.750,107.650 319.250,109.150" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polyline points="320.000,107.650 320.000,106.150" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="321.200,106.150 321.192,106.016 321.170,105.883 321.133,105.754 321.081,105.629 321.016,105.512 320.938,105.402 320.849,105.301 320.748,105.212 320.638,105.134 320.521,105.069 320.396,105.017 320.267,104.980 320.134,104.958 320.000,104.950 319.866,104.958 319.733,104.980 319.604,105.017 319.479,105.069 319.362,105.134 319.252,105.212 319.151,105.301 319.062,105.402 318.984,105.512 318.919,105.629 318.867,105.754 318.830,105.883 318.808,106.016 318.800,106.150" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+<polygon points="17.450,45.650 18.950,47.150 18.950,45.650 17.450,47.150" fill="#ffffff" stroke="#000000" stroke-width="0.25"/>
+<polyline points="18.200,45.650 18.200,44.150" fill="none" stroke="#000000" stroke-width="0.22" stroke-linecap="butt" stroke-linejoin="miter"/>
+<polygon points="19.400,44.150 19.392,44.016 19.370,43.883 19.333,43.754 19.281,43.629 19.216,43.512 19.138,43.402 19.049,43.301 18.948,43.212 18.838,43.134 18.721,43.069 18.596,43.017 18.467,42.980 18.334,42.958 18.200,42.950 18.066,42.958 17.933,42.980 17.804,43.017 17.679,43.069 17.562,43.134 17.452,43.212 17.351,43.301 17.262,43.402 17.184,43.512 17.119,43.629 17.067,43.754 17.030,43.883 17.008,44.016 17.000,44.150" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+</g>
+<g inkscape:groupmode="layer" inkscape:label="Instrumen" id="lapisan-inst">
+<circle cx="88.000" cy="66.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="85.000,66.000 91.000,66.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="88.000" y="65.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TIC</tspan></text>
+<text x="88.000" y="67.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>102</tspan></text>
+<circle cx="110.000" cy="100.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="107.000,100.000 113.000,100.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="110.000" y="99.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="110.000" y="101.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>103</tspan></text>
+<circle cx="116.000" cy="113.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="113.000,113.000 119.000,113.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="116.000" y="112.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TIC</tspan></text>
+<text x="116.000" y="114.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>206</tspan></text>
+<circle cx="119.000" cy="178.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="116.000,178.000 122.000,178.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="119.000" y="177.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LI</tspan></text>
+<text x="119.000" y="179.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>204</tspan></text>
+<circle cx="151.000" cy="178.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="148.000,178.000 154.000,178.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="151.000" y="177.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LI</tspan></text>
+<text x="151.000" y="179.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>205</tspan></text>
+<circle cx="151.000" cy="198.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="148.000,198.000 154.000,198.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="151.000" y="197.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIC</tspan></text>
+<text x="151.000" y="199.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>202</tspan></text>
+<circle cx="183.000" cy="198.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="180.000,198.000 186.000,198.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="183.000" y="197.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIC</tspan></text>
+<text x="183.000" y="199.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>203</tspan></text>
+<circle cx="190.000" cy="96.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="187.000,96.000 193.000,96.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="190.000" y="95.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="190.000" y="97.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>207</tspan></text>
+<circle cx="196.000" cy="122.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="193.000,122.000 199.000,122.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="196.000" y="121.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>FIC</tspan></text>
+<text x="196.000" y="123.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>301</tspan></text>
+<circle cx="219.000" cy="131.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="216.000,131.000 222.000,131.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="219.000" y="130.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LI</tspan></text>
+<text x="219.000" y="132.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>303</tspan></text>
+<circle cx="201.000" cy="153.500" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="198.000,153.500 204.000,153.500" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="201.000" y="152.900" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>FIC</tspan></text>
+<text x="201.000" y="155.247" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>304</tspan></text>
+<circle cx="278.000" cy="100.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="275.000,100.000 281.000,100.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="278.000" y="99.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="278.000" y="101.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>305</tspan></text>
+<circle cx="122.000" cy="60.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="119.000,60.000 125.000,60.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="122.000" y="59.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="122.000" y="61.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>401</tspan></text>
+<circle cx="224.000" cy="52.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="221.000,52.000 227.000,52.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="224.000" y="51.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="224.000" y="53.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>402</tspan></text>
+<circle cx="271.000" cy="30.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="268.000,30.000 274.000,30.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="271.000" y="29.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="271.000" y="31.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>404</tspan></text>
+<circle cx="285.000" cy="34.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="282.000,34.000 288.000,34.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="285.000" y="33.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PIC</tspan></text>
+<text x="285.000" y="35.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>405</tspan></text>
+<circle cx="319.000" cy="70.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="316.000,70.000 322.000,70.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="319.000" y="69.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIA</tspan></text>
+<text x="319.000" y="71.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>406</tspan></text>
+<circle cx="320.000" cy="34.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="317.000,34.000 323.000,34.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="320.000" y="33.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PIC</tspan></text>
+<text x="320.000" y="35.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>407</tspan></text>
+<circle cx="320.000" cy="97.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="317.000,97.000 323.000,97.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="320.000" y="96.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>JIC</tspan></text>
+<text x="320.000" y="98.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>501</tspan></text>
+<circle cx="12.000" cy="30.000" r="3.000" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
+<polyline points="9.000,30.000 15.000,30.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
+<text x="12.000" y="29.400" font-size="1.55" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="12.000" y="31.747" font-size="1.55" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>601</tspan></text>
+</g>
+<g inkscape:groupmode="layer" inkscape:label="Teks dan Nomor Aliran" id="lapisan-label">
+<text x="37.000" y="53.400" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>CT-601</tspan></text>
+<text x="59.500" y="54.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-601</tspan></text>
+<text x="37.600" y="98.030" font-size="1.2" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>M</tspan></text>
+<text x="30.000" y="93.000" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>SC-101</tspan></text>
+<text x="43.500" y="129.800" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-101</tspan></text>
+<text x="59.000" y="101.000" font-size="2.4" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>HC-101</tspan></text>
+<text x="72.000" y="95.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>E-101</tspan></text>
+<text x="96.000" y="149.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TK-101</tspan></text>
+<text x="111.500" y="171.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-201</tspan></text>
+<text x="132.000" y="149.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>R-201</tspan></text>
+<text x="174.000" y="149.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>R-214</tspan></text>
+<text x="154.000" y="137.400" font-size="2.4" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-202</tspan></text>
+<text x="130.000" y="171.400" font-size="1" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>M</tspan></text>
+<text x="130.000" y="193.200" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TK-201</tspan></text>
+<text x="143.500" y="193.200" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-203</tspan></text>
+<text x="162.000" y="171.400" font-size="1" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>M</tspan></text>
+<text x="162.000" y="193.200" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TK-202</tspan></text>
+<text x="175.500" y="193.200" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-204</tspan></text>
+<text x="189.500" y="145.000" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-301</tspan></text>
+<text x="209.600" y="111.800" font-size="1.5" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>UF</tspan></text>
+<text x="216.000" y="123.000" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>MB-301</tspan></text>
+<text x="215.500" y="139.200" font-size="2.4" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TK-302</tspan></text>
+<text x="241.500" y="137.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-302</tspan></text>
+<text x="186.600" y="159.000" font-size="2.4" text-anchor="end" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-303</tspan></text>
+<text x="242.560" y="177.040" font-size="1.1" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>M</tspan></text>
+<text x="214.000" y="190.400" font-size="2.4" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PR-501</tspan></text>
+<text x="264.000" y="149.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TK-301</tspan></text>
+<text x="279.500" y="147.000" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-501</tspan></text>
+<text x="148.000" y="69.000" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>GH-301</tspan></text>
+<text x="194.000" y="32.000" font-size="2.4" text-anchor="end" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>BTF-301</tspan></text>
+<text x="221.000" y="70.500" font-size="2.4" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>P-305</tspan></text>
+<text x="184.500" y="75.400" font-size="2.4" text-anchor="end" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>K-301</tspan></text>
+<text x="222.500" y="22.000" font-size="2.4" text-anchor="end" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>HX-301</tspan></text>
+<text x="238.000" y="29.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>CH-301</tspan></text>
+<text x="256.000" y="26.000" font-size="2.4" text-anchor="end" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>V-301</tspan></text>
+<text x="284.000" y="17.000" font-size="2.4" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>K-302</tspan></text>
+<text x="294.000" y="47.500" font-size="2.4" text-anchor="end" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AC-301</tspan></text>
+<text x="341.000" y="62.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>FL-301</tspan></text>
+<text x="349.220" y="108.952" font-size="1.15" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>MESIN GAS</tspan></text>
+<text x="375.260" y="107.240" font-size="2" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>G</tspan></text>
+<text x="375.260" y="109.440" font-size="1.2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>3~</tspan></text>
+<text x="380.000" y="62.000" font-size="2.4" text-anchor="end" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>HX-401</tspan></text>
+<text x="435.000" y="18.600" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>ST-401</tspan></text>
+<text x="67.800" y="62.000" font-size="1.7" text-anchor="end" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>CWS</tspan></text>
+<text x="76.200" y="62.000" font-size="1.7" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>CWR</tspan></text>
+<polygon points="7.578,44.300 13.400,44.300 15.000,46.400 13.400,48.500 7.578,48.500" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+<text x="10.489" y="47.090" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>PW</tspan></text>
+<polygon points="5.910,95.160 14.400,95.160 16.000,97.260 14.400,99.360 5.910,99.360" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="10.155" y="97.950" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>POME</tspan></text>
+<polygon points="24.000,131.900 15.174,131.900 13.574,134.000 15.174,136.100 24.000,136.100" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="19.587" y="134.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Residu</tspan></text>
+<text x="153.000" y="101.000" font-size="2" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>R-202 s/d</tspan></text>
+<text x="153.000" y="104.400" font-size="2" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>R-213</tspan></text>
+<text x="153.000" y="107.600" font-size="1.7" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>identik</tspan></text>
+<polygon points="246.979,157.900 237.600,157.900 236.000,160.000 237.600,162.100 246.979,162.100" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="242.290" y="160.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Polimer</tspan></text>
+<polygon points="208.000,177.100 195.172,177.100 193.572,179.200 195.172,181.300 208.000,181.300" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="201.586" y="179.890" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Kue lumpur</tspan></text>
+<polygon points="292.000,123.900 317.280,123.900 318.880,126.000 317.280,128.100 292.000,128.100" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="304.640" y="126.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Efluen ke kolam polishing</tspan></text>
+<polygon points="166.353,43.900 174.400,43.900 176.000,46.000 174.400,48.100 166.353,48.100" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="170.376" y="46.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Udara</tspan></text>
+<polygon points="232.000,37.900 243.716,37.900 245.316,40.000 243.716,42.100 232.000,42.100" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="237.858" y="40.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Blowdown</tspan></text>
+<polygon points="266.000,43.900 278.163,43.900 279.763,46.000 278.163,48.100 266.000,48.100" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="272.082" y="46.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Kondensat</tspan></text>
+<polygon points="314.000,14.700 328.498,14.700 330.098,16.800 328.498,18.900 314.000,18.900" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="321.249" y="17.490" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Karbon jenuh</tspan></text>
+<polygon points="316.794,83.900 330.400,83.900 332.000,86.000 330.400,88.100 316.794,88.100" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="323.597" y="86.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Udara bakar</tspan></text>
+<text x="372.000" y="122.800" font-size="2.4" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>GE-401/402 (×2)</tspan></text>
+<polygon points="386.575,125.900 402.400,125.900 404.000,128.000 402.400,130.100 386.575,130.100" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+<text x="394.488" y="128.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>HWR dari PKS</tspan></text>
+<polygon points="416.000,137.900 401.508,137.900 399.908,140.000 401.508,142.100 416.000,142.100" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+<text x="408.754" y="140.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>HWS ke PKS</tspan></text>
+<polygon points="352.000,131.900 367.048,131.900 368.648,134.000 367.048,136.100 352.000,136.100" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+<text x="359.524" y="134.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>Listrik ke PKS</tspan></text>
+<polygon points="7.578,201.900 13.400,201.900 15.000,204.000 13.400,206.100 7.578,206.100" fill="#ffffff" stroke="#000000" stroke-width="0.22"/>
+<text x="10.489" y="204.690" font-size="2" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>PW</tspan></text>
+<text x="26.000" y="202.800" font-size="1.8" text-anchor="start" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>Header air baku / proses (PW)</tspan></text>
+<polygon points="43.500,101.604 45.800,103.904 43.500,106.204 41.200,103.904" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="43.500" y="104.525" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>3</tspan></text>
+<polygon points="83.660,82.700 85.960,85.000 83.660,87.300 81.360,85.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="83.660" y="85.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>4</tspan></text>
+<polygon points="35.400,131.700 37.700,134.000 35.400,136.300 33.100,134.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="35.400" y="134.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>2</tspan></text>
+<polygon points="147.140,151.700 149.440,154.000 147.140,156.300 144.840,154.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="147.140" y="154.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>7</tspan></text>
+<polygon points="134.250,163.700 136.550,166.000 134.250,168.300 131.950,166.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="134.250" y="166.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>5</tspan></text>
+<polygon points="164.125,159.700 166.425,162.000 164.125,164.300 161.825,162.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="164.125" y="162.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>6</tspan></text>
+<polygon points="189.500,114.400 191.800,116.700 189.500,119.000 187.200,116.700" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="189.500" y="117.321" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>8</tspan></text>
+<polygon points="209.000,101.700 211.300,104.000 209.000,106.300 206.700,104.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="209.000" y="104.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>9</tspan></text>
+<polygon points="245.125,97.700 247.425,100.000 245.125,102.300 242.825,100.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="245.125" y="100.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>10</tspan></text>
+<polygon points="219.360,156.944 221.660,159.244 219.360,161.544 217.060,159.244" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="219.360" y="159.865" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>11</tspan></text>
+<polygon points="242.000,193.700 244.300,196.000 242.000,198.300 239.700,196.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="242.000" y="196.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>13</tspan></text>
+<polygon points="279.500,127.450 281.800,129.750 279.500,132.050 277.200,129.750" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="279.500" y="130.371" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>14</tspan></text>
+<polygon points="161.200,79.700 163.500,82.000 161.200,84.300 158.900,82.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="161.200" y="82.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>15</tspan></text>
+<polygon points="190.000,66.300 192.300,68.600 190.000,70.900 187.700,68.600" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="190.000" y="69.221" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>16</tspan></text>
+<polygon points="181.750,50.700 184.050,53.000 181.750,55.300 179.450,53.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="181.750" y="53.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>17</tspan></text>
+<polygon points="227.380,37.700 229.680,40.000 227.380,42.300 225.080,40.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="227.380" y="40.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>19</tspan></text>
+<polygon points="212.800,10.700 215.100,13.000 212.800,15.300 210.500,13.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="212.800" y="13.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>18</tspan></text>
+<polygon points="262.500,39.780 264.800,42.080 262.500,44.380 260.200,42.080" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="262.500" y="42.701" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>20</tspan></text>
+<polygon points="311.000,14.500 313.300,16.800 311.000,19.100 308.700,16.800" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="311.000" y="17.421" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>25</tspan></text>
+<polygon points="330.000,45.820 332.300,48.120 330.000,50.420 327.700,48.120" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="330.000" y="48.741" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>22</tspan></text>
+<polygon points="312.000,81.988 314.300,84.288 312.000,86.588 309.700,84.288" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="312.000" y="84.909" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>21</tspan></text>
+<polygon points="412.733,41.700 415.033,44.000 412.733,46.300 410.433,44.000" fill="#ffffff" stroke="#000000" stroke-width="0.3"/>
+<text x="412.733" y="44.621" font-size="1.8" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>24</tspan></text>
+</g>
+</svg>

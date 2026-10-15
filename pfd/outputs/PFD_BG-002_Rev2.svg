@@ -1230,100 +1230,100 @@
 <g inkscape:groupmode="layer" inkscape:label="Instrumen" id="lapisan-inst">
 <circle cx="122.000" cy="140.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="119.300,140.000 124.700,140.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="122.000" y="139.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TIC</tspan></text>
-<text x="122.000" y="141.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>102</tspan></text>
+<text x="122.000" y="139.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TIC</tspan></text>
+<text x="122.000" y="141.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>102</tspan></text>
 <circle cx="152.000" cy="185.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="149.300,185.000 154.700,185.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="152.000" y="184.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
-<text x="152.000" y="186.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>103</tspan></text>
+<text x="152.000" y="184.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="152.000" y="186.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>103</tspan></text>
 <circle cx="220.000" cy="252.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="217.300,252.000 222.700,252.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="220.000" y="251.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>FQI</tspan></text>
-<text x="220.000" y="253.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>201</tspan></text>
+<text x="220.000" y="251.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>FQI</tspan></text>
+<text x="220.000" y="253.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>201</tspan></text>
 <circle cx="185.000" cy="275.300" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="182.300,275.300 187.700,275.300" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="185.000" y="274.750" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LI</tspan></text>
-<text x="185.000" y="277.250" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>204</tspan></text>
+<text x="185.000" y="274.760" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LI</tspan></text>
+<text x="185.000" y="276.913" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>204</tspan></text>
 <circle cx="221.000" cy="275.300" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="218.300,275.300 223.700,275.300" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="221.000" y="274.750" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LI</tspan></text>
-<text x="221.000" y="277.250" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>205</tspan></text>
+<text x="221.000" y="274.760" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LI</tspan></text>
+<text x="221.000" y="276.913" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>205</tspan></text>
 <circle cx="207.500" cy="283.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="204.800,283.000 210.200,283.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="207.500" y="282.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIC</tspan></text>
-<text x="207.500" y="284.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>202</tspan></text>
+<text x="207.500" y="282.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIC</tspan></text>
+<text x="207.500" y="284.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>202</tspan></text>
 <circle cx="243.500" cy="283.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="240.800,283.000 246.200,283.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="243.500" y="282.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIC</tspan></text>
-<text x="243.500" y="284.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>203</tspan></text>
+<text x="243.500" y="282.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIC</tspan></text>
+<text x="243.500" y="284.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>203</tspan></text>
 <circle cx="166.000" cy="200.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="163.300,200.000 168.700,200.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="166.000" y="199.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TIC</tspan></text>
-<text x="166.000" y="201.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>206</tspan></text>
+<text x="166.000" y="199.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TIC</tspan></text>
+<text x="166.000" y="201.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>206</tspan></text>
 <circle cx="270.000" cy="180.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="267.300,180.000 272.700,180.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="270.000" y="179.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
-<text x="270.000" y="181.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>207</tspan></text>
+<text x="270.000" y="179.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="270.000" y="181.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>207</tspan></text>
 <circle cx="278.000" cy="224.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="275.300,224.000 280.700,224.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="278.000" y="223.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>FIC</tspan></text>
-<text x="278.000" y="225.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>301</tspan></text>
+<text x="278.000" y="223.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>FIC</tspan></text>
+<text x="278.000" y="225.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>301</tspan></text>
 <circle cx="292.000" cy="226.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="289.300,226.000 294.700,226.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="292.000" y="225.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PDI</tspan></text>
-<text x="292.000" y="227.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>302</tspan></text>
+<text x="292.000" y="225.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PDI</tspan></text>
+<text x="292.000" y="227.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>302</tspan></text>
 <circle cx="324.000" cy="240.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="321.300,240.000 326.700,240.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="324.000" y="239.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LI</tspan></text>
-<text x="324.000" y="241.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>303</tspan></text>
+<text x="324.000" y="239.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LI</tspan></text>
+<text x="324.000" y="241.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>303</tspan></text>
 <circle cx="290.000" cy="260.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="287.300,260.000 292.700,260.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="290.000" y="259.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>FIC</tspan></text>
-<text x="290.000" y="261.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>304</tspan></text>
+<text x="290.000" y="259.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>FIC</tspan></text>
+<text x="290.000" y="261.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>304</tspan></text>
 <circle cx="382.000" cy="185.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="379.300,185.000 384.700,185.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="382.000" y="184.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
-<text x="382.000" y="186.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>305</tspan></text>
+<text x="382.000" y="184.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="382.000" y="186.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>305</tspan></text>
 <circle cx="170.000" cy="110.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="167.300,110.000 172.700,110.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="170.000" y="109.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
-<text x="170.000" y="111.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>401</tspan></text>
+<text x="170.000" y="109.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="170.000" y="111.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>401</tspan></text>
 <circle cx="264.000" cy="80.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="261.300,80.000 266.700,80.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="264.000" y="79.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
-<text x="264.000" y="81.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>402</tspan></text>
+<text x="264.000" y="79.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="264.000" y="81.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>402</tspan></text>
 <circle cx="304.000" cy="124.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="301.300,124.000 306.700,124.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="304.000" y="123.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIC</tspan></text>
-<text x="304.000" y="125.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>403</tspan></text>
+<text x="304.000" y="123.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIC</tspan></text>
+<text x="304.000" y="125.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>403</tspan></text>
 <circle cx="362.000" cy="47.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="359.300,47.000 364.700,47.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="362.000" y="46.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
-<text x="362.000" y="48.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>404</tspan></text>
+<text x="362.000" y="46.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="362.000" y="48.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>404</tspan></text>
 <circle cx="382.000" cy="50.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="379.300,50.000 384.700,50.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="382.000" y="49.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PIC</tspan></text>
-<text x="382.000" y="51.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>405</tspan></text>
+<text x="382.000" y="49.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PIC</tspan></text>
+<text x="382.000" y="51.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>405</tspan></text>
 <circle cx="422.000" cy="150.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="419.300,150.000 424.700,150.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="422.000" y="149.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIA</tspan></text>
-<text x="422.000" y="151.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>406</tspan></text>
+<text x="422.000" y="149.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>AIA</tspan></text>
+<text x="422.000" y="151.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>406</tspan></text>
 <circle cx="423.000" cy="60.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="420.300,60.000 425.700,60.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="423.000" y="59.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PIC</tspan></text>
-<text x="423.000" y="61.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>407</tspan></text>
+<text x="423.000" y="59.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>PIC</tspan></text>
+<text x="423.000" y="61.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>407</tspan></text>
 <circle cx="420.000" cy="196.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="417.300,196.000 422.700,196.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="420.000" y="195.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>JIC</tspan></text>
-<text x="420.000" y="197.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>501</tspan></text>
+<text x="420.000" y="195.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>JIC</tspan></text>
+<text x="420.000" y="197.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>501</tspan></text>
 <circle cx="566.000" cy="140.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="563.300,140.000 568.700,140.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="566.000" y="139.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TI</tspan></text>
-<text x="566.000" y="141.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>502</tspan></text>
+<text x="566.000" y="139.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>TI</tspan></text>
+<text x="566.000" y="141.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>502</tspan></text>
 <circle cx="34.000" cy="60.000" r="2.700" fill="#ffffff" stroke="#000000" stroke-width="0.28"/>
 <polyline points="31.300,60.000 36.700,60.000" fill="none" stroke="#000000" stroke-width="0.2" stroke-linecap="butt" stroke-linejoin="miter"/>
-<text x="34.000" y="59.450" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
-<text x="34.000" y="61.950" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>601</tspan></text>
+<text x="34.000" y="59.460" font-size="1.45" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>LIC</tspan></text>
+<text x="34.000" y="61.613" font-size="1.45" text-anchor="middle" fill="#000000" xml:space="preserve"><tspan>601</tspan></text>
 </g>
 <g inkscape:groupmode="layer" inkscape:label="Teks dan Nomor Aliran" id="lapisan-label">
 <text x="54.640" y="172.900" font-size="1.2" text-anchor="middle" fill="#000000" font-weight="bold" xml:space="preserve"><tspan>M</tspan></text>
