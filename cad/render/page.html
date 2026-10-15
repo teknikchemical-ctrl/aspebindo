@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#fff}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script></head>
+<body><script type="module">
+import * as THREE from 'three';
+import {STLLoader} from 'three/addons/loaders/STLLoader.js';
+window.renderJob = async (job) => {
+  const W = job.w, H = job.h;
+  const renderer = new THREE.WebGLRenderer({antialias:true, preserveDrawingBuffer:true});
+  renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.setClearColor(0xffffff, 1);
+  document.body.appendChild(renderer.domElement);
+  const scene = new THREE.Scene();
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 1.35));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.7); scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xffffff, .55); scene.add(fill);
+  const loader = new STLLoader(); const box = new THREE.Box3();
+  for (const p of job.parts) {
+    const buf = await (await fetch(p.stl)).arrayBuffer();
+    const g = loader.parse(buf); g.computeVertexNormals();
+    const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({color:p.color, metalness:p.metal??0.15, roughness:p.rough??0.55, flatShading:false,
+              transparent:(p.opacity??1)<1, opacity:p.opacity??1, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:1, polygonOffsetUnits:1}));
+    scene.add(m); box.expandByObject(m);
+    if (p.edges !== false) {
+      const e = new THREE.LineSegments(new THREE.EdgesGeometry(g, p.edgeAngle ?? 28), new THREE.LineBasicMaterial({color:0x1a1a1a}));
+      scene.add(e);
+    }
+  }
+  const c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3()), R = sz.length()/2;
+  const out = [];
+  for (const v of job.views) {
+    const dir = new THREE.Vector3(...v.dir).normalize();
+    const up = new THREE.Vector3(...(v.up||[0,0,1]));
+    const cam = new THREE.OrthographicCamera(-1,1,1,-1, -10*R, 10*R);
+    cam.up.copy(up); cam.position.copy(c.clone().add(dir.clone().multiplyScalar(2*R))); cam.lookAt(c); cam.updateMatrixWorld();
+    // fit: project the 8 box corners into camera space
+    const inv = cam.matrixWorldInverse; let xs=[], ys=[];
+    for (const x of [box.min.x,box.max.x]) for (const y of [box.min.y,box.max.y]) for (const z of [box.min.z,box.max.z]) {
+      const q = new THREE.Vector3(x,y,z).applyMatrix4(inv); xs.push(q.x); ys.push(q.y); }
+    let x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), y1=Math.max(...ys);
+    const pad = v.pad ?? 0.04, ww=(x1-x0)*(1+2*pad), hh=(y1-y0)*(1+2*pad), cx=(x0+x1)/2, cy=(y0+y1)/2;
+    const asp = W/H; let hw = ww/2, hh2 = hh/2; if (hw/hh2 > asp) hh2 = hw/asp; else hw = hh2*asp;
+    cam.left=cx-hw; cam.right=cx+hw; cam.top=cy+hh2; cam.bottom=cy-hh2; cam.updateProjectionMatrix();
+    sun.position.copy(c.clone().add(new THREE.Vector3(...(v.sun||[0.6,-0.9,1.4])).multiplyScalar(4*R)));
+    fill.position.copy(c.clone().add(new THREE.Vector3(-1,1,0.3).multiplyScalar(4*R)));
+    renderer.render(scene, cam);
+    out.push(renderer.domElement.toDataURL('image/png'));
+  }
+  return out;
+};
+window.ready = true;
+</script></body></html>

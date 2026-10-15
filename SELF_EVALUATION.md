@@ -39,3 +39,16 @@ Written by the assistant after reviewing its own work. Dates: 2026-10-15.
 3. **Waste-sludge flow is large** (226 m3/d at 2-3 % solids). A screw press handles it, but cake disposal needs a plan; land application to the estate is assumed.
 4. **Membrane fouling and cleaning chemicals are not modelled**; CIP is drawn but not costed in detail.
 5. **Economics are a placeholder screen** (6.1 MUSD, about 6 y payback).
+
+# Phase 3 self-evaluation (3D model + engineering drawings)
+
+## What was done
+- Parametric CadQuery 3D model of every module (14 reactors, TK-101, PM-1, PM-4 ... PM-10) and the full plant, exported as coloured STEP.
+- 8-sheet A3 drawing set (PDF + DXF) derived from the 3D model by hidden-line projection, so drawings and model agree.
+- Plot area corrected: the 3D GA gives 0.29 ha (incl. 3 m roads), not the 0.16 ha formula estimate; `portable_modules.py` now reads `cad/out/ga.json`.
+- Vessel empty mass recomputed from solids: about 20.4 t (8 mm shell), consistent with the transport assumption.
+
+## Remaining weaknesses
+- Mechanical sizes beyond the process model (plate thickness, nozzles, frames, internal container layout, foundations) are conceptual assumptions; no ASME VIII / wind / seismic calculation.
+- Container internals (pumps, blowers, panels) are envelope blocks, not vendor models.
+- Title-block names are placeholders.

@@ -15,7 +15,7 @@ eq = R["equipment"]; rv = eq["reactor_vessel"]
 N = rv["count"]
 STEEL = 7.85; T_SHELL = 0.008                                             # t/m3, 8 mm carbon-steel shell  [ASSUME]
 A_shell = math.pi * rv["D_m"] * rv["H_shell_m"] + 2 * 1.084 * rv["D_m"] ** 2
-m_vessel = A_shell * T_SHELL * STEEL + 2.0 + 2.0                           # shell + insulation/cladding + nozzles/internals
+m_vessel = A_shell * T_SHELL * STEEL + 2.0 + 2.0              # cocok dengan model 3D (cad/bgmodels.vessel_mass ~ 20 t)                           # shell + insulation/cladding + nozzles/internals
 L_ship = rv["H_shell_m"] + 0.5 * rv["D_m"]
 n_buffer = 1; n_perm = 1
 
@@ -49,8 +49,12 @@ for m in mods:
 pitch = rv["D_m"] + 1.5
 rows = 2; cols = math.ceil((N + n_buffer + n_perm) / rows)
 area_v = (cols * pitch) * (rows * pitch + 4.0)
+GA = os.path.join(D, "..", "cad", "out", "ga.json")          # tata letak umum dari model 3D (cad/drawings/d01_ga.py)
+plot = dict(vessels=area_v, skids_and_roads=900.0, total=area_v + 900.0, source="perkiraan rumus")
+if os.path.exists(GA):
+    g = json.load(open(GA)); plot = dict(total=g["plot_m2"], x_m=g["plot_x_m"], y_m=g["plot_y_m"], source="GA 3D BG-GA-001 (termasuk jalan 3 m)")
 out = dict(modules=mods, ship_units_total=tot_u, mass_t_total=tot_m, vessel=dict(D=rv["D_m"], H_shell=rv["H_shell_m"], V=rv["V_liq_m3"], mass_t=m_vessel, ship_length_m=L_ship),
-           plot_area_m2_estimate=dict(vessels=area_v, skids_and_roads=900.0, total=area_v + 900.0),
+           plot_area_m2_estimate=plot,
            scaling={k: dict(vessels=v["N_modules"] + 2, chp_units=v["chp"]["N_gen"], chp_kWe=v["chp"]["P_unit"], membrane_m2=v["membrane"]["area_m2"]) for k, v in R["tiers"].items()},
            rev0_comparison=dict(rev0_digester_m3=14000, rev1_reactor_m3=N * rv["V_liq_m3"]),
            assumptions="masses, shipping units and footprint are planning estimates [ASSUME]")

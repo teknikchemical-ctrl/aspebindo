@@ -167,9 +167,10 @@
   "ship_length_m": 17.3
  },
  "plot_area_m2_estimate": {
-  "vessels": 702.24,
-  "skids_and_roads": 900.0,
-  "total": 1602.24
+  "total": 2860.13,
+  "x_m": 89.8,
+  "y_m": 31.85,
+  "source": "GA 3D BG-GA-001 (termasuk jalan 3 m)"
  },
  "scaling": {
   "30": {

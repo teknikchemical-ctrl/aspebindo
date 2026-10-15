@@ -335,7 +335,7 @@ class Doc:
         from reportlab.pdfgen import canvas
         k=72/25.4
         c=canvas.Canvas(path,pagesize=(W*k,H*k))
-        c.setTitle(DOC_TITLE); c.setAuthor('Tim Lagi Pengen')
+        c.setTitle(DOC_TITLE); c.setAuthor(globals().get('DOC_AUTHOR',''))
         def col(cc):
             h=cc.lstrip('#'); return tuple(int(h[i:i+2],16)/255 for i in (0,2,4))
         for L in LAYERS:
@@ -360,6 +360,9 @@ class Doc:
                     c.setLineWidth(w*k); c.setStrokeColorRGB(*col(cl)); c.setDash([])
                     if fill: c.setFillColorRGB(*col(fill))
                     c.circle(cx*k,(H-cy)*k,r*k,stroke=1 if w>0 else 0,fill=1 if fill else 0)
+                elif t=='image':
+                    _,ip,x,y,w,h=it
+                    c.drawImage(ip,x*k,(H-y-h)*k,w*k,h*k,mask='auto')
                 elif t=='text':
                     _,x,y,tx,size,anchor,bold,rot,cl,ital=it
                     c.saveState(); c.setFillColorRGB(*col(cl)); c.translate(x*k,(H-y)*k)
@@ -885,3 +888,53 @@ class Sym:
     def valve(d,x,y,vert=False,layer='equip',s=1.3):
         if vert: d.poly([(x-s/2,y-s/2),(x+s/2,y-s/2),(x-s/2,y+s/2),(x+s/2,y+s/2)],.25,'#ffffff',K,layer)
         else: d.poly([(x-s/2,y-s/2),(x+s/2,y+s/2),(x+s/2,y-s/2),(x-s/2,y+s/2)],.25,'#ffffff',K,layer)
+
+
+# ---- keluaran DXF (disalin dari mesin PFD; gambar raster dilewati)
+_DXF_LAYERS={'frame':'PFD-BINGKAI','table':'PFD-TABEL','util':'PFD-UTILITAS','proc':'PFD-PROSES','sig':'PFD-SINYAL','equip':'PFD-PERALATAN','inst':'PFD-INSTRUMEN','label':'PFD-TEKS'}
+_SUBS=str.maketrans('0123456789','\u2080\u2081\u2082\u2083\u2084\u2085\u2086\u2087\u2088\u2089')
+def _dxf(s,path,title=None):
+    """tulis DXF R2010 (satuan mm, sumbu Y ke atas) satu lapisan per kelompok gambar. Isian putih/abu dibuang (CAD tanpa isian agar terbaca di latar gelap maupun terang); isian hitam -> HATCH ACI 7."""
+    import ezdxf
+    from ezdxf.enums import TextEntityAlignment as TA
+    doc=ezdxf.new('R2010',setup=True); doc.units=4
+    msp=doc.modelspace()
+    for L in LAYERS: doc.layers.add(_DXF_LAYERS[L],color=8 if L=='util' else 7)
+    doc.styles.add('PFD',font='arial.ttf')
+    valid=[0,5,9,13,15,18,20,25,30,35,40,50,53,60,70,80,90,100,106,120,140,158,200,211]
+    lw=lambda w:min(valid,key=lambda v:abs(v-w*100))
+    def rgb(cl): h=cl.lstrip('#'); return tuple(int(h[i:i+2],16) for i in (0,2,4))
+    Y=lambda y:H-y
+    for L in LAYERS:
+        ly=_DXF_LAYERS[L]
+        for it in s.items[L]:
+            t=it[0]
+            if t=='image': continue
+            if t=='line':
+                _,pts,w,dash,cl,cap=it
+                at=dict(layer=ly,lineweight=lw(w),linetype='DASHED' if dash else 'Continuous',ltscale=0.35)
+                if cl!='#000000': at['true_color']=ezdxf.colors.rgb2int(rgb(cl))
+                msp.add_lwpolyline([(x,Y(y)) for x,y in pts],dxfattribs=at)
+            elif t=='poly':
+                _,pts,w,fill,cl,dash=it
+                P=[(x,Y(y)) for x,y in pts]
+                if fill and fill.lower()=='#000000':                                    # hanya isian hitam (kepala panah): warna ACI 7 (adaptif terang/gelap)
+                    hh=msp.add_hatch(color=7,dxfattribs=dict(layer=ly)); hh.paths.add_polyline_path(P,is_closed=True)
+                if w>0 or (fill and fill.lower()=='#000000' and w==0):
+                    at=dict(layer=ly,lineweight=lw(w),linetype='DASHED' if dash else 'Continuous',ltscale=0.35)
+                    if cl!='#000000': at['true_color']=ezdxf.colors.rgb2int(rgb(cl))
+                    msp.add_lwpolyline(P,close=True,dxfattribs=at)
+            elif t=='circ':
+                _,cx,cy,r,w,fill,cl=it
+                if fill and fill.lower()=='#000000':
+                    hh=msp.add_hatch(color=7,dxfattribs=dict(layer=ly))
+                    ep=hh.paths.add_edge_path(); ep.add_arc((cx,Y(cy)),r,0,360)
+                if w>0: msp.add_circle((cx,Y(cy)),r,dxfattribs=dict(layer=ly,lineweight=lw(w)))
+            elif t=='text':
+                _,x,y,tx,size,anchor,bold,rot,cl,ital=it
+                txt=''.join(r_.translate(_SUBS) if sb else r_ for r_,sb,_i in runs(tx))
+                e=msp.add_text(txt,height=size*.72,dxfattribs=dict(layer=ly,style='PFD',rotation=rot))
+                e.set_placement((x,Y(y)),align={'l':TA.LEFT,'m':TA.CENTER,'r':TA.RIGHT}[anchor])
+                if cl!='#000000': e.dxf.true_color=ezdxf.colors.rgb2int(rgb(cl))
+    doc.saveas(path)
+Doc.dxf=_dxf

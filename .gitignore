@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+cad/out/stl/
+cad/render/node_modules/
+cad/out/step/PLANT.step
+cad/drawings/out/_img_*

@@ -48,7 +48,7 @@ A **portable, shop-built biogas power plant for palm oil mills of 30-60 t FFB/h*
 | PM-9 Skid pemulih panas + menara pendingin | hot-water recovery 1439 kWth; cooling 832 kWth | 1 | skid 20 ft + sel CT modular | 9.0 |
 | PM-10 Bejana standar: tangki permeat + skid lumpur | permeate tank (same vessel), screw press 226.3 m3/d waste sludge | 1 | bejana + skid 20 ft | 27.0 |
 
-**Total: 28 truck loads, about 426 t; plot about 0.16 ha** (Rev 0: 0.39 ha). Planning estimates.
+**Total: 28 truck loads, about 426 t; plot about 0.29 ha** (Rev 0: 0.39 ha). Planning estimates.
 
 ## 5. Design-basis operating point (45 t FFB/h x 20 h)
 | Item | Value |

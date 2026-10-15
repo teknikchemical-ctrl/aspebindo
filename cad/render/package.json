@@ -1,0 +1,1 @@
+{"name":"bg-render","private":true,"type":"module","dependencies":{"three":"0.160.0","playwright-core":"1.47.0"}}
