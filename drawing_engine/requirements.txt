@@ -1,0 +1,3 @@
+reportlab
+cadquery
+numpy
