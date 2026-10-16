@@ -74,6 +74,8 @@ function mk(pres) {
     }));
     s.addTable(body, { x, y, colW, rowH: rows.map((_, i) => (i < nh ? (o.hrh || o.rh || 0.24) : (Array.isArray(o.rh) ? o.rh[i - nh] : (o.rh || 0.24)))), autoPage: false, objectName: oid("tabel") });
   };
+  // kotak "Artinya": satu kalimat pesan utama di bawah tiap grafik
+  H.take = (s, text, x, y, w, h, label) => H.box(s, [{ text: (label || "Artinya: "), options: { bold: true, color: C.navy } }, { text: text, options: { color: C.ink } }], x, y, w, h || 0.4, { fs: 8.2, align: "left", fill: C.tealL, line: C.teal, lw: 0.75, radius: 0.04, margin: [2, 6, 2, 6], valign: "middle" });
   H.concl = (s, text, label) => {
     H.box(s, label || "Kesimpulan", 0.45, 6.5, 1.5, 0.38, { fs: 10, bold: true, color: C.white, fill: C.navy, line: null, radius: 0.05, font: FONT_H });
     H.box(s, text, 2.0, 6.5, 10.9, 0.38, { fs: 9.5, align: "left", fill: C.tealL, line: C.teal, lw: 0.75, radius: 0.05, margin: [2, 8, 2, 8], bold: false });

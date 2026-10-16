@@ -23,7 +23,7 @@ g = {"Tangki GFS": cc["Tangki reaktor GFS"] + cc["Tangki umpan, efluen, ekualisa
 tot = sum(g.values()); items = sorted(g.items(), key=lambda x: -x[1])
 colr = {"Tangki GFS": TEAL, "Genset": NAVY, "Skid": ROYAL, "Pemurnian": ROYAL, "Sipil": AMB, "Perpipaan": AMB, "Interkoneksi": AMB, "Rekayasa": RED, "Kontingensi": RED}
 def cof(n): return next(v for k, v in colr.items() if n.startswith(k))
-fig = plt.figure(figsize=(4.65, 2.0)); ax = fig.add_axes([0.40, 0.19, 0.30, 0.79])
+fig = plt.figure(figsize=(4.05, 1.65)); ax = fig.add_axes([0.40, 0.2, 0.30, 0.77])
 nm = [i[0] for i in items]; vs = [i[1] / 1000 for i in items]
 ax.barh(range(len(nm)), vs, color=[cof(n) for n in nm], height=0.68); ax.set_yticks(range(len(nm))); ax.set_yticklabels(nm, fontsize=7.2); ax.invert_yaxis(); clean(ax)
 for i, v in enumerate(vs): ax.text(v + 12, i, f"{idn(v)} ({idn(v*1000/tot*100,1)}%)", va="center", fontsize=7)
@@ -40,7 +40,7 @@ oi = K["opex_items"]
 ox = [("Staf operasi (10 orang)", oi["Staf operasi (10 orang)"]["v"], "F", "Staf dan admin."), ("O&M genset (kontrak)", oi["O&M genset (kontrak)"]["v"], "V", "Pemeliharaan"), ("Perawatan proses", oi["Perawatan peralatan proses"]["v"], "F", "Pemeliharaan"),
       ("Bahan kimia", oi["Bahan kimia (polimer, karbon aktif, NaOH)"]["v"], "V", "Bahan"), ("Administrasi dan SCADA", oi["Administrasi & SCADA jarak jauh"]["v"], "F", "Staf dan admin."), ("Asuransi", oi["Asuransi"]["v"], "F", "Asuransi dan lahan"), ("MRV karbon", 12000.0, "F", "Staf dan admin."), ("Sewa lahan", oi["Sewa lahan plot di PKS"]["v"], "F", "Asuransi dan lahan")]
 ox.sort(key=lambda x: -x[1]); T = sum(x[1] for x in ox); gc = {"Staf dan admin.": ROYAL, "Pemeliharaan": TEAL, "Bahan": GREEN, "Asuransi dan lahan": AMB}
-fig = plt.figure(figsize=(4.65, 2.0)); ax = fig.add_axes([0.27, 0.19, 0.44, 0.79])
+fig = plt.figure(figsize=(4.05, 1.65)); ax = fig.add_axes([0.3, 0.2, 0.42, 0.77])
 ax.barh(range(len(ox)), [x[1] / 1000 for x in ox], color=[gc[x[3]] for x in ox], height=0.68); ax.set_yticks(range(len(ox))); ax.set_yticklabels([x[0] for x in ox], fontsize=7.2); ax.invert_yaxis(); clean(ax)
 for i, x in enumerate(ox): ax.text(x[1] / 1000 + 3, i, f"{idn(x[1]/1000,1)} ({idn(x[1]/T*100,1)}%)", va="center", fontsize=7)
 ax.set_xlim(0, 200); ax.set_xticks([0, 50, 100]); ax.set_xlabel("USD ribu per tahun (2026)", fontsize=7.2, labelpad=1); ax.tick_params(labelsize=7)
@@ -55,7 +55,7 @@ save(fig, "f_opex.png")
 
 # ---------- F3 titik impas (BEP)
 bs = TG["bep_series"]; u = np.array([b["util"] for b in bs]) * 100; rev = np.array([b["rev"] for b in bs]) / 1e3; opx = np.array([b["opex"] for b in bs]) / 1e3; tc = np.array([b["tc"] for b in bs]) / 1e3
-fig = plt.figure(figsize=(4.0, 1.88)); ax = fig.add_axes([0.12, 0.3, 0.85, 0.67]); clean(ax); ax.set_ylim(0, 1850)
+fig = plt.figure(figsize=(4.05, 1.65)); ax = fig.add_axes([0.12, 0.34, 0.85, 0.62]); clean(ax); ax.set_ylim(0, 1850)
 ax.plot(u, rev, color=GREEN, lw=2, label="Pendapatan"); ax.plot(u, opx, color=SL, lw=1.6, label="Biaya tunai (OPEX)"); ax.plot(u, tc, color=RED, lw=2, label="Biaya total (+ penyusutan + bunga)")
 ax.fill_between(u, rev, tc, where=rev >= tc, color=GREEN, alpha=.12, lw=0); ax.fill_between(u, rev, tc, where=rev < tc, color=RED, alpha=.07, lw=0)
 for x, lab, dy in [(TG["bep_util_acc"] * 100, "impas akuntansi", 1), (TG["bep_util_npv"] * 100, "impas NPV", 2)]:
@@ -66,7 +66,7 @@ save(fig, "f_bep.png")
 
 # ---------- F4 payback (gaya contoh)
 yrs = TG["years"]; cf = TG["cf"]; cum = np.array(cf["cum"]) / 1e6; cumd = np.array(cf["cumd"]) / 1e6
-fig = plt.figure(figsize=(4.6, 1.88)); ax = fig.add_axes([0.1, 0.2, 0.88, 0.74]); clean(ax)
+fig = plt.figure(figsize=(4.05, 1.65)); ax = fig.add_axes([0.11, 0.23, 0.87, 0.71]); clean(ax)
 ax.axvspan(2026.5, 2027.5, color="#EEF2F6"); ax.text(2027, 8.6, "Konstruksi", fontsize=6.8, color=SL, ha="center")
 ax.plot(yrs, cum, "-o", color=TEAL, lw=2, ms=3, label="Kumulatif arus kas (tanpa diskonto)"); ax.plot(yrs, cumd, "-s", color=RED, lw=2, ms=3, label=f"Kumulatif arus kas terdiskonto ({idn(TG['WACC']*100,1)}%)"); ax.axhline(0, color="k", lw=.8)
 def cross(a):
@@ -231,7 +231,7 @@ P = D["pesaing"]; SC = np.array([r["scores"] for r in P["rows"]]); W_ = np.array
 NAMA = ["Status quo kolam", "Lagun tertutup\n(Sei Mangkei, AANE)", "CSTR milik PKS\n(TSE, Aiken Kakoki)", "Biometana BOOT\n(reNIKOLA, KIS)", "UASB / IC", "AnMBR\n(Veolia, Kubota)", "KAMI: BOO\ntermofilik"]
 # ---------- peta posisi pesaing (data skor)
 X = SC[:, 3]; Y = (SC[:, 0] * .25 + SC[:, 1] * .2 + SC[:, 2] * .15) / .6; tot_ = np.array([r["total"] for r in P["rows"]])
-fig = plt.figure(figsize=(5.0, 2.35)); ax = fig.add_axes([0.1, 0.17, 0.87, 0.78]); clean(ax)
+fig = plt.figure(figsize=(4.6, 2.1)); ax = fig.add_axes([0.1, 0.17, 0.87, 0.78]); clean(ax)
 ax.axhline(3.0, color="#C9D6E3", lw=.8, ls="--"); ax.axvline(3.0, color="#C9D6E3", lw=.8, ls="--")
 off = {0: (-0.22, 0.0), 1: (0.2, 0.22), 2: (0.2, -0.22), 3: (0.22, 0.0), 4: (0.2, 0.0), 5: (0.2, 0.0), 6: (0.0, -0.62)}
 for i in range(7):
@@ -243,7 +243,7 @@ ax.set_xlim(0.6, 5.6); ax.set_ylim(1.0, 4.9); ax.set_xlabel("Kematangan dan refe
 ax.text(0.78, 4.78, "Beban rendah, belum teruji", fontsize=6.3, color=SL, va="top"); ax.text(5.55, 4.78, "Beban rendah, teruji", fontsize=6.3, color=SL, va="top", ha="right")
 save(fig, "f_posisi2.png")
 # ---------- heatmap skor
-fig = plt.figure(figsize=(4.3, 2.05)); ax = fig.add_axes([0.3, 0.01, 0.68, 0.98]); ax.set_xlim(0, 8); ax.set_ylim(-.55, 7.9); ax.axis("off")
+fig = plt.figure(figsize=(3.9, 1.9)); ax = fig.add_axes([0.3, 0.01, 0.68, 0.98]); ax.set_xlim(0, 8); ax.set_ylim(-.55, 7.9); ax.axis("off")
 kc = ["Biaya\nPOME", "Modal\nPKS", "Risiko\nkinerja", "Referensi", "Lahan,\nwaktu", "Metana,\nbau", "Pindah", "Total"]
 order = np.argsort(-tot_); pal = lambda v: plt.matplotlib.colors.to_rgb(plt.matplotlib.colors.LinearSegmentedColormap.from_list("q", ["#F6D9D2", "#FFF3CF", "#D2EBC9", "#8FCB86"])((v - 1) / 4))
 for r, i in enumerate(order):
@@ -254,7 +254,7 @@ for r, i in enumerate(order):
 for j, k_ in enumerate(kc): ax.text(j + .5, 6.6, k_, ha="center", va="bottom", fontsize=6.4, color=NAVY, fontweight="bold")
 save(fig, "f_heatskor.png")
 # ---------- segmentasi 2x2
-fig = plt.figure(figsize=(4.1, 2.05)); ax = fig.add_axes([0.08, 0.12, 0.9, 0.84]); ax.set_xlim(0, 2); ax.set_ylim(0, 2); ax.axis("off")
+fig = plt.figure(figsize=(3.9, 1.95)); ax = fig.add_axes([0.08, 0.12, 0.9, 0.84]); ax.set_xlim(0, 2); ax.set_ylim(0, 2); ax.axis("off")
 quad = [(0, 1, "Klaster PKS dekat jaringan pipa gas", "Biometana BOOT", "reNIKOLA + PTPN IV (8 PKS, USD 40–45 juta), KIS + Toyota Tsusho", ROYAL, "#E6EEF9"), (1, 1, "PKS bermodal, ingin memiliki", "Program grup dan CSTR milik sendiri", "Wilmar 25, Musim Mas 17, Asian Agri ±7–20 fasilitas; TSE 2 MW", SL, "#EEF2F6"),
         (0, 0, "PKS independen, modal terbatas", "KAMI: BOO termofilik", f"57 PKS siap · USD {idn(D['pasar']['rows'][2]['rev']/1e6,0)} juta/tahun · modal PKS nol", GREEN, "#E3F3DE"), (1, 0, "PKS bermodal, terpencil", "Lagun tertutup dan CSTR EPC", "Sei Mangkei 2,4 MW, AANE Belitung, Sei Garo", MID, "#EAF1FA")]
 for qx, qy, cond, nm_, ex, col, bg in quad:
@@ -300,13 +300,13 @@ for y, t_, col in [(1.7, f"USD {idn(r[0]['rev']/1e6)} juta/th\nseluruh PKS tanpa
     ax.plot([2.0, 2.0], [y - .17, y + .17], color=col, lw=2.5); ax.text(2.08, y, t_, fontsize=6.2, va="center", color=INK, linespacing=1.15)
 save(fig, "f_pasar.png")
 # ---------- provinsi (3,0 x 2,0)
-pv = Pm["prov"]; fig = plt.figure(figsize=(3.0, 2.0)); ax = fig.add_axes([0.2, 0.1, 0.72, 0.86]); clean(ax)
+pv = Pm["prov"]; fig = plt.figure(figsize=(4.05, 1.88)); ax = fig.add_axes([0.17, 0.1, 0.75, 0.86]); clean(ax)
 ax.barh(range(len(pv)), [p[1] for p in pv], color=[NAVY if i < 3 else (TEAL if i < 7 else MID) for i in range(len(pv))], height=0.66); ax.set_yticks(range(len(pv))); ax.set_yticklabels([p[0] for p in pv], fontsize=7); ax.invert_yaxis()
 for i, p_ in enumerate(pv): ax.text(p_[1] + 4, i, str(p_[1]), va="center", fontsize=6.8)
 ax.set_xlim(0, 330); ax.set_xticks([]); ax.spines["bottom"].set_visible(False); ax.text(0.98, 0.4, f"Σ {idn(sum(p_[1] for p_ in pv))} PKS", transform=ax.transAxes, ha="right", fontsize=7, color=NAVY, fontweight="bold")
 save(fig, "f_prov.png")
 # ---------- peta NPV fee x solar
-hm = TG["heat"]; Z = np.array(hm["npv"]); fig = plt.figure(figsize=(3.0, 2.0)); ax = fig.add_axes([0.2, 0.2, 0.78, 0.74]); cm_ = plt.matplotlib.colors.LinearSegmentedColormap.from_list("q", ["#F6D9D2", "#FFF3CF", "#D2EBC9", "#5FAE63"])
+hm = TG["heat"]; Z = np.array(hm["npv"]); fig = plt.figure(figsize=(4.05, 1.88)); ax = fig.add_axes([0.16, 0.2, 0.82, 0.74]); cm_ = plt.matplotlib.colors.LinearSegmentedColormap.from_list("q", ["#F6D9D2", "#FFF3CF", "#D2EBC9", "#5FAE63"])
 ax.imshow(Z, cmap=cm_, aspect="auto", origin="lower", vmin=-.4, vmax=3.5)
 for i_ in range(Z.shape[0]):
     for j_ in range(Z.shape[1]): ax.text(j_, i_, idn(Z[i_, j_], 1), ha="center", va="center", fontsize=6.4, fontweight="bold" if (hm["diesel"][i_] == 3.0 and hm["fees"][j_] == 1.35) else None)
@@ -324,7 +324,7 @@ ax.set_xlim(0, 3.2); ax.set_xlabel("NPV per set, USD juta", fontsize=6.8, labelp
 save(fig, "f_tuas.png")
 # ---------- armada: pendapatan per aliran + EBITDA
 fl = TG["fleet"]; ys = fl["years"]; sl_ = slice(2, 16); x = ys[sl_]
-fig = plt.figure(figsize=(3.0, 2.3)); ax = fig.add_axes([0.13, 0.17, 0.84, 0.78]); clean(ax); bt = np.zeros(len(x))
+fig = plt.figure(figsize=(4.05, 1.88)); ax = fig.add_axes([0.11, 0.18, 0.86, 0.76]); clean(ax); bt = np.zeros(len(x))
 for k_, c_, l_ in [("rev_fee", NAVY, "Jasa POME"), ("rev_el", TEAL, "Listrik"), ("rev_c", GREEN, "Karbon")]:
     v_ = np.array(fl[k_][sl_]) / 1e6; ax.bar(x, v_, bottom=bt, color=c_, width=.7, label=l_); bt += v_
 ax.plot(x, np.array(fl["ebitda"][sl_]) / 1e6, color=AMB, lw=2, marker="o", ms=3, label="EBITDA")
@@ -337,7 +337,7 @@ for i_, x_ in enumerate(sg): ax.text(i_, x_["save"] * 100 + .3, idn(x_["save"] *
 ax.set_ylim(0, 16); ax.set_ylabel("Hemat biaya POME PKS, %", fontsize=6.8, labelpad=1); ax.set_xlabel("Solar tergantikan (L/t TBS) dan NPV set (USD juta)", fontsize=6.6, labelpad=1); ax.tick_params(labelsize=6.4)
 save(fig, "f_segsave.png")
 # ---------- pendapatan 20 tahun (slide 7)
-cf = TG["cf"]; yy = TG["years"][1:]; fig = plt.figure(figsize=(3.65, 1.88)); ax = fig.add_axes([0.11, 0.2, 0.86, 0.74]); clean(ax); bt = np.zeros(len(yy))
+cf = TG["cf"]; yy = TG["years"][1:]; fig = plt.figure(figsize=(4.05, 1.65)); ax = fig.add_axes([0.1, 0.22, 0.87, 0.72]); clean(ax); bt = np.zeros(len(yy))
 for k_, c_, l_ in [("rev_fee", NAVY, "Jasa POME"), ("rev_cap", ROYAL, "Listrik ke PKS"), ("rev_exp", TEAL, "Ekspor PLN"), ("rev_c", GREEN, "Karbon")]:
     v_ = np.array(cf[k_][1:]) / 1e6; ax.bar(yy, v_, bottom=bt, color=c_, width=.72, label=l_); bt += v_
 ax.plot(yy, np.array(cf["ebitda"][1:]) / 1e6, color=AMB, lw=2, label="EBITDA"); ax.set_xticks(yy[::4]); ax.tick_params(labelsize=6.8); ax.set_ylabel("USD juta per tahun", fontsize=7, labelpad=1); ax.set_ylim(0, 2.3)
