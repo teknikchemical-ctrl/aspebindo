@@ -63,5 +63,9 @@ T["pks"] = dict(per_t={k: f(c[k]["per_t"]) for k in "ABCD"}, capex={k: f(c[k]["c
 fl = F.fleet(vt); i0 = fl["years"].index(2035)
 T["fleet"] = dict(NPV=f(fl["NPV"]), IRR=f(fl["IRR"]) if fl["IRR"] == fl["IRR"] else None, peak=f(fl["peak"]), years=fl["years"], sets_op=[f(x) for x in fl["sets_op"]], rev=[f(x) for x in fl["rev"]], ebitda=[f(x) for x in fl["ebitda"]], co2=[f(x) for x in fl["co2"]], E=[f(x) for x in fl["E"]])
 T["be"] = {k: (x if x == x else None) for k, x in T["be"].items()}
+fees = [0.8, 1.0, 1.2, 1.35, 1.5, 1.7]; dsl = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+T["heat"] = dict(fees=fees, diesel=dsl, npv=[[f(F.run(dict(vt, diesel_L_tffb=d, fee_ffb=x), capex_mult=cm)["NPV"] / 1e6) for x in fees] for d in dsl])
+T["segsave"] = [dict(d=d, save=f(MI.compare(dict(vt, diesel_L_tffb=d))["saving_D_vs_A_pct"]), npv=f(F.run(dict(vt, diesel_L_tffb=d), capex_mult=cm)["NPV"] / 1e6), per_t_A=f(MI.compare(dict(vt, diesel_L_tffb=d))["A"]["per_t"])) for d in dsl]
+T["fleet"]["rev_fee"] = [f(x) for x in fl["rev_fee"]]; T["fleet"]["rev_el"] = [f(x) for x in fl["rev_el"]]; T["fleet"]["rev_c"] = [f(x) for x in fl["rev_c"]]
 json.dump(D, open(os.path.join(ROOT, "deck", "deck_data.json"), "w"), indent=1, default=lambda x: float(x) if isinstance(x, (np.floating, np.integer)) else str(x))
 print({k: (round(T[k], 3) if isinstance(T[k], float) else None) for k in ("NPV", "IRR", "IRR_eq", "PBP", "DPBP", "DSCR", "FCI", "peak")}); print(T["be"]); print([(x["l"], round(x["NPV"] / 1e6, 2)) for x in T["levers"]]); print("flt", T["fleet"]["NPV"], T["fleet"]["peak"], T["fleet"]["IRR"], T["pks"]["per_t"], T["pks"]["save_pct"], T["bep_util_acc"], T["bep_util_npv"])

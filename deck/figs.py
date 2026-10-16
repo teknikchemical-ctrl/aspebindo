@@ -1,5 +1,5 @@
 # Gambar gaya laporan konsultan untuk slide 1, 7-10 (dibaca dari deck_data.json). Jalankan dari akar repo.
-import json, numpy as np, matplotlib
+import json, textwrap, numpy as np, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
@@ -223,6 +223,132 @@ ax.bar(ys[:n], sets, color=TEAL, width=.7); ax.set_xticks(ys[1:n:2]); ax.tick_pa
 ax2 = ax.twinx(); ax2.plot(ys[:n], [x * lc["net_total"] / 1000 for x in sets], color=NAVY, lw=2, marker="o", ms=3); ax2.set_ylabel("ribu tCO₂e dihindari/tahun", fontsize=7.2, labelpad=1); ax2.tick_params(labelsize=7); ax2.spines["top"].set_visible(False)
 ax.annotate(f"10 set pada 2035:\n±{idn(10*lc['net_total']/1000)} ribu tCO₂e/tahun", (2035, 10), xytext=(2029.6, 10.3), fontsize=7, color=NAVY, arrowprops=dict(arrowstyle="-|>", color=NAVY, lw=.7))
 save(fig, "f_armada.png")
+
+
+# ================= v5: gambar baru =================
+from matplotlib.patches import FancyBboxPatch, Rectangle
+P = D["pesaing"]; SC = np.array([r["scores"] for r in P["rows"]]); W_ = np.array([c[1] for c in P["crit"]])
+NAMA = ["Status quo kolam", "Lagun tertutup\n(Sei Mangkei, AANE)", "CSTR milik PKS\n(TSE, Aiken Kakoki)", "Biometana BOOT\n(reNIKOLA, KIS)", "UASB / IC", "AnMBR\n(Veolia, Kubota)", "KAMI: BOO\ntermofilik"]
+# ---------- peta posisi pesaing (data skor)
+X = SC[:, 3]; Y = (SC[:, 0] * .25 + SC[:, 1] * .2 + SC[:, 2] * .15) / .6; tot_ = np.array([r["total"] for r in P["rows"]])
+fig = plt.figure(figsize=(5.0, 2.35)); ax = fig.add_axes([0.1, 0.17, 0.87, 0.78]); clean(ax)
+ax.axhline(3.0, color="#C9D6E3", lw=.8, ls="--"); ax.axvline(3.0, color="#C9D6E3", lw=.8, ls="--")
+off = {0: (-0.22, 0.0), 1: (0.2, 0.22), 2: (0.2, -0.22), 3: (0.22, 0.0), 4: (0.2, 0.0), 5: (0.2, 0.0), 6: (0.0, -0.62)}
+for i in range(7):
+    c = GREEN if i == 6 else (ROYAL if i in (3,) else (SL if i == 0 else MID))
+    ax.scatter(X[i], Y[i], s=tot_[i] ** 2 * 38, color=c, alpha=.9, edgecolor="white", lw=1.5, zorder=5)
+    ax.text(X[i] + off[i][0], Y[i] + off[i][1], NAMA[i], fontsize=6.9, fontweight="bold" if i == 6 else None, color=INK, ha="center" if i == 6 else ("right" if i == 0 else "left"), va="center")
+ax.text(5.55, 1.15, "Gelembung = skor berbobot total", fontsize=6.4, color=SL, ha="right")
+ax.set_xlim(0.6, 5.6); ax.set_ylim(1.0, 4.9); ax.set_xlabel("Kematangan dan referensi di Indonesia  →", fontsize=7.4, labelpad=1); ax.set_ylabel("Keringanan bagi PKS (biaya, modal, risiko)  →", fontsize=7.4, labelpad=1); ax.tick_params(labelsize=6.8)
+ax.text(0.78, 4.78, "Beban rendah, belum teruji", fontsize=6.3, color=SL, va="top"); ax.text(5.55, 4.78, "Beban rendah, teruji", fontsize=6.3, color=SL, va="top", ha="right")
+save(fig, "f_posisi2.png")
+# ---------- heatmap skor
+fig = plt.figure(figsize=(4.3, 2.05)); ax = fig.add_axes([0.3, 0.01, 0.68, 0.98]); ax.set_xlim(0, 8); ax.set_ylim(-.55, 7.9); ax.axis("off")
+kc = ["Biaya\nPOME", "Modal\nPKS", "Risiko\nkinerja", "Referensi", "Lahan,\nwaktu", "Metana,\nbau", "Pindah", "Total"]
+order = np.argsort(-tot_); pal = lambda v: plt.matplotlib.colors.to_rgb(plt.matplotlib.colors.LinearSegmentedColormap.from_list("q", ["#F6D9D2", "#FFF3CF", "#D2EBC9", "#8FCB86"])((v - 1) / 4))
+for r, i in enumerate(order):
+    y = 6 - r
+    for j in range(7): ax.add_patch(Rectangle((j, y - .5), 1, 1, fc=pal(SC[i, j]), ec="white", lw=1.2)); ax.text(j + .5, y, idn(SC[i, j], 1), ha="center", va="center", fontsize=7)
+    ax.add_patch(Rectangle((7, y - .5), 1, 1, fc=GREEN if i == 6 else NAVY, ec="white", lw=1.2)); ax.text(7.5, y, idn(tot_[i], 2), ha="center", va="center", fontsize=7.4, fontweight="bold", color="white")
+    ax.text(-.1, y, NAMA[i].replace("\n", " ").split(" (")[0] if i != 6 else "KAMI: BOO termofilik", ha="right", va="center", fontsize=7.2, fontweight="bold" if i == 6 else None)
+for j, k_ in enumerate(kc): ax.text(j + .5, 6.6, k_, ha="center", va="bottom", fontsize=6.4, color=NAVY, fontweight="bold")
+save(fig, "f_heatskor.png")
+# ---------- segmentasi 2x2
+fig = plt.figure(figsize=(4.1, 2.05)); ax = fig.add_axes([0.08, 0.12, 0.9, 0.84]); ax.set_xlim(0, 2); ax.set_ylim(0, 2); ax.axis("off")
+quad = [(0, 1, "Klaster PKS dekat jaringan pipa gas", "Biometana BOOT", "reNIKOLA + PTPN IV (8 PKS, USD 40–45 juta), KIS + Toyota Tsusho", ROYAL, "#E6EEF9"), (1, 1, "PKS bermodal, ingin memiliki", "Program grup dan CSTR milik sendiri", "Wilmar 25, Musim Mas 17, Asian Agri ±7–20 fasilitas; TSE 2 MW", SL, "#EEF2F6"),
+        (0, 0, "PKS independen, modal terbatas", "KAMI: BOO termofilik", f"57 PKS siap · USD {idn(D['pasar']['rows'][2]['rev']/1e6,0)} juta/tahun · modal PKS nol", GREEN, "#E3F3DE"), (1, 0, "PKS bermodal, terpencil", "Lagun tertutup dan CSTR EPC", "Sei Mangkei 2,4 MW, AANE Belitung, Sei Garo", MID, "#EAF1FA")]
+for qx, qy, cond, nm_, ex, col, bg in quad:
+    ax.add_patch(FancyBboxPatch((qx + .03, qy + .03), .94, .94, boxstyle="round,pad=0,rounding_size=0.04", fc=bg, ec=col, lw=2.2 if col == GREEN else 1))
+    ax.text(qx + .08, qy + .9, cond, fontsize=6.3, color=SL, va="top"); ax.text(qx + .08, qy + .73, textwrap.fill(nm_, 24), fontsize=8, fontweight="bold", color=col, va="top", linespacing=1.05)
+    ax.text(qx + .08, qy + .36, textwrap.fill(ex, 40), fontsize=6.3, color=INK, va="top", linespacing=1.15)
+ax.text(1, -.08, "Kemampuan modal PKS (rendah → tinggi)", ha="center", fontsize=7, color=NAVY, fontweight="bold"); ax.text(-.03, 1, "Kedekatan ke jaringan gas dan klaster", rotation=90, ha="center", va="center", fontsize=6.8, color=NAVY, fontweight="bold")
+save(fig, "f_segmen.png")
+# ---------- Porter (ukuran baru)
+po = D["porter"]; fo = [("Daya tawar pembeli", "Pembeli"), ("Persaingan", "Persaingan"), ("Produk substitusi", "Produk substitusi"), ("Pendatang baru", "Pendatang baru"), ("Daya tawar pemasok", "Pemasok")]
+mean = [(a, float(np.mean([x["s"] for x in po[k]]))) for a, k in fo]; resp = ["fee dibatasi biaya yang dihindari PKS", "BOOT biometana, program grup", "kolam murah; PLTS + baterai", "izin PLN, modal USD 5 juta", "genset 6–9 bulan; GFS banyak"]
+fig = plt.figure(figsize=(3.8, 2.05)); ax = fig.add_axes([0.3, 0.13, 0.66, 0.84]); clean(ax)
+ax.barh(range(5), [m[1] for m in mean], color=[RED if m[1] >= 3.5 else (AMB if m[1] >= 3 else GREEN) for m in mean], height=.58); ax.set_yticks(range(5)); ax.set_yticklabels([m[0] for m in mean], fontsize=7.4); ax.invert_yaxis(); ax.set_xlim(0, 7.2)
+for i, m in enumerate(mean): ax.text(m[1] + .08, i - .08, idn(m[1], 1), va="center", fontsize=7.6, fontweight="bold"); ax.text(m[1] + .08, i + .2, resp[i], va="center", fontsize=5.9, color=SL)
+ax.set_xticks([0, 1, 2, 3, 4, 5]); ax.axvline(3, color=SL, ls=":", lw=.8); ax.set_xlabel("Intensitas tekanan (1 = lemah, 5 = kuat)", fontsize=6.8, labelpad=1); ax.tick_params(labelsize=6.8)
+save(fig, "f_porter.png")
+# ---------- risiko: peta panas sebelum/sesudah mitigasi
+risks = [("R1", "Tarif dan izin jual listrik", (4, 4), (2, 3)), ("R2", "Kinerja reaktor termofilik", (3, 5), (2, 4)), ("R3", "CAPEX melampaui rencana", (3, 4), (2, 3)), ("R4", "Solar PKS di bawah target", (3, 4), (2, 3)), ("R5", "Beban TBS PKS rendah", (3, 3), (2, 2)), ("R6", "Keselamatan gas dan bejana", (2, 5), (1, 4))]
+fig = plt.figure(figsize=(5.55, 2.3)); ax = fig.add_axes([0.075, 0.17, 0.4, 0.72]); ax.set_xlim(.5, 5.5); ax.set_ylim(.5, 5.5)
+for pi in range(1, 6):
+    for im in range(1, 6):
+        sc_ = pi * im; ax.add_patch(Rectangle((im - .5, pi - .5), 1, 1, fc="#D2EBC9" if sc_ <= 6 else ("#FFF3CF" if sc_ <= 12 else "#F6D9D2"), ec="white", lw=1))
+ax.set_xticks(range(1, 6)); ax.set_yticks(range(1, 6)); ax.tick_params(labelsize=6.8); ax.set_xlabel("Dampak", fontsize=7.2, labelpad=1); ax.set_ylabel("Peluang", fontsize=7.2, labelpad=1)
+for sp in ax.spines.values(): sp.set_visible(False)
+jit = [(-.22, .2), (.22, .2), (-.22, -.2), (.22, -.2), (0, 0), (0, -.22)]
+for (rid, nm_, (pa, ia), (pb, ib)), (jx, jy) in zip(risks, jit):
+    ax.annotate("", (ib + jx, pb + jy), (ia + jx, pa + jy), arrowprops=dict(arrowstyle="-|>", color="#7A8CA3", lw=.9))
+    ax.scatter(ia + jx, pa + jy, s=150, color=RED, edgecolor="white", zorder=5); ax.text(ia + jx, pa + jy, rid, color="white", fontsize=6.3, ha="center", va="center", fontweight="bold", zorder=6)
+    ax.scatter(ib + jx, pb + jy, s=150, color=GREEN, edgecolor="white", zorder=5); ax.text(ib + jx, pb + jy, rid, color="white", fontsize=6.3, ha="center", va="center", fontweight="bold", zorder=6)
+ax.set_title("● sebelum mitigasi   ● sesudah mitigasi", fontsize=6.8, pad=3, loc="left")
+ax2 = fig.add_axes([0.52, 0.04, 0.47, 0.92]); ax2.axis("off")
+for i, (rid, nm_, a, b) in enumerate(risks):
+    y = 0.95 - i * .165; ax2.text(0, y, rid, fontsize=7.6, fontweight="bold", color=RED, va="center"); ax2.text(.1, y, nm_, fontsize=7.6, va="center"); ax2.text(1.0, y, f"{a[0]*a[1]} → {b[0]*b[1]}", fontsize=7.6, va="center", ha="right", fontweight="bold", color=GREEN)
+ax2.text(0, 0.0, "Skor = peluang × dampak (1–5); penilaian tim", fontsize=6.3, color=SL)
+save(fig, "f_risiko.png")
+# ---------- pasar (3,0 x 2,0)
+Pm = D["pasar"]; r = Pm["rows"]
+fig = plt.figure(figsize=(3.0, 2.0)); ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 3.0); ax.set_ylim(0, 2.0); ax.axis("off"); ax.set_aspect("equal"); cx = 0.95
+for rad, col, y in [(.95, NAVY, .98), (.7, ROYAL, .73), (.45, TEAL, .48), (.22, AMB, .25)]: ax.add_patch(Circle((cx, y), rad, fc=col, ec="white", lw=1.5))
+ax.text(cx, 1.72, f"TAM {idn(r[0]['sets'])}", color="white", ha="center", fontsize=7.4, fontweight="bold"); ax.text(cx, 1.24, f"SAM luas {idn(r[1]['sets'])}", color="white", ha="center", fontsize=7, fontweight="bold")
+ax.text(cx, .66, f"SAM {idn(r[2]['sets'])}", color="white", ha="center", fontsize=7, fontweight="bold"); ax.text(cx, .25, f"SOM\n{idn(r[3]['sets'])}", color=INK, ha="center", va="center", fontsize=6.6, fontweight="bold")
+for y, t_, col in [(1.7, f"USD {idn(r[0]['rev']/1e6)} juta/th\nseluruh PKS tanpa\npenangkap metana", NAVY), (1.2, f"USD {idn(r[1]['rev']/1e6)} juta/th\n30–60 t/jam,\nSumatera–Kalimantan", ROYAL), (.68, f"USD {idn(r[2]['rev']/1e6)} juta/th\nsolar ≥ 2 L/t, jaringan\n≤ 2 km, bebas grup", TEAL), (.2, f"10 set (2034)\n= 17% SAM", AMB)]:
+    ax.plot([2.0, 2.0], [y - .17, y + .17], color=col, lw=2.5); ax.text(2.08, y, t_, fontsize=6.2, va="center", color=INK, linespacing=1.15)
+save(fig, "f_pasar.png")
+# ---------- provinsi (3,0 x 2,0)
+pv = Pm["prov"]; fig = plt.figure(figsize=(3.0, 2.0)); ax = fig.add_axes([0.2, 0.1, 0.72, 0.86]); clean(ax)
+ax.barh(range(len(pv)), [p[1] for p in pv], color=[NAVY if i < 3 else (TEAL if i < 7 else MID) for i in range(len(pv))], height=0.66); ax.set_yticks(range(len(pv))); ax.set_yticklabels([p[0] for p in pv], fontsize=7); ax.invert_yaxis()
+for i, p_ in enumerate(pv): ax.text(p_[1] + 4, i, str(p_[1]), va="center", fontsize=6.8)
+ax.set_xlim(0, 330); ax.set_xticks([]); ax.spines["bottom"].set_visible(False); ax.text(0.98, 0.4, f"Σ {idn(sum(p_[1] for p_ in pv))} PKS", transform=ax.transAxes, ha="right", fontsize=7, color=NAVY, fontweight="bold")
+save(fig, "f_prov.png")
+# ---------- peta NPV fee x solar
+hm = TG["heat"]; Z = np.array(hm["npv"]); fig = plt.figure(figsize=(3.0, 2.0)); ax = fig.add_axes([0.2, 0.2, 0.78, 0.74]); cm_ = plt.matplotlib.colors.LinearSegmentedColormap.from_list("q", ["#F6D9D2", "#FFF3CF", "#D2EBC9", "#5FAE63"])
+ax.imshow(Z, cmap=cm_, aspect="auto", origin="lower", vmin=-.4, vmax=3.5)
+for i_ in range(Z.shape[0]):
+    for j_ in range(Z.shape[1]): ax.text(j_, i_, idn(Z[i_, j_], 1), ha="center", va="center", fontsize=6.4, fontweight="bold" if (hm["diesel"][i_] == 3.0 and hm["fees"][j_] == 1.35) else None)
+ax.add_patch(Rectangle((hm["fees"].index(1.35) - .5, hm["diesel"].index(3.0) - .5), 1, 1, fill=False, ec=NAVY, lw=1.6))
+ax.set_xticks(range(len(hm["fees"]))); ax.set_xticklabels([idn(x, 2) for x in hm["fees"]], fontsize=6.4); ax.set_yticks(range(len(hm["diesel"]))); ax.set_yticklabels([idn(x, 1) for x in hm["diesel"]], fontsize=6.4)
+ax.set_xlabel("Fee jasa (USD/t TBS)", fontsize=6.8, labelpad=1); ax.set_ylabel("Solar tergantikan (L/t TBS)", fontsize=6.8, labelpad=1)
+for sp in ax.spines.values(): sp.set_visible(False)
+save(fig, "f_heatnpv.png")
+# ---------- tuas nilai (3,0 x 2,0), tanpa kasus awal
+lv = TG["levers"][1:]; fig = plt.figure(figsize=(3.0, 2.0)); ax = fig.add_axes([0.46, 0.17, 0.5, 0.8]); clean(ax)
+nmv = [l["l"].replace(" (kurva belajar)", "").replace(" (kuotasi)", "") for l in lv]; vv_ = [l["NPV"] / 1e6 for l in lv]
+ax.barh(range(len(lv)), vv_, color=[TEAL] * (len(lv) - 1) + [GREEN], height=.62); ax.set_yticks(range(len(lv))); ax.set_yticklabels(nmv, fontsize=6.6); ax.invert_yaxis(); ax.get_yticklabels()[-1].set_fontweight("bold")
+for i_, a_ in enumerate(vv_): ax.text(a_ + .04, i_, idn(a_, 2), va="center", fontsize=6.6)
+ax.set_xlim(0, 3.2); ax.set_xlabel("NPV per set, USD juta", fontsize=6.8, labelpad=1); ax.tick_params(labelsize=6.4)
+save(fig, "f_tuas.png")
+# ---------- armada: pendapatan per aliran + EBITDA
+fl = TG["fleet"]; ys = fl["years"]; sl_ = slice(2, 16); x = ys[sl_]
+fig = plt.figure(figsize=(3.0, 2.3)); ax = fig.add_axes([0.13, 0.17, 0.84, 0.78]); clean(ax); bt = np.zeros(len(x))
+for k_, c_, l_ in [("rev_fee", NAVY, "Jasa POME"), ("rev_el", TEAL, "Listrik"), ("rev_c", GREEN, "Karbon")]:
+    v_ = np.array(fl[k_][sl_]) / 1e6; ax.bar(x, v_, bottom=bt, color=c_, width=.7, label=l_); bt += v_
+ax.plot(x, np.array(fl["ebitda"][sl_]) / 1e6, color=AMB, lw=2, marker="o", ms=3, label="EBITDA")
+ax.set_xticks(x[::3]); ax.tick_params(labelsize=6.6); ax.set_ylabel("USD juta per tahun", fontsize=6.8, labelpad=1); ax.legend(fontsize=6.2, frameon=False, loc="upper left", ncol=2, handlelength=1, borderpad=0); ax.set_ylim(0, bt.max() * 1.25)
+save(fig, "f_armada.png")
+# ---------- hemat PKS menurut intensitas solar
+sg = [x for x in TG["segsave"] if x["d"] >= 2.0]; fig = plt.figure(figsize=(3.0, 2.3)); ax = fig.add_axes([0.13, 0.2, 0.84, 0.74]); clean(ax)
+ax.bar([idn(x["d"], 1) + "\nNPV " + idn(x["npv"], 1) for x in sg], [x["save"] * 100 for x in sg], color=[MID, MID, GREEN, TEAL, TEAL], width=.62)
+for i_, x_ in enumerate(sg): ax.text(i_, x_["save"] * 100 + .3, idn(x_["save"] * 100, 1) + "%", ha="center", fontsize=6.8, fontweight="bold")
+ax.set_ylim(0, 16); ax.set_ylabel("Hemat biaya POME PKS, %", fontsize=6.8, labelpad=1); ax.set_xlabel("Solar tergantikan (L/t TBS) dan NPV set (USD juta)", fontsize=6.6, labelpad=1); ax.tick_params(labelsize=6.4)
+save(fig, "f_segsave.png")
+# ---------- pendapatan 20 tahun (slide 7)
+cf = TG["cf"]; yy = TG["years"][1:]; fig = plt.figure(figsize=(3.65, 1.88)); ax = fig.add_axes([0.11, 0.2, 0.86, 0.74]); clean(ax); bt = np.zeros(len(yy))
+for k_, c_, l_ in [("rev_fee", NAVY, "Jasa POME"), ("rev_cap", ROYAL, "Listrik ke PKS"), ("rev_exp", TEAL, "Ekspor PLN"), ("rev_c", GREEN, "Karbon")]:
+    v_ = np.array(cf[k_][1:]) / 1e6; ax.bar(yy, v_, bottom=bt, color=c_, width=.72, label=l_); bt += v_
+ax.plot(yy, np.array(cf["ebitda"][1:]) / 1e6, color=AMB, lw=2, label="EBITDA"); ax.set_xticks(yy[::4]); ax.tick_params(labelsize=6.8); ax.set_ylabel("USD juta per tahun", fontsize=7, labelpad=1); ax.set_ylim(0, 2.3)
+ax.legend(fontsize=6.2, frameon=False, loc="upper left", ncol=3, handlelength=1, borderpad=0, columnspacing=.8)
+save(fig, "f_pendapatan.png")
+# ---------- ketahanan NPV (slide 10)
+rb = TG["robust"]; fig = plt.figure(figsize=(6.1, 1.75)); ax = fig.add_axes([0.36, 0.2, 0.6, 0.76]); clean(ax)
+ax.barh(range(len(rb)), [x["NPV"] / 1e6 for x in rb], color=[GREEN] + [TEAL] * (len(rb) - 1), height=.62); ax.set_yticks(range(len(rb))); ax.set_yticklabels([x["l"] for x in rb], fontsize=7.4); ax.invert_yaxis(); ax.get_yticklabels()[0].set_fontweight("bold")
+for i_, x_ in enumerate(rb): ax.text(x_["NPV"] / 1e6 + .04, i_, f"{idn(x_['NPV']/1e6,2)}  ·  IRR {idn(x_['IRR']*100,1)}%  ·  payback {idn(x_['PBP'],1)} th", va="center", fontsize=7)
+ax.set_xlim(0, 4.6); ax.set_xlabel("NPV per set, USD juta (satu asumsi diubah, lainnya tetap kasus target)", fontsize=7, labelpad=1); ax.tick_params(labelsize=7)
+save(fig, "f_robust.png")
 
 # ---------- sampul: latar render + gradasi navy
 im = Image.open("cad/out/render/DIORAMA_lokasi_raw.png").convert("RGB"); W, Hh = 2667, 1500; sh = 900

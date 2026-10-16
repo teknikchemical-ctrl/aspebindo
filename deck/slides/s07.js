@@ -16,16 +16,15 @@ module.exports = (pres, H, L) => {
   H.hdr(s, "(b) OPEX tunai: USD " + fmt(k.opF / 1000 + k.opV / 1000 + 12, 0) + " ribu per tahun", 5.2, 2.02, 4.65, { fill: C.teal, h: 0.22, fs: 9 });
   img("f_opex.png", 5.2, 2.26, 4.65, 2.0, "grafik-opex");
   H.hdr(s, "(c) Ringkasan ekonometrik", 9.95, 2.02, 2.95, { h: 0.22, fs: 9 });
-  const g = { fill: { color: C.greenL }, bold: true, align: "center" }, ce = { align: "center" };
-  const rows = [["Indikator", "Awal", "Target"], ["NPV (USD juta)", fmt(b.NPV / 1e6, 2), fmt(t.NPV / 1e6, 2)], ["IRR proyek", fmt(b.IRR * 100, 1) + "%", fmt(t.IRR * 100, 1) + "%"], ["IRR ekuitas", fmt(b.IRR_eq * 100, 1) + "%", fmt(t.IRR_eq * 100, 1) + "%"], ["Payback (tahun)", fmt(b.PBP, 1), fmt(t.PBP, 1)], ["Payback terdiskonto", fmt(b.DPBP, 1), fmt(t.DPBP, 1)], ["DSCR minimum", fmt(b.DSCR, 2), fmt(t.DSCR, 2)], ["Indeks profitabilitas", fmt(b.PI, 2), fmt(t.PI, 2)], ["LCOE bersih (USD/kWh)", fmt(b.LCOE_net, 3), fmt(t.LCOE_net, 3)]];
-  H.table(s, rows.map((r, i) => i === 0 ? r : [{ text: r[0], options: { bold: true, color: C.navy } }, { text: r[1], options: ce }, { text: r[2], options: g }]), 9.95, 2.26, [1.35, 0.7, 0.9], { fs: 8, rh: 0.222, hrh: 0.24 });
+  const rows = [["Indikator", "Nilai", "Acuan"], ["NPV (USD juta)", fmt(t.NPV / 1e6, 2), "WACC " + fmt(t.WACC * 100, 1) + "%"], ["IRR proyek", fmt(t.IRR * 100, 1) + "%", "+" + fmt((t.IRR - t.WACC) * 100, 1) + " poin dari WACC"], ["IRR ekuitas", fmt(t.IRR_eq * 100, 1) + "%", "biaya ekuitas 15%"], ["Payback (tahun)", fmt(t.PBP, 1), "umur proyek 20 tahun"], ["Payback terdiskonto", fmt(t.DPBP, 1) + " th", "pada WACC"], ["DSCR minimum", fmt(t.DSCR, 2), "ambang bank 1,30"], ["Indeks profitabilitas", fmt(t.PI, 2), "> 1,0 layak"], ["LCOE bersih (USD/kWh)", fmt(t.LCOE_net, 3), "setelah fee dan karbon"], ["Impas beban PKS", fmt(t.be.util * 100, 0) + "%", "asumsi dasar 75%"]];
+  H.table(s, rows.map((r, i) => i === 0 ? r : [{ text: r[0], options: { bold: true, color: C.navy } }, { text: r[1], options: { align: "center", bold: true, fill: { color: C.greenL } } }, { text: r[2], options: { color: C.slate } }]), 9.95, 2.26, [1.2, 0.62, 1.13], { fs: 7.6, rh: 0.2, hrh: 0.22, margin: [1, 3, 1, 3] });
   // baris B
   H.hdr(s, "(d) Titik impas terhadap beban PKS", 0.45, 4.33, 4.0, { h: 0.22, fs: 9 });
   img("f_bep.png", 0.45, 4.57, 4.0, 1.88, "grafik-bep");
   H.hdr(s, "(e) Kurva payback: arus kas kumulatif", 4.55, 4.33, 4.6, { fill: C.teal, h: 0.22, fs: 9 });
   img("f_payback.png", 4.55, 4.57, 4.6, 1.88, "grafik-payback");
-  H.hdr(s, "(f) Jembatan NPV: nilai tiap gerbang", 9.25, 4.33, 3.65, { h: 0.22, fs: 9 });
-  img("f_bridge.png", 9.25, 4.57, 3.65, 1.88, "grafik-jembatan");
-  H.concl(s, "NPV tetap positif sampai beban PKS turun ke " + fmt(t.be.util * 100, 0) + "% dan CAPEX naik +" + fmt((t.be.capex / t.capex_mult - 1) * 100, 0) + "%; tiap gerbang G0–G2 membuka nilai tambah yang terukur, dari NPV USD " + fmt(b.NPV / 1e6, 2) + " juta menjadi USD " + fmt(t.NPV / 1e6, 2) + " juta.", "Kesimpulan");
+  H.hdr(s, "(f) Pendapatan per aliran dan EBITDA", 9.25, 4.33, 3.65, { h: 0.22, fs: 9 });
+  img("f_pendapatan.png", 9.25, 4.57, 3.65, 1.88, "grafik-pendapatan");
+  H.concl(s, "Selisih IRR terhadap WACC +" + fmt((t.IRR - t.WACC) * 100, 1) + " poin dan DSCR " + fmt(t.DSCR, 2) + " (ambang 1,30); NPV tetap positif sampai beban PKS turun ke " + fmt(t.be.util * 100, 0) + "% atau CAPEX naik +" + fmt((t.be.capex / t.capex_mult - 1) * 100, 0) + "%.", "Kesimpulan");
   H.src(s, "BG_Model_Keuangan.xlsx; finance/fin_core.py v4 (60 t TBS/jam + PM-12, USD nominal, 20 tahun). Kasus target = kasus awal + solar tergantikan 3,0 L/t (G0) + CAPEX −15% (G1) + fee USD 1,35/t (G2; jendela 0,67–1,84) + karbon USD 8,3/t; asumsi lain identik.", "FCI biaya modal tetap; WACC biaya modal rata-rata tertimbang; DSCR rasio cakupan layanan utang; LCOE biaya listrik terlevelisasi; PI indeks profitabilitas; MRV pemantauan, pelaporan, verifikasi.");
 };

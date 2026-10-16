@@ -1,32 +1,32 @@
-// Slide 6: Analisis pesaing
+// Slide 6: Analisis pesaing dan posisi pasar
 module.exports = (pres, H, L) => {
-  const { C, D, fmt, FONT_H } = L; const P = D.pesaing, tg = D.tgt, tp = tg.pks;
-  const s = H.slide(6, "Pesaing unggul pada satu sisi saja; hanya {{BOO termofilik}} memberi modal PKS nol, biaya POME turun " + fmt(tp.save_pct * 100, 0) + "%, dan skor tertinggi (" + fmt(P.rows[6].total, 2) + ")",
-    "Pesaing. Skor berbobot K1-K7 (bobot: biaya POME 25%, modal PKS 20%, risiko kinerja 15%, kematangan 15%, lahan dan waktu 10%, penangkapan metana 10%, dapat dipindah 5%). Opsi G peringkat 1 pada " + fmt(P.rankD_p * 100, 0) + "% dari 20.000 variasi bobot Dirichlet dan pada 7 dari 7 uji bobot ±50%. Skor K2-K7 adalah penilaian tim. Biaya POME PKS dari Model Keputusan PKS pada kasus target (solar tergantikan 3,0 L/t). Kelemahan yang dikelola: TRL 4 (pilot di G3), skala minimum 60 t/jam; ancaman: izin dan tarif PLN, program grup besar.");
+  const { C, D, fmt, FONT_H } = L; const P = D.pesaing, t = D.tgt;
+  const s = H.slide(6, "Pesaing kuat di klaster besar dan modal sendiri; {{BOO termofilik}} menempati ruang kosong, yaitu PKS independen tanpa modal, dengan skor berbobot tertinggi (" + fmt(P.rows[6].total, 2) + ")",
+    "Pesaing. Sumber: research/R3 (reNIKOLA, KIS, Pertamina NRE, Aiken Kakoki, TSE, AANE, program grup Wilmar/Musim Mas/Asian Agri, Veolia/Kubota). Skor berbobot K1-K7 (bobot: biaya POME 25%, modal PKS 20%, risiko kinerja 15%, kematangan 15%, lahan dan waktu 10%, metana dan bau 10%, dapat dipindah 5%); K2-K7 adalah penilaian tim. Peringkat 1 pada " + fmt(P.rankD_p * 100, 0) + "% dari 20.000 variasi bobot Dirichlet dan 7/7 uji bobot +-50%. Kelemahan yang dikelola: kematangan (TRL 4, pilot G3), CAPEX per kWe lebih tinggi dari tangki CSTR (TSE USD 1,8 juta/MW) sehingga skala dan kurva belajar menjadi kunci.");
   const img = (f, x, y, w, h, n) => s.addImage({ path: L.ROOT + "/deck/img/" + f, x, y, w, h, objectName: n });
-  H.hdr(s, "(a) Skor berbobot tujuh opsi (tujuh kriteria)", 0.45, 1.25, 5.3, { h: 0.24, fs: 9.5 });
-  img("f_skor.png", 0.45, 1.52, 5.3, 2.55, "grafik-skor");
-  H.hdr(s, "(b) Perbandingan opsi", 5.85, 1.25, 4.0, { fill: C.teal, h: 0.24, fs: 9.5 });
-  const cp = (t, o = {}) => ({ text: t, options: Object.assign({ align: "center" }, o) }), gf = { fill: { color: C.greenL }, bold: true };
-  const R = P.rows, sc = (i) => fmt(R[i].total, 2);
-  H.table(s, [["Opsi", "Modal PKS (USD juta)", "Biaya POME (USD/t TBS)", "Referensi Indonesia"],
-    ["A  Kolam terbuka", cp("0"), cp(fmt(tp.per_t.A, 2)), "±85–90% PKS"], ["B  Lagun tertutup", cp(fmt(tp.capex.B / 1e6, 1)), cp(fmt(tp.per_t.B, 2)), "Sei Mangkei"], ["C  CSTR mesofilik", cp(fmt(tp.capex.C / 1e6, 1)), cp(fmt(tp.per_t.C, 2)), "TSE 2 MW (2025)"],
-    ["D  Biometana BOOT", cp("0"), cp("n/a"), "PTPN IV (2026)"], ["E  UASB / IC", cp("±4,4"), cp("n/a"), "belum ada"], ["F  AnMBR", cp("±8,0"), cp("n/a"), "belum ada"],
-    [{ text: "G  Termofilik BOO (kami)", options: gf }, cp("0", gf), cp(fmt(tp.per_t.D, 2), gf), { text: "pilot 2027–28", options: gf }]], 5.85, 1.52, [1.4, 0.7, 0.8, 1.1], { fs: 8, rh: 0.27, hrh: 0.42 });
-  H.t(s, "Biaya POME: biaya terlevelisasi 20 tahun yang ditanggung PKS (solar 3,0 L/t); D–F tanpa data biaya publik.", 5.85, 3.78, 4.0, 0.25, { fontSize: 7, color: C.slate });
-  H.hdr(s, "(c) Posisi modal vs biaya", 9.95, 1.25, 2.95, { h: 0.24, fs: 9.5 });
-  img("f_posisi.png", 9.95, 1.55, 2.95, 1.88, "grafik-posisi");
-  H.box(s, "Peringkat 1 pada " + fmt(P.rankD_p * 100, 0) + "% dari 20.000 variasi bobot; 7/7 uji ±50%", 9.95, 3.5, 2.95, 0.55, { fs: 8.5, bold: true, color: C.navy, fill: C.greenL, line: C.green, radius: 0.05 });
-  // baris 2
-  const Y = 4.17;
-  H.hdr(s, "(d) Lima kekuatan Porter", 0.45, Y, 3.6, { h: 0.24, fs: 9.5 });
-  img("f_porter.png", 0.45, Y + 0.27, 3.6, 1.95, "grafik-porter");
-  H.hdr(s, "(e) PESTLE: dampak terhadap keputusan", 4.15, Y, 4.5, { fill: C.teal, h: 0.24, fs: 9.5 });
-  H.table(s, [["Faktor", "Kondisi", "Keputusan kami"], ["Politik", "Perpres 112/2022: tarif plafon", "tarif dasar 9,81 USc, tanpa F"], ["Ekonomi", "solar Rp 21.000/L", "layani PKS solar-berat"], ["Sosial", "bau POME; kerja lokal", "10 pekerja lokal; kontrak komunitas"], ["Teknologi", "TRL 4 termofilik", "pilot 10–20 m³ sebelum FID"], ["Hukum", "IUPTLS dan PJBL", "kontrak jasa energi 20 tahun"], ["Lingkungan", "ISPO 2027, RED II", "nilai penangkapan metana naik"]], 4.15, Y + 0.27, [0.8, 1.7, 2.0], { fs: 8, rh: 0.275, hrh: 0.25 });
-  H.hdr(s, "(f) SWOT → strategi TOWS", 8.75, Y, 4.15, { h: 0.24, fs: 9.5 });
-  const q = [["SO · Masuk lebih dulu", "kontrak percontohan sebelum ISPO 2027; modal nol sebagai pembuka", C.green], ["WO · Buktikan lebih cepat", "pilot menaikkan TRL 4 → 6; jaminan kinerja bertahap", C.royal], ["ST · Kunci pendapatan", "kontrak jasa energi 20 tahun; tarif dasar tanpa F", C.teal], ["WT · Kecilkan risiko", "mulai di 60 t/jam; tiga kuotasi sebelum FID", C.navy]];
-  q.forEach(([a, b, c], i) => { const x = 8.75 + (i % 2) * 2.1, y = Y + 0.3 + Math.floor(i / 2) * 1.0; H.rect(s, x, y, 2.05, 0.95, { fill: C.white, line: c, radius: 0.04, lw: 1.25 }); H.rect(s, x, y, 0.07, 0.95, { fill: c, line: null });
-    H.t(s, [{ text: a, options: { bold: true, color: c, fontSize: 8.8, breakLine: true } }, { text: b, options: { fontSize: 8 } }], x + 0.14, y + 0.06, 1.85, 0.85, { valign: "top" }); });
-  H.concl(s, "Pesaing menang di satu kriteria (modal atau biaya); kami unggul di keseluruhan: PKS tidak mengeluarkan modal, hemat " + fmt(tp.save_pct * 100, 0) + "% biaya POME, dan risiko kinerja ada pada operator.", "Kesimpulan");
-  H.src(s, "research/R3 (reNIKOLA, KIS, TSE, AANE), R2, R6; Model Keputusan PKS (finance/fin_mill.py, kasus target); bobot dan skor K2–K7 penilaian tim; 20.000 variasi bobot Dirichlet.", "TRL tingkat kesiapan teknologi; BOOT bangun-miliki-operasikan-alihkan; UASB/IC reaktor lumpur aktif aliran ke atas; AnMBR reaktor membran anaerob; IUPTLS izin usaha penyediaan tenaga listrik untuk kepentingan sendiri; PJBL perjanjian jual beli listrik; FID keputusan investasi akhir.");
+  H.hdr(s, "(a) Profil pesaing utama di Indonesia", 0.45, 1.25, 7.45, { h: 0.24, fs: 9.5 });
+  const k = { fill: { color: C.greenL }, bold: true };
+  const rows = [["Pesaing", "Model dan skala", "Kekuatan", "Celah yang kami isi"],
+    ["reNIKOLA + PTPN IV", "BOO(T) biometana; 8 PKS, USD 40–45 juta, kontrak gas 15 tahun (2026)", "modal besar, offtake pasti", "PKS di luar klaster dan pipa gas"],
+    ["KIS Group + Toyota Tsusho", "teknologi → BOOT; biometana ke PGN, 150 ribu MMBtu/th (2027)", "rekam jejak sejak 2013", "fokus gas; skala klaster"],
+    ["Pertamina NRE + PTPN III", "IPP PLTBg Sei Mangkei 2,4 MW, lagun tertutup ±2 ha", "dukungan BUMN", "lahan ±2 ha; hanya aset BUMN"],
+    ["Aiken Kakoki + PTPN IV", "EPC dan teknologi; Sei Garo, beroperasi Nov 2025 (±24 bulan)", "teknologi Jepang", "waktu bangun; modal di PKS"],
+    ["TSE Group", "milik sendiri; 2 tangki 7.800 m³, 2 MW, USD 3,6 juta", "CAPEX per MW rendah", "modal dan risiko di PKS"],
+    ["AANE (Austindo)", "IPP POME komersial pertama, Belitung, jual ke PLN", "pengalaman PPA PLN", "lagun; satu lokasi"],
+    ["Wilmar, Musim Mas, Asian Agri", "program internal: 25, 17, dan ±7–20 fasilitas", "modal dan skala", "tidak melayani PKS lain"],
+    ["Veolia Memthane, Kubota", "AnMBR; belum ada referensi POME", "teknologi membran", "CAPEX ±USD 5 juta"],
+    [{ text: "KAMI: kontak termofilik BOO", options: k }, { text: "modal PKS nol; HRT 5 hari; modul 21 kontainer; fee USD " + fmt(t.fee, 2) + "/t", options: k }, { text: "portabel, tanpa pipa gas", options: k }, { text: "pilot 2027–28: TRL 4 → 7", options: k }]];
+  H.table(s, rows.map((r, i) => i === 0 || i === 9 ? r : [{ text: r[0], options: { bold: true, color: C.navy } }, r[1], r[2], r[3]]), 0.45, 1.5, [1.55, 2.75, 1.5, 1.65], { fs: 7.2, rh: 0.262, hrh: 0.24, margin: [1, 3, 1, 3] });
+  H.hdr(s, "(b) Peta posisi pesaing (dari skor)", 7.95, 1.25, 4.95, { fill: C.teal, h: 0.24, fs: 9.5 });
+  img("f_posisi2.png", 7.95, 1.5, 4.95, 2.33 * 4.95 / 5.0 * 1.0, "grafik-posisi");
+  H.box(s, "Peringkat 1 pada " + fmt(P.rankD_p * 100, 0) + "% dari 20.000 variasi bobot dan pada 7/7 uji ±50%", 7.95, 3.85, 4.95, 0.28, { fs: 8.2, bold: true, color: C.navy, fill: C.greenL, line: C.green, radius: 0.05 });
+  const Y = 4.2;
+  H.hdr(s, "(c) Peta panas skor (1–5)", 0.45, Y, 4.0, { h: 0.23, fs: 9 });
+  img("f_heatskor.png", 0.45, Y + 0.25, 4.0, 4.0 * 2.05 / 4.3, "grafik-heatskor");
+  H.hdr(s, "(d) Segmentasi pasar: siapa melayani siapa", 4.55, Y, 4.3, { fill: C.teal, h: 0.23, fs: 9 });
+  img("f_segmen.png", 4.55, Y + 0.25, 4.3, 4.3 * 2.05 / 4.1, "grafik-segmen");
+  H.hdr(s, "(e) Lima kekuatan Porter", 8.95, Y, 3.95, { h: 0.23, fs: 9 });
+  img("f_porter.png", 8.95, Y + 0.25, 3.95, 3.95 * 2.05 / 3.8, "grafik-porter");
+  H.concl(s, "Pesaing melayani klaster bergas atau PKS bermodal; kami melayani 57 PKS independen yang tidak tersentuh keduanya, tanpa modal PKS dan dengan skor tertinggi.", "Kesimpulan");
+  H.src(s, "research/R3 dan R6 (reNIKOLA/The Star 2026, KIS, Pertamina NRE, InfoSawit TSE 2025, Petromindo Sei Garo); Model Keputusan PKS (fin_mill.py); bobot dan skor K2–K7 penilaian tim; 20.000 variasi bobot Dirichlet.", "BOO bangun-miliki-operasikan; BOOT bangun-miliki-operasikan-alihkan; IPP produsen listrik swasta; PLTBg pembangkit listrik tenaga biogas; AnMBR reaktor membran anaerob; HRT waktu tinggal hidraulik; TRL tingkat kesiapan teknologi; PPA perjanjian jual beli listrik.");
 };
