@@ -20,6 +20,6 @@ module.exports = (pres, H, L) => {
   });
   H.hdr(s, "Peralatan utama modul acuan 45 t TBS/jam (dari PFD dan daftar bagian)", RX, 5.3, RW, { fill: C.navy, h: 0.22, fs: 8 });
   H.table(s, [["Tag", "Uraian", "Ukuran / kapasitas"], ["R-201…203", "reaktor kontak GFS dibaut, 55 °C", "Ø11,46 × 10,8 m; 3 × 980 m³"], ["DG-301 · LS-301", "degasser vakum · settler lamella 60°", "8 m³ · 81 m² proyeksi"], ["GH-301 · FL-301", "penampung gas membran ganda · flare tertutup", "986 m³ (2 jam) · ≥ 15 m dari GH"], ["BTF-301 · AC-301", "bio-scrubber H₂S · karbon aktif penjaga", "2.868 → 21 ppm H₂S"], ["GE-401/402", "genset biogas kontainer 40 ft", "2 × 600 kWe; η 39,3%"]], RX, 5.53, [1.2, 2.85, 2.0], { fs: 7.3, rh: 0.158, head: 1, hrh: 0.17, margin: [0.5, 4, 0.5, 4] });
-  H.concl(s, "Rancangan sudah mencakup PFD, tata letak dengan jarak aman terverifikasi, model 3D, dan gambar unit utama; yang belum ada adalah gambar tangki ekualisasi dan modul keempat untuk skala 60 t TBS/jam.", "Kesimpulan");
+  H.concl(s, "Rancangan sudah mencakup PFD, tata letak dengan jarak aman terverifikasi, model 3D, dan gambar unit utama; skala komersial 60 t TBS/jam menambahkan satu reaktor identik dan tangki ekualisasi 24 jam pada desain yang sama.", "Kesimpulan");
   H.src(s, "pfd/outputs/PFD_BG-002_Rev3.pdf; cad/drawings/out/BG_drawing_set_A3.pdf (9 lembar, pemeriksa tabrakan teks: 0 temuan); model CadQuery tim.", "PFD diagram alir proses; GFS baja berlapis kaca; PM modul portabel; DG degasser; LS settler lamella; ISO/ISA standar simbol.");
 };

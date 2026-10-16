@@ -69,7 +69,7 @@ function mk(pres) {
       const hd = i < nh;
       const op = Object.assign({ fontFace: FONT_B, fontSize: fs, color: hd ? C.white : C.ink, bold: hd, align: (o.align && o.align[j]) || (hd ? "center" : "left"), valign: "middle",
         fill: { color: hd ? (o.headFill || C.navy) : (o.zebra !== false && (i - nh) % 2 === 1 ? C.panel : C.white) }, margin: (o.margin || [1, 4, 1, 4]).map((q) => Math.max(1, q)),
-        border: [0, 1, 2, 3].map(() => ({ type: "solid", pt: 0.5, color: C.line })) }, cell.options || {});
+        border: [{ type: "none" }, { type: "none" }, { type: "solid", pt: 0.5, color: C.line }, { type: "none" }] }, cell.options || {});
       return { text: cell.text, options: op };
     }));
     s.addTable(body, { x, y, colW, rowH: rows.map((_, i) => (i < nh ? (o.hrh || o.rh || 0.24) : (Array.isArray(o.rh) ? o.rh[i - nh] : (o.rh || 0.24)))), autoPage: false, objectName: oid("tabel") });

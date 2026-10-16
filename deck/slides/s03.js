@@ -12,8 +12,8 @@ module.exports = (pres, H, L) => {
   [["21", "kontainer dan skid 40 ft per modul acuan"], ["980 m³", "tangki GFS dibaut identik; 2, 3, atau 4 per set"], ["±6 bulan", "bongkar-pasang antar-PKS, biaya 15% FCI"]].forEach(([b, t], i) => H.kpi(s, b, t, 0.45 + i * 1.95, y1 + 0.33, 1.85, 0.78, { bs: 15, ls: 8 }));
   const m30 = sc.find((x) => x.tag === "Modul 30 t/jam"), m45 = sc.find((x) => x.tag === "Modul 45 t/jam"), b60 = sc[0], T = p.tiers;
   const nv = (x) => ({ text: fmt(x / 1e6, 2), options: { align: "center", bold: true, color: x < 0 ? C.red : C.green } });
-  H.table(s, [["PKS (t TBS/jam)", "Tangki", "Genset (kWe)", "Biogas (Nm³/hari)", "Neto (kW)", "FCI (USD juta)", "NPV (USD juta)"],
-    ["30", "2", "2 × 400", fmt(T["30"].bg, 0), fmt(T["30"].Pn, 0), fmt(m30.FCI / 1e6, 2), nv(m30.NPV)], ["45 (acuan)", "3", "2 × 600", fmt(T["45"].bg, 0), fmt(T["45"].Pn, 0), fmt(m45.FCI / 1e6, 2), nv(m45.NPV)], ["60 (komersial)", "4", "2 × 800", fmt(T["60"].bg, 0), fmt(T["60"].Pn, 0), fmt(b60.FCI / 1e6, 2), nv(b60.NPV)]],
+  H.table(s, [["PKS (t TBS/jam)", "Tangki", "Genset (kWe)", "Biogas (Nm³/hari)", "Neto (kW)", "FCI (USD juta)", "Peran"],
+    ["30", "2", "2 × 400", fmt(T["30"].bg, 0), fmt(T["30"].Pn, 0), fmt(m30.FCI / 1e6, 2), "pilot"], ["45 (acuan)", "3", "2 × 600", fmt(T["45"].bg, 0), fmt(T["45"].Pn, 0), fmt(m45.FCI / 1e6, 2), "acuan gambar"], ["60 (komersial)", "4", "2 × 800", fmt(T["60"].bg, 0), fmt(T["60"].Pn, 0), fmt(b60.FCI / 1e6, 2), "komersial"]],
     0.45, y1 + 1.22, [1.0, 0.55, 0.8, 0.95, 0.65, 0.85, 0.95], { fs: 8, rh: 0.2, hrh: 0.3, align: ["left", "center", "center", "center", "center", "center", "center"] });
   // ---- kanan: alur proses
   const X0 = 6.4, XW = 6.5;
