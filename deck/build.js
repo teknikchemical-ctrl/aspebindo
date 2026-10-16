@@ -16,16 +16,17 @@ pres.author = "Tim Malataxtax";
 pres.subject = "EIC 2026 - Energy Business Plan Competition, Subtema 3";
 pres.company = "Malataxtax";
 
+pres.defineSlideMaster({ title: "SAMPUL", background: { color: "FFFFFF" }, objects: [] });
 pres.defineSlideMaster({
-  title: "SAMPUL", background: { path: path.join(__dirname, "img/bg_sampul.png") }, objects: [],
-});
-pres.defineSlideMaster({
-  title: "KONTEN", background: { path: path.join(__dirname, "img/bg_konten.png") },
+  title: "KONTEN", background: { color: "FFFFFF" },
   objects: [
-    { placeholder: { options: { name: "judul", type: "title", x: 0.92, y: 0.45, w: 12.0, h: 0.62, fontFace: FONT_H, fontSize: 16, bold: true, color: C.navy, align: "left", valign: "top", margin: 0 }, text: "" } },
-    { text: { text: "Malataxtax  |  Energy Business Plan Competition, EIC 2026  |  Subtema 3: Ekonomi Sirkular", options: { x: 0.4, y: 7.3, w: 9, h: 0.14, fontFace: FONT_B, fontSize: 6.5, color: C.slate, margin: 0, valign: "middle" } } },
+    { placeholder: { options: { name: "judul", type: "title", x: 0.45, y: 0.28, w: 10.9, h: 0.8, fontFace: FONT_H, fontSize: 19, bold: true, color: C.navy, align: "left", valign: "middle", margin: 0 }, text: "" } },
+    { line: { x: 0.45, y: 1.13, w: 12.45, h: 0, line: { color: C.teal, width: 1.5 } } },
+    { rect: { x: 11.62, y: 0.3, w: 0.46, h: 0.46, fill: { color: C.navy }, rectRadius: 0.08 } },
+    { text: { text: "M", options: { x: 11.62, y: 0.3, w: 0.46, h: 0.46, fontFace: FONT_H, fontSize: 18, bold: true, color: "FFFFFF", align: "center", valign: "middle", margin: 0 } } },
+    { text: { text: "MALATAXTAX", options: { x: 12.14, y: 0.3, w: 0.95, h: 0.26, fontFace: FONT_H, fontSize: 9.5, bold: true, color: C.navy, margin: 0, valign: "middle" } } },
+    { text: { text: "EIC 2026 · Business Plan", options: { x: 12.14, y: 0.54, w: 0.95, h: 0.22, fontFace: FONT_B, fontSize: 6.5, color: C.slate, margin: 0, valign: "top" } } },
   ],
-  slideNumber: { x: 12.4, y: 7.3, w: 0.55, h: 0.14, fontFace: FONT_B, fontSize: 7, color: C.navy, align: "right" },
 });
 
 const H = L.mk(pres);

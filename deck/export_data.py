@@ -138,3 +138,48 @@ D["meta"] = dict(base_tier=F.BASE_TIER, util=v["util"], wacc=f(o["wacc"]), infla
                  p_diesel=MI.M["p_diesel"][0], avail=v["avail"], c_gfs=v["c_gfs"], c_chp=v["c_chp"], match=f(F.match_f(v)), roll=F.ROLL)
 json.dump(D, open(os.path.join(ROOT, "deck", "deck_data.json"), "w"), indent=1, default=lambda x: float(x) if isinstance(x, (np.floating, np.integer)) else (x.tolist() if isinstance(x, np.ndarray) else str(x)))
 print("ok", os.path.getsize(os.path.join(ROOT, "deck", "deck_data.json")))
+
+# ============================ tambahan v2 (deck konsultan) ============================
+D = json.load(open(os.path.join(ROOT, "deck", "deck_data.json")))
+# BEP: pendapatan vs biaya total terhadap laju olah TBS (tahun operasi ke-3)
+bs = []
+for u in np.arange(0.10, 1.001, 0.05):
+    oo = F.run(dict(v, util=float(u))); i = 3
+    bs.append(dict(util=float(u), ffb=float(T["ffb_ty_nom"] * u), rev=float(oo["rev"][i]), opex=float(oo["opex_tot"][i]), dep=float(oo["fci"] / v["n_op"]), intr=float(oo["intr"][i]), ebitda=float(oo["ebitda"][i]), npv=float(oo["NPV"]),
+                   dscr=float(oo["DSCR_min"])))
+D["keu"]["bep_series"] = bs
+def cross(key_a, key_b):
+    xs = [(b["util"], b[key_a] - b[key_b]) for b in bs]
+    for (u0, d0), (u1, d1) in zip(xs[:-1], xs[1:]):
+        if d0 <= 0 <= d1: return u0 + (u1 - u0) * (-d0) / (d1 - d0)
+    return None
+D["keu"]["bep_util_cash"] = cross("rev", "opex")
+for b in bs: b["tc"] = b["opex"] + b["dep"] + b["intr"]
+D["keu"]["bep_util_acc"] = cross("rev", "tc")
+xs = [(b["util"], b["npv"]) for b in bs]; bu = None
+for (u0, d0), (u1, d1) in zip(xs[:-1], xs[1:]):
+    if d0 <= 0 <= d1: bu = u0 + (u1 - u0) * (-d0) / (d1 - d0)
+D["keu"]["bep_util_npv"] = bu
+# kategori CAPEX
+def cat(n):
+    n = n.lower()
+    for key, c in (("reaktor kontak", "Tangki reaktor GFS"), ("tk-101", "Tangki umpan, efluen, ekualisasi"), ("tk-102", "Tangki umpan, efluen, ekualisasi"), ("pm-1 ", "Praolah (PM-1)"), ("pm-4", "Skid kontak (degasser + lamella)"), ("pm-5", "Dosing dan pompa"), ("pm-6", "Pemurnian biogas (PM-6)"),
+                   ("pm-7", "Penampung gas dan flare"), ("pm-8", "Genset biogas"), ("pm-9", "Pemulih panas dan menara"), ("pm-10", "Screw press dan lumpur"), ("pipe rack", "Perpipaan, listrik, SCADA"), ("listrik (trafo", "Perpipaan, listrik, SCADA"), ("instrumentasi", "Perpipaan, listrik, SCADA"),
+                   ("sipil", "Sipil, angkut, ereksi"), ("transportasi", "Sipil, angkut, ereksi"), ("ereksi", "Sipil, angkut, ereksi"), ("lokasi:", "Pipa lokasi dan interkoneksi PLN"), ("interkoneksi", "Pipa lokasi dan interkoneksi PLN"),
+                   ("rekayasa", "Rekayasa, izin, start-up"), ("perizinan", "Rekayasa, izin, start-up"), ("start-up", "Rekayasa, izin, start-up"), ("kontingensi", "Kontingensi 20%")):
+        if key in n: return c
+    return "Lainnya"
+cc = {}
+for r in D["keu"]["capex_rows"]: cc[cat(r["n"])] = cc.get(cat(r["n"]), 0) + r["t"]
+D["keu"]["capex_cat"] = cc
+# rantai hasil dan data harian reaktor
+dy = json.load(open(os.path.join(ROOT, "process", "outputs", "year_daily.json")))
+pome_y = R["year"]["pome_m3"]; gwh = R["year"]["GWh_net"]
+D["yield"] = dict(pome_d=db["pome_m3d"], bg_d=t45["biogas_Nm3d"], ch4_d=t45["ch4_Nm3d"], bg_m3=t45["biogas_Nm3d"] / db["pome_m3d"], ch4_m3=t45["ch4_Nm3d"] / db["pome_m3d"],
+                  kwh_gross_m3=en["P_gross"] * 24 / db["pome_m3d"], kwh_net_m3_nom=en["P_net"] * 24 / db["pome_m3d"], kwh_net_m3_year=gwh * 1e6 / pome_y, pome_y=pome_y, gwh=gwh, ffb_y=R["year"]["ffb_t"], kwh_t_ffb=gwh * 1e6 / R["year"]["ffb_t"],
+                  cod_in_kgd=db["pome_m3d"] * db["cod_blend"], fuel_kW=en["fuel_kW"], P_el=en["chp"]["P_el"], Q_jacket=en["chp"]["Q_jacket"], Q_exh=en["chp"]["Q_exh"], Q_rad=en["chp"]["Q_rad"], P_par=en["P_par"], P_net=en["P_net"])
+D["daily"] = dict(P_net=[float(x) for x in dy["P_net"]], bg=[float(x) for x in dy["bg"]], pH=[float(x) for x in dy["pH"]], fos=[float(x) for x in dy["fos"]], vfa=[float(x) for x in dy["vfa"]], util=[float(x) for x in dy["util"]],
+                  monthly_MWh=R["year"]["monthly_net_MWh"], ch4_frac=[float(x) for x in dy["ch4_frac"]])
+D["mc_proc"] = {k: R["monte_carlo"][k] for k in ("bg", "ch4", "P_net", "olr", "pH", "fos", "cod_rem", "load", "h2s_ppm_raw")}
+json.dump(D, open(os.path.join(ROOT, "deck", "deck_data.json"), "w"), indent=1, default=lambda x: float(x) if isinstance(x, (np.floating, np.integer)) else str(x))
+print("v2 ok", D["keu"]["bep_util_cash"], D["keu"]["bep_util_acc"], D["keu"]["bep_util_npv"])
