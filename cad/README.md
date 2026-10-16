@@ -3,7 +3,7 @@
 ## Deliverables
 | File | Isi |
 |---|---|
-| `drawings/out/BG_drawing_set_A3.pdf` | Set gambar teknik A3, 8 lembar (PDF) |
+| `drawings/out/BG_drawing_set_A3.pdf` | Set gambar teknik A3, 9 lembar (PDF) |
 | `drawings/out/BG-*.dxf` | Lembar yang sama dalam DXF (AutoCAD), audit 0 error |
 | `out/step/*.step` | Model 3D STEP (mm, berwarna): R-201, TK-101, PM-1, PM-4 ... PM-10 |
 | `out/step/PLANT_step.zip` | Susunan pabrik lengkap (PLANT.step 66 MB, di-zip) |
@@ -44,7 +44,7 @@ Buku render dibuat ulang dengan `python3 make_renderbook.py`. GA memakai model p
 
 ## Rev C - model 3D lokasi + alir
 - `site3d.py`: PKS proksi 45 t TBS/jam (loading ramp, rebusan, pabrik utama, boiler + cerobong, rumah mesin, pengolahan air, tangki CPO, fat pit), sistem kolam POME yang diukur dari debit dan HRT, kebun sawit, produk, rute pipa/kabel nyata (panjang -> CAPEX via `out/site.json`), pemeriksaan jarak aman.
-- `build_site.py`: STEP lokasi (`out/step/SITE_step.zip`) + render `SITE_*.png`.
-- `flow_views.py`: gambar alir `ALIR_lokasi.png`, `ALIR_produk.png`, `ALIR_atas.png` - garis alir berwarna (POME, biogas, listrik ke PKS & PLN, efluen, lumpur) + penanda bernomor + panel legenda (tanpa teks menutupi adegan).
+- `build_site.py`: STEP lokasi (`out/step/SITE_step.zip`).
+- `diorama.py`: render diorama lokasi `DIORAMA_lokasi.png`, `DIORAMA_lokasi-barat.png`, `DIORAMA_atas.png`, `DIORAMA_produk.png` - platform rumput, atap biru, panah alir kecil berwarna (POME, biogas, listrik, efluen, lumpur), label pil singkat + legenda alir.
 - Lembar ke-9 `BG-GA-002` denah lokasi dengan tabel interkoneksi, luas lahan, jarak aman.
 - Perbaikan tata letak produk: flare 16 m dari tepi GH (sebelumnya 7 m), kontainer CHP digeser (sebelumnya menumpang pondasi GH), jalur gas sesuai PFD (reaktor -> GH -> BTF/PM-6 -> CHP, cabang flare). Plot 0,34 ha.

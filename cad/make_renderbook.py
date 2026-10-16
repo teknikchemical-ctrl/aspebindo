@@ -8,9 +8,8 @@ F = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"; FB = "/usr/share/fonts/tr
 W, H = 3508, 2480
 pages = []
 # halaman alir + lokasi (gambar penuh)
-for fn_, ttl in (("ALIR_lokasi.png", "Lokasi PKS: alir POME -> energi"), ("ALIR_produk.png", "Alir di dalam set portabel"), ("ALIR_atas.png", "Denah alir lokasi"),
-                 ("SITE_udara-tenggara.png", "Model 3D lokasi - udara tenggara"), ("SITE_udara-baratdaya.png", "Model 3D lokasi - udara barat daya"),
-                 ("SITE_produk-PKS.png", "Produk di samping PKS"), ("SITE_dekat-produk.png", "Produk - jarak dekat"), ("SITE_produk-kolam.png", "Produk dan sistem kolam")):
+for fn_, ttl in (("DIORAMA_lokasi.png", "PKS + set biogas portabel: tata letak dan alir"), ("DIORAMA_lokasi-barat.png", "Tata letak - tampak barat daya"),
+                 ("DIORAMA_atas.png", "Denah lokasi - tampak atas"), ("DIORAMA_produk.png", "Set generator biogas portabel - jarak dekat")):
     p_ = os.path.join(IMG, fn_)
     if not os.path.exists(p_): continue
     pg = Image.new("RGB", (W, H), "white"); d = ImageDraw.Draw(pg)

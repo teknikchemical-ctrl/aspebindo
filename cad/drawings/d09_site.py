@@ -20,7 +20,7 @@ def rect(x, y, L_, W_, w=.35, fill=None, dash=None, layer='equip'):
 with own(('jalan',)):
     rect(-8, -21, 482, 7, .25, '#d9d9d9', layer='util')
 TC(PT(120, -17.5)[0], PT(120, -17.5)[1], "JALAN UMUM", 3.0, 'm')
-for pts in ([(-5, -5), (227, -5), (227, 200), (-5, 200), (-5, -5)], [(227, -5), (470, -5), (470, 205), (227, 205)]):
+for pts in ([(-5, -5), (227, -5), (227, 200), (-5, 200), (-5, -5)], [(227, -5), (475, -5), (475, 200), (227, 200)]):
     with own(('pagar', pts[0])):
         L([PT(*p) for p in pts], .3, [3, 1, .6, 1], 'inst')
 # jejak bangunan / kolam
@@ -50,7 +50,7 @@ for f in info["foot"]:
                 d.rect(c[0] - 4.2, c[1] - 2.2, 8.4, 4.4, 0, '#ffffff', 'inst')
             TC(c[0], c[1], f["tag"], 3.0, 'm', owner=('fpt', f["tag"]))
         else:
-            auto_leader(c, f["tag"], pref={"WB": -20, "GI": -150}.get(f["tag"], 135), rmin=6, rmax=26, size=3.0)
+            auto_leader(c, f["tag"], pref={"WB": -20, "GI": -20}.get(f["tag"], 135), rmin=6, rmax=26, size=3.0)
     else:
         cx, cy, r = f["geom"]
         with own(('fp', f["tag"])):
@@ -82,7 +82,7 @@ for kk, r_ in info["routes"].items():
     with own(('rute', kk)):
         L([PT(*p) for p in pts], STY[kk][1], STY[kk][0], 'proc')
 # label rute
-for kk, (x, y, pr) in {"POME": (236, 120, 180), "EFLUEN": (240, 140, 0), "20kV-PKS": (231, 60, 180)}.items():
+for kk, (x, y, pr) in {"POME": (230, 112, 180), "EFLUEN": (232, 60, 180), "20kV-PKS": (228, 80, 180)}.items():
     auto_leader(PT(x, y), {"POME": "POME DN150", "EFLUEN": "EFLUEN DN150", "20kV-PKS": "20 kV KE PKS", "BYPASS": "BYPASS"}[kk], pref=pr, rmin=6, rmax=30, size=3.0)
 # panah utara + skala grafis
 nx, ny = PT(455, 225)
@@ -97,7 +97,10 @@ vlabel(PT(360, 0)[0], PT(0, -30)[1] - 2, "DENAH LOKASI (DARI MODEL 3D)", "1:1750
 half = (len(codes) + 1) // 2
 cw = [("Kode", 14, 'm'), ("Uraian", 66, 'l')]
 y_ = 183
-def short(l): return (l.replace(" - DIBEBASKAN", " (bebas)").replace("Kolam ", "K. ")[:44])
+def short(l):
+    l = l.replace(" - DIBEBASKAN", " (bebas)").replace("Kolam ", "K. ").replace("HRT ", "").replace(".0 d)", " d)")
+    if len(l) > 40 and ":" in l: l = l.split(":")[0]
+    return l[:40]
 y1 = table(14, y_, cw, [[c, short(l)] for c, l in codes[:half]], "LEGENDA", rh=4.4, size=2.5, hsize=2.6)
 table(96, y_ + 6, cw, [[c, short(l)] for c, l in codes[half:]], None, rh=4.4, size=2.5, hsize=2.6)
 # ---------------- tabel kanan: rute + luas + jarak aman

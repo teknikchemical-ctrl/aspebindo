@@ -47,7 +47,7 @@ def fig(path, w=170, cap=None):
 def build(RES):
     o, be, mc, fl, mk, TR = RES["o"], RES["be"], RES["mc"], RES["fl"], RES["mk"], RES["tiers"]
     v = o["v"]; FG = RES["figs"]; T_ = F.TECH; i3 = 3; yrs = o["years"]; SJ = F.SITE
-    alir = os.path.join(F.ROOT, "cad", "out", "render", "ALIR_lokasi.png")
+    alir = os.path.join(F.ROOT, "cad", "out", "render", "DIORAMA_lokasi.png")
     doc = SimpleDocTemplate(OUT, pagesize=A4, leftMargin=22 * mm, rightMargin=22 * mm, topMargin=18 * mm, bottomMargin=18 * mm,
                             title="Analisis Ekonomi - Generator Biogas Portabel", author="NAMA TIM")
     S = [Paragraph("ANALISIS PASAR DAN KELAYAKAN EKONOMI<br/>GENERATOR BIOGAS PORTABEL AnMBR TERMOFILIK UNTUK PKS", TITLE),

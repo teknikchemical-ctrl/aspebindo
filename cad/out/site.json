@@ -1,34 +1,34 @@
 {
  "routes": {
   "POME": {
-   "L_m": 149.68,
+   "L_m": 162.43,
    "label": "POME 85 \u00b0C DN150 (fat pit -> PM-1)",
    "cost_m": 140.0,
-   "cost": 20955.2
+   "cost": 22740.2
   },
   "EFLUEN": {
-   "L_m": 148.04285714285714,
+   "L_m": 147.79285714285714,
    "label": "Efluen AnMBR DN150 HDPE (TK-301 -> kolam fakultatif)",
    "cost_m": 70.0,
-   "cost": 10363.0
+   "cost": 10345.5
   },
   "BYPASS": {
-   "L_m": 77.67500000000001,
+   "L_m": 73.42500000000001,
    "label": "Bypass darurat DN150 (TK-101 -> kolam pendingin)",
    "cost_m": 70.0,
-   "cost": 5437.250000000001
+   "cost": 5139.750000000001
   },
   "20kV": {
-   "L_m": 113.0,
+   "L_m": 92.25,
    "label": "Saluran udara 20 kV di lokasi (gardu -> jaringan PLN)",
    "cost_m": 45.0,
-   "cost": 5085.0
+   "cost": 4151.25
   },
   "20kV-PKS": {
-   "L_m": 255.60000000000002,
+   "L_m": 246.85000000000002,
    "label": "Saluran 20 kV ke rumah mesin PKS (+ trafo 20/0,4 kV di PKS)",
    "cost_m": 40.0,
-   "cost": 28224.0
+   "cost": 27874.0
   }
  },
  "ponds": {
@@ -39,8 +39,8 @@
    "status": "tetap",
    "hrt": 1.0,
    "depth": 2.5,
-   "x": 244,
-   "y": 90,
+   "x": 243,
+   "y": 66,
    "L": 26,
    "W": 12.75
   },
@@ -51,8 +51,8 @@
    "status": "tetap",
    "hrt": 1.0,
    "depth": 2.5,
-   "x": 244,
-   "y": 112,
+   "x": 243,
+   "y": 85,
    "L": 26,
    "W": 12.75
   },
@@ -63,8 +63,8 @@
    "status": "dibebaskan",
    "hrt": 5.0,
    "depth": 3.5,
-   "x": 278,
-   "y": 90,
+   "x": 279,
+   "y": 66,
    "L": 40,
    "W": 26.142857142857142
   },
@@ -75,8 +75,8 @@
    "status": "dibebaskan",
    "hrt": 30.0,
    "depth": 5.0,
-   "x": 326,
-   "y": 90,
+   "x": 328,
+   "y": 61,
    "L": 66,
    "W": 60.68181818181818
   },
@@ -87,8 +87,8 @@
    "status": "dibebaskan",
    "hrt": 30.0,
    "depth": 5.0,
-   "x": 400,
-   "y": 90,
+   "x": 403,
+   "y": 61,
    "L": 66,
    "W": 60.68181818181818
   },
@@ -99,8 +99,8 @@
    "status": "tetap",
    "hrt": 15.0,
    "depth": 3.0,
-   "x": 244,
-   "y": 154,
+   "x": 243,
+   "y": 126,
    "L": 70,
    "W": 46.285714285714285
   },
@@ -112,7 +112,7 @@
    "hrt": 7.5,
    "depth": 2.0,
    "x": 322,
-   "y": 154,
+   "y": 126,
    "L": 70,
    "W": 34.339285714285715
   },
@@ -123,8 +123,8 @@
    "status": "tetap",
    "hrt": 7.5,
    "depth": 2.0,
-   "x": 400,
-   "y": 154,
+   "x": 401,
+   "y": 126,
    "L": 66,
    "W": 36.23863636363637
   },
@@ -148,35 +148,35 @@
   },
   {
    "item": "GH-301 -> rumah boiler PKS",
-   "dist": 141.9,
+   "dist": 142.9,
    "min": 30,
    "basis": "Sumber nyala terbuka",
    "ok": true
   },
   {
    "item": "GH-301 -> tangki CPO",
-   "dist": 203.1,
+   "dist": 208.7,
    "min": 30,
    "basis": "Bahan mudah terbakar",
    "ok": true
   },
   {
    "item": "Flare -> batas pagar lokasi",
-   "dist": 38.0,
+   "dist": 17.2,
    "min": 10,
    "basis": "Radiasi panas di batas",
    "ok": true
   },
   {
    "item": "Reaktor -> kolam pendingin (tanah)",
-   "dist": 23.9,
+   "dist": 20.6,
    "min": 20,
    "basis": "Stabilitas lereng / pondasi",
    "ok": true
   },
   {
    "item": "Cerobong boiler -> GH-301",
-   "dist": 136.0,
+   "dist": 138.2,
    "min": 30,
    "basis": "Bunga api cerobong",
    "ok": true
@@ -186,5 +186,5 @@
  "land_freed_m2": 11080.753246753247,
  "pond_area_before_m2": 22361.435064935067,
  "pond_area_after_m2": 11280.681818181818,
- "interconnect_cost": 70064.45
+ "interconnect_cost": 70250.7
 }

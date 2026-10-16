@@ -53,8 +53,7 @@ class Site:
 def mill(S):
     # halaman PKS (laterit dipadatkan) + jalan beton
     S.add([("halaman-PKS", box(232 * m, 205 * m, 40, -5 * m, -5 * m, 0), YARD)])
-    for nm, (x, y, L, W) in {"jalan-utama": (36, -5, 8, 200), "jalan-timur": (36, 50, 200, 8), "jalan-proses": (44, 140, 190, 7),
-                             "jalan-site": (228, -5, 6, 150)}.items():
+    for nm, (x, y, L, W) in {"jalan-utama": (36, -5, 8, 200), "jalan-timur": (36, 50, 200, 8), "jalan-proses": (44, 140, 190, 7)}.items():
         S.add([(nm, box(L * m, W * m, 60, x * m, y * m, 40), ROAD)])
     # pos jaga + jembatan timbang (2 x 60 t)
     S.add([("pos-jaga", box(4 * m, 4 * m, 3 * m, 30 * m, 2 * m, 0), WALL), gable(29.7 * m, 2 * m, 4.6 * m, 4 * m, 3 * m, 4 * m, "#b85c3a", "pos-atap")])
@@ -166,14 +165,14 @@ def fence(S, pts, gate=None, h=2100):
 # ============================================================================================ kolam POME
 # HRT tipikal sistem kolam PKS Indonesia: pendingin 2 d, pengasaman 5 d, anaerobik 60 d, fakultatif 15 d, aerobik 2 x 7,5 d
 PONDS = [  # tag, nama, HRT d, kedalaman m, x, y, L (x), status setelah produk ('tetap'/'dibebaskan'), warna air
-    ("CP1", "Kolam pendingin 1", 1.0, 2.5, 244, 90, 26, "tetap", WATER_C),
-    ("CP2", "Kolam pendingin 2", 1.0, 2.5, 244, 112, 26, "tetap", WATER_C),
-    ("AC", "Kolam pengasaman", 5.0, 3.5, 278, 90, 40, "dibebaskan", WATER_C),
-    ("AN1", "Kolam anaerobik 1", 30.0, 5.0, 326, 90, 66, "dibebaskan", WATER_A),
-    ("AN2", "Kolam anaerobik 2", 30.0, 5.0, 400, 90, 66, "dibebaskan", WATER_A),
-    ("FA", "Kolam fakultatif", 15.0, 3.0, 244, 154, 70, "tetap", WATER_F),
-    ("AE1", "Kolam aerobik 1", 7.5, 2.0, 322, 154, 70, "tetap", WATER_O),
-    ("AE2", "Kolam aerobik 2", 7.5, 2.0, 400, 154, 66, "tetap", WATER_O),
+    ("CP1", "Kolam pendingin 1", 1.0, 2.5, 243, 66, 26, "tetap", WATER_C),
+    ("CP2", "Kolam pendingin 2", 1.0, 2.5, 243, 85, 26, "tetap", WATER_C),
+    ("AC", "Kolam pengasaman", 5.0, 3.5, 279, 66, 40, "dibebaskan", WATER_C),
+    ("AN1", "Kolam anaerobik 1", 30.0, 5.0, 328, 61, 66, "dibebaskan", WATER_A),
+    ("AN2", "Kolam anaerobik 2", 30.0, 5.0, 403, 61, 66, "dibebaskan", WATER_A),
+    ("FA", "Kolam fakultatif", 15.0, 3.0, 243, 126, 70, "tetap", WATER_F),
+    ("AE1", "Kolam aerobik 1", 7.5, 2.0, 322, 126, 70, "tetap", WATER_O),
+    ("AE2", "Kolam aerobik 2", 7.5, 2.0, 401, 126, 66, "tetap", WATER_O),
 ]
 def ponds(S):
     tot_before = tot_after = 0.0
@@ -194,8 +193,8 @@ def ponds(S):
     S.area["_total_before_m2"] = tot_before; S.area["_total_after_m2"] = tot_after
     # lahan aplikasi (land application) flatbed di kebun utara
     for k in range(8):
-        S.add([("flatbed-%d" % k, box(40 * m, 4 * m, 300, (250 + 45 * (k % 4)) * m, (214 + 8 * (k // 4)) * m, 0), WATER_F)])
-    S.fp("rect", "LA", (250, 212, 175, 16), "Flatbed aplikasi lahan (efluen ke kebun)", grp="KOLAM")
+        S.add([("flatbed-%d" % k, box(40 * m, 4 * m, 300, (250 + 45 * (k % 4)) * m, (182 + 8 * (k // 4)) * m, 0), WATER_F)])
+    S.fp("rect", "LA", (250, 180, 175, 16), "Flatbed aplikasi lahan (efluen ke kebun)", grp="KOLAM")
 
 # ============================================================================================ kebun sawit
 def palms(S, region, exclude, sp=9.0):
@@ -214,7 +213,7 @@ def palms(S, region, exclude, sp=9.0):
     return n
 
 # ============================================================================================ produk + interkoneksi
-PRODUCT_ORIGIN = (247.3, 28.0)        # m: pergeseran koordinat lokal model pabrik produk -> koordinat site
+PRODUCT_ORIGIN = (239.3, 7.25)        # m: pergeseran koordinat lokal model pabrik produk -> koordinat site
 def product(S):
     out, tags, (X0, Y0, X1, Y1) = M.plant(simple=False)
     dx, dy = PRODUCT_ORIGIN
@@ -247,14 +246,14 @@ def route(S, name, pts, r, color, z=600, factor=1, label=None, cost_m=0.0):
 def interconnect(S):
     p = S.pts
     # 1 POME panas DN150 (CS sch40, insulasi) fat pit -> PM-1
-    route(S, "POME", [p["fatpit_out"], (236, 146), (236, p["PM1_in"][1]), p["PM1_in"]], 84, "#7a5a3a", label="POME 85 °C DN150 (fat pit -> PM-1)", cost_m=140.0)
+    route(S, "POME", [p["fatpit_out"], (230, 146), (230, p["PM1_in"][1]), p["PM1_in"]], 84, "#7a5a3a", label="POME 85 °C DN150 (fat pit -> PM-1)", cost_m=140.0)
     # 2 efluen DN150 HDPE TK-301 -> kolam fakultatif (dipertahankan sbg kolam polishing)
     fa = S.area["FA"]
-    route(S, "EFLUEN", [p["TK301"], (240, p["TK301"][1]), (240, fa["y"] + fa["W"] / 2), (fa["x"], fa["y"] + fa["W"] / 2)], 84, "#5f8a6a", z=400,
+    route(S, "EFLUEN", [p["TK301"], (232, p["TK301"][1]), (232, fa["y"] + fa["W"] / 2), (fa["x"], fa["y"] + fa["W"] / 2)], 84, "#5f8a6a", z=400,
           label="Efluen AnMBR DN150 HDPE (TK-301 -> kolam fakultatif)", cost_m=70.0)
     # 3 bypass darurat DN150 TK-101 -> kolam pendingin CP1 (saat set berhenti)
     cp = S.area["CP1"]
-    route(S, "BYPASS", [p["TK101"], (238, p["TK101"][1]), (238, cp["y"] + cp["W"] / 2), (cp["x"], cp["y"] + cp["W"] / 2)], 84, "#9c6b4e", z=900,
+    route(S, "BYPASS", [p["TK101"], (234, p["TK101"][1]), (234, cp["y"] + cp["W"] / 2), (cp["x"], cp["y"] + cp["W"] / 2)], 84, "#9c6b4e", z=900,
           label="Bypass darurat DN150 (TK-101 -> kolam pendingin)", cost_m=70.0)
     # 5 saluran 20 kV: gardu step-up di sisi CHP -> tiang ke jaringan PLN di jalan umum (selatan)
     chp = p["CHP"]
@@ -273,7 +272,7 @@ def interconnect(S):
     L = sum(math.dist(a, b) for a, b in zip(poles[:-1], poles[1:]))
     S.routes["20kV"] = dict(pts=poles, L_m=L, label="Saluran udara 20 kV di lokasi (gardu -> jaringan PLN)", cost_m=45.0, cost=L * 45.0)
     # kabel 20 kV ke rumah mesin PKS (pasokan listrik ke PKS & perumahan di luar jam olah)
-    mp = [(gx, gy), (gx, 12), (231, 12), (231, 131), (183, 131)]
+    mp = [(gx, gy), (gx, 2), (228, 2), (228, 131), (183, 131)]
     S.pts["mill_power"] = mp
     for i, (a, b) in enumerate(zip(mp[:-1], mp[1:])):
         n = max(1, int(math.dist(a, b) // 35))
@@ -310,36 +309,6 @@ def _ribbon(name, pts, col, r=900, arrow_every=28.0):
             out.append(("ALIR/%s-panah-%d-%d" % (name, i, j), cq.Solid.makeCone(r * 2.6, 0, 6.0 * m, cq.Vector(*c), cq.Vector(*d)), col))
     return out
 
-def flows(info):
-    """garis alir skematis (bukan pipa nyata): POME -> biogas -> listrik ke PKS & PLN; efluen -> kolam; lumpur -> kebun"""
-    p = info["pts"]; A = info["ponds"]; bb = p["prod_bb"]
-    dx, dy = PRODUCT_ORIGIN
-    L = lambda x, y: (x / m + dx, y / m + dy)             # lokal produk (mm) -> site (m)
-    R1 = L(9500 + 6400, 15500); R7 = L(9500 + 6400 * 7, 15500); RN = L(9500 + 6400 * 7, 15500 + 6400)
-    TK1 = L(9500, 15500); TK3 = L(9500, 21900); PM1 = L(14000, 7200); PM4 = L(9500 + 12800 + 6000, 15500 + 6400 + 5200 + 1200)
-    GH = p["GH"]; BTF = L(9500 + 51200 + 3500, 15500 + 6400 + 5200 + 1200); PM6 = L(9500 + 25600 + 1000 + 6000, 15500 + 6400 + 5200 + 1200)
-    CHP = L(49300 + 6000, 15500 - 8500); PM10 = L(9500 + 25600 + 1000 + 3000, 15500 - 8300)
-    ER = (183, 131); gx, gy = p["mill_power"][0]
-    fa = A["FA"]; ae1 = A["AE1"]; ae2 = A["AE2"]
-    F = []
-    F += _ribbon("POME", [(203, 146, 4), (236, 146, 4), (236, PM1[1], 4), (PM1[0], PM1[1], 4), (PM1[0], TK1[1], 4), (TK1[0], TK1[1], 4)], FLOW["POME"])
-    F += _ribbon("POME-reaktor", [(TK1[0], TK1[1] - 3.2, 4), (R7[0], R1[1] - 3.2, 4)], FLOW["POME"], r=700)
-    F += _ribbon("POME-membran", [(R1[0] + 6.4, (R1[1] + RN[1]) / 2 + 3.2, 6), (PM4[0], (R1[1] + RN[1]) / 2 + 3.2, 6), (PM4[0], PM4[1], 6)], FLOW["POME"], r=600)
-    F += _ribbon("BIOGAS", [(R1[0], (R1[1] + RN[1]) / 2, 22), (R7[0], (R1[1] + RN[1]) / 2, 22), (GH[0], GH[1], 22), (GH[0], GH[1], 13)], FLOW["BIOGAS"])
-    F += _ribbon("BIOGAS-bersih", [(GH[0] - 6, GH[1] + 4, 10), (BTF[0], BTF[1], 12), (PM6[0], PM6[1], 7), (PM6[0] + 14, PM6[1] - 4, 7), (CHP[0], CHP[1] + 6, 7), (CHP[0], CHP[1], 7)], FLOW["BIOGAS"])
-    F += _ribbon("LISTRIK", [(CHP[0], CHP[1], 9), (gx, gy, 9)], FLOW["LISTRIK"])
-    F += _ribbon("LISTRIK-PKS", [(gx, gy, 12), (gx, 12, 12), (231, 12, 12), (231, ER[1], 12), (ER[0], ER[1], 12)], FLOW["LISTRIK"])
-    F += _ribbon("LISTRIK-PLN", [(gx, gy, 12), (gx, -12, 12)], FLOW["LISTRIK"])
-    F += _ribbon("EFLUEN", [(TK3[0], TK3[1], 3), (240, TK3[1], 3), (240, fa["y"] + fa["W"] / 2, 3), (fa["x"] + fa["L"], fa["y"] + fa["W"] / 2, 3),
-                            (ae1["x"] + ae1["L"], ae1["y"] + ae1["W"] / 2, 3), (ae2["x"] + 30, ae2["y"] + ae2["W"] / 2, 3), (ae2["x"] + 30, 220, 3), (300, 220, 3)], FLOW["EFLUEN"])
-    F += _ribbon("LUMPUR", [(PM10[0], PM10[1], 3), (PM10[0], 6, 3), (455, 6, 3), (455, -3, 3), (478, -3, 3)], FLOW["LUMPUR"], r=600)
-    RC = ((R1[0] + R7[0]) / 2, (R1[1] + RN[1]) / 2)
-    marks = [(1, (203, 146, 2)), (2, (PM1[0], PM1[1], 4)), (3, (RC[0], RC[1] - 3.2, 19.5)), (4, (PM4[0], PM4[1], 4)), (5, (GH[0], GH[1], 12)),
-             (6, (PM6[0], PM6[1], 4)), (7, (CHP[0], CHP[1], 5)), (8, (gx, gy, 4)), (9, (231, 70, 13)), (10, (gx, -12, 13)),
-             (11, (fa["x"] + fa["L"] / 2, fa["y"] + fa["W"] / 2, 2)), (12, (330, 220, 2)), (13, (PM10[0], 6, 4)),
-             (14, (A["AN1"]["x"] + A["AN1"]["L"] / 2, A["AN1"]["y"] + A["AN1"]["W"] / 2, 2))]
-    return F, [(n, (x * m, y * m, z * m)) for n, (x, y, z) in marks]
-
 def safety(S):
     p = S.pts
     def d(a, b, ra=0, rb=0): return math.dist(a, b) - ra - rb
@@ -348,7 +317,7 @@ def safety(S):
            ("Flare FL-301 -> kontainer CHP", d(p["FL"], (p["CHP"][0] + 6.2, p["CHP"][1])), 15, "Sumber nyala vs zona gas"),
            ("GH-301 -> rumah boiler PKS", d(p["GH"], bh, 7.4, 14), 30, "Sumber nyala terbuka"),
            ("GH-301 -> tangki CPO", d(p["GH"], (140, 169), 7.4, 8), 30, "Bahan mudah terbakar"),
-           ("Flare -> batas pagar lokasi", min(p["FL"][1] - (-5), 440 - p["FL"][0]), 10, "Radiasi panas di batas"),
+           ("Flare -> batas pagar lokasi", min(p["FL"][1] - (-5), 475 - p["FL"][0]), 10, "Radiasi panas di batas"),
            ("Reaktor -> kolam pendingin (tanah)", S.area["CP1"]["y"] - 3 - S.pts["prod_bb"][3], 20, "Stabilitas lereng / pondasi"),
            ("Cerobong boiler -> GH-301", d((190, 106), p["GH"], 1.25, 7.4), 30, "Bunga api cerobong")]
     return [dict(item=a, dist=round(b, 1), min=c, basis=e, ok=b >= c) for a, b, c, e in chk]
@@ -361,8 +330,8 @@ def site():
     ponds(S)
     product(S)
     # pagar area pengolahan limbah + produk (menyatu dengan pagar PKS)
-    fence(S, [(227, -5), (470, -5), (470, 205), (227, 205)])
-    S.add([("halaman-site", box(243 * m, 210 * m, 30, 227 * m, -5 * m, 0), "#d3c9ae")])
+    fence(S, [(227, -5), (475, -5), (475, 200), (227, 200)])
+    S.add([("halaman-site", box(248 * m, 205 * m, 30, 227 * m, -5 * m, 0), "#d3c9ae")])
     interconnect(S)
     n = palms(S, (-60, -10, 500, 375), [(-12, -14, 234, 207), (226, -14, 476, 211), (244, 210, 432, 232), (-80, -30, 600, -8)])
     info = dict(foot=S.foot, routes=S.routes, ponds=S.area, safety=safety(S), palms=n, pts=S.pts,

@@ -6,7 +6,8 @@ import {STLLoader} from 'three/addons/loaders/STLLoader.js';
 window.renderJob = async (job) => {
   const W = job.w, H = job.h;
   const renderer = new THREE.WebGLRenderer({antialias:true, preserveDrawingBuffer:true});
-  renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.setClearColor(0xffffff, 1);
+  if (job.shadows) { renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; }
+  renderer.setPixelRatio(1); renderer.setSize(W, H); renderer.setClearColor(job.bg ? new THREE.Color(job.bg) : 0xffffff, 1);
   document.body.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 1.35));
@@ -18,6 +19,7 @@ window.renderJob = async (job) => {
     const g = loader.parse(buf); g.computeVertexNormals();
     const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({color:p.color, metalness:p.metal??0.15, roughness:p.rough??0.55, flatShading:false,
               transparent:(p.opacity??1)<1, opacity:p.opacity??1, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:1, polygonOffsetUnits:1}));
+    if (job.shadows) { m.castShadow = p.cast !== false; m.receiveShadow = true; }
     scene.add(m); box.expandByObject(m);
     if (p.edges !== false) {
       const e = new THREE.LineSegments(new THREE.EdgesGeometry(g, p.edgeAngle ?? 28), new THREE.LineBasicMaterial({color:0x1a1a1a}));
@@ -25,11 +27,37 @@ window.renderJob = async (job) => {
     }
   }
   const c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3()), R = sz.length()/2;
+  if (job.shadows) {
+    sun.castShadow = true; sun.shadow.mapSize.set(job.shadowMap||4096, job.shadowMap||4096);
+    const sc = sun.shadow.camera; sc.left=-R; sc.right=R; sc.top=R; sc.bottom=-R; sc.near=0.1*R; sc.far=10*R; sun.shadow.bias=-0.0004; sun.shadow.normalBias = R*0.0006;
+    sun.target.position.copy(c); scene.add(sun.target);
+  }
+  if (job.light) { scene.children.filter(o=>o.isHemisphereLight)[0].intensity = job.light[0]; sun.intensity = job.light[1]; fill.intensity = job.light[2]; }
   const out = [];
   for (const v of job.views) {
     const dir = new THREE.Vector3(...v.dir).normalize();
     const up = new THREE.Vector3(...(v.up||[0,0,1]));
-    const cam = new THREE.OrthographicCamera(-1,1,1,-1, -10*R, 10*R);
+    let cam;
+    sun.position.copy(c.clone().add(new THREE.Vector3(...(v.sun||[0.6,-0.9,1.4])).multiplyScalar(4*R)));
+    fill.position.copy(c.clone().add(new THREE.Vector3(-1,1,0.3).multiplyScalar(4*R)));
+    if (v.persp) {
+      cam = new THREE.PerspectiveCamera(v.persp, W/H, R*0.01, R*30);
+      const fb = v.fit ? new THREE.Box3(new THREE.Vector3(...v.fit.slice(0,3)), new THREE.Vector3(...v.fit.slice(3))) : box;
+      const pts = []; for (const x of [fb.min.x,fb.max.x]) for (const y of [fb.min.y,fb.max.y]) for (const z of [fb.min.z,fb.max.z]) pts.push(new THREE.Vector3(x,y,z));
+      const tgt = fb.getCenter(new THREE.Vector3()); let D = 3*R; const pad = v.pad ?? 0.03;
+      for (let it=0; it<12; it++) {
+        cam.up.copy(up); cam.position.copy(tgt.clone().add(dir.clone().multiplyScalar(D))); cam.lookAt(tgt); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+        let xs=[], ys=[]; for (const p of pts) { const q = p.clone().project(cam); xs.push(q.x); ys.push(q.y); }
+        const x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), y1=Math.max(...ys);
+        const cx=(x0+x1)/2, cy=(y0+y1)/2, s=Math.max((x1-x0)/2, (y1-y0)/2)/(1-pad);
+        const hh = D*Math.tan(v.persp*Math.PI/360), hw = hh*W/H;
+        const rgt = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0), cup = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1);
+        tgt.add(rgt.multiplyScalar(cx*hw)).add(cup.multiplyScalar(cy*hh));
+        D *= s;
+      }
+      cam.position.copy(tgt.clone().add(dir.clone().multiplyScalar(D))); cam.lookAt(tgt); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+    } else {
+    cam = new THREE.OrthographicCamera(-1,1,1,-1, -10*R, 10*R);
     cam.up.copy(up); cam.position.copy(c.clone().add(dir.clone().multiplyScalar(2*R))); cam.lookAt(c); cam.updateMatrixWorld();
     // fit: project the 8 box corners into camera space
     const inv = cam.matrixWorldInverse; let xs=[], ys=[];
@@ -39,8 +67,6 @@ window.renderJob = async (job) => {
     const pad = v.pad ?? 0.04, ww=(x1-x0)*(1+2*pad), hh=(y1-y0)*(1+2*pad), cx=(x0+x1)/2, cy=(y0+y1)/2;
     const asp = W/H; let hw = ww/2, hh2 = hh/2; if (hw/hh2 > asp) hh2 = hw/asp; else hw = hh2*asp;
     cam.left=cx-hw; cam.right=cx+hw; cam.top=cy+hh2; cam.bottom=cy-hh2; cam.updateProjectionMatrix();
-    sun.position.copy(c.clone().add(new THREE.Vector3(...(v.sun||[0.6,-0.9,1.4])).multiplyScalar(4*R)));
-    fill.position.copy(c.clone().add(new THREE.Vector3(-1,1,0.3).multiplyScalar(4*R)));
     if (v.zoom) { // perbesar ke kotak minat [x0,y0,z0,x1,y1,z1]
       const zb = new THREE.Box3(new THREE.Vector3(...v.zoom.slice(0,3)), new THREE.Vector3(...v.zoom.slice(3)));
       let zx=[], zy=[];
@@ -49,6 +75,7 @@ window.renderJob = async (job) => {
       let a0=Math.min(...zx), a1=Math.max(...zx), b0=Math.min(...zy), b1=Math.max(...zy);
       let w2=(a1-a0)/2*1.06, h2=(b1-b0)/2*1.06; if (w2/h2 > asp) h2 = w2/asp; else w2 = h2*asp;
       cam.left=(a0+a1)/2-w2; cam.right=(a0+a1)/2+w2; cam.top=(b0+b1)/2+h2; cam.bottom=(b0+b1)/2-h2; cam.updateProjectionMatrix();
+    }
     }
     renderer.render(scene, cam);
     const labs = (job.labels||[]).map(p => { const q = new THREE.Vector3(...p).project(cam); return [(q.x+1)/2*W, (1-q.y)/2*H]; });
