@@ -12,7 +12,7 @@ v3 (iterasi riset Tahap 0-3, lihat research/*.md):
 Model bisnis: BOO per set standar di lahan PKS (kontrak 20 th). Pendapatan: (1) jasa pengolahan POME USD/t TBS,
 (2) listrik ke PKS di luar jam olah (menggantikan genset diesel), (3) ekspor PLN (Perpres 112/2022), (4) kredit karbon.
 """
-import os, json, math
+import os, sys, json, math
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -24,6 +24,8 @@ def _js(p, d):
 GA = _js("cad/out/ga.json", {"plot_m2": 2410.0})
 if GA.get("rev", 1) < 2: GA = {"plot_m2": json.load(open(os.path.join(ROOT, "process", "outputs", "portable_modules.json")))["plot_area_m2_estimate"]["total"]}
 SITE = _js("cad/out/site.json", {"routes": {}, "land_freed_m2": 11081.0})
+sys.path.insert(0, os.path.join(ROOT, "process"))
+import hourly_match as HM          # kecocokan per jam (temuan audit #1)
 
 # ------------------------------------------------------------------------------------------- teknis
 _mon = np.array(R["year"]["monthly_net_MWh"]); _f = _mon / _mon.mean()
@@ -44,9 +46,12 @@ TECH = dict(
 TECH["E_nom_GWh"] = TECH["E_year_GWh"]                                      # energi neto tahunan pada util proses (0,75)
 TECH["ffb_ty_nom"] = TECH["ffb_tph"] * TECH["hrs_day"] * TECH["days_yr"]    # TBS/th pada util 1,0
 TECH["pome_m3y_nom"] = TECH["pome_m3d"] * TECH["days_yr"]
+FFB45 = TECH["ffb_tph"] * TECH["hrs_day"] * TECH["days_yr"]               # skala acuan profil harian (set 45 t/jam)
 TECH["eff_t_nom"] = TECH["eff_codb_kgd"] * TECH["days_yr"] / 1000.0          # t COD terurai/th pada util 1,0
 SR = SITE.get("routes", {})
 TECH["site_lines"] = [(v["label"], round(v["L_m"]), v["cost_m"], v["cost"]) for k, v in SR.items()]
+TECH45 = dict(TECH)                                                          # modul acuan 45 t TBS/jam (PFD, 3D, gambar)
+BASE_TIER = os.environ.get("BG_TIER", "60")                                  # konfigurasi komersial kasus investasi (skala minimum layak, lihat tier_ctx)
 
 # ------------------------------------------------------------------------------------------- asumsi
 # (nilai, satuan, sumber/catatan, rendah, tinggi)
@@ -58,14 +63,16 @@ A = {
     "ramp1": (0.70, "-", "Faktor produksi tahun operasi 1: start-up termofilik 2-4 bulan [R4]", 0.55, 0.85),
     "cap_kW": (1000.0, "kW", "Kapasitas kontrak ekspor PLN di titik serah (tier Perpres 112 <= 1 MW)", None, None),
     # listrik ke PKS (menggantikan genset diesel di luar jam olah)
-    "diesel_L_tffb": (3.0, "L/t TBS", "Solar PKS + emplasmen + bengkel/KCP yang dapat digantikan (segmen sasaran S3). PKS saja 0,53 [R2]; DSNG hemat 2-2,75 jt L/th per lokasi [DSNG SR 2022-24]", 0.53, 5.0),
+    "diesel_L_tffb": (2.0, "L/t TBS", "Solar yang DAPAT DIGANTIKAN biogas (PKS + emplasmen + bengkel/KCP). Turunan PalmCo (>2,6 juta L, 2023-2025, 2 PKS; 293.000 m3 POME/th) = 1,9 L/t [R6, keyakinan RENDAH]; DSNG 4,8-5,5 L/t (lokasi terpencil); solar PKS saja 0,4-1,5. Wajib diganti log solar 12 bulan PKS mitra (gerbang G0)", 1.0, 3.0),
+    "export_on": (1, "0/1", "Ekspor ke PLN tersedia (jaringan 20 kV <= 2 km). 0 = PKS terisolasi: kelebihan listrik tidak terjual", 0, 1),
+    "buffer": (1, "0/1", "PM-12: tangki ekualisasi POME 24 jam (600 m3 GFS) agar reaktor diumpan pada hari Minggu; menaikkan kecocokan per jam (process/hourly_match.py). Dalam kasus investasi; belum ada di gambar rekayasa acuan (ditambahkan pada FEED)", 0, 1),
     "sfc": (0.30, "L/kWh", "Konsumsi spesifik genset diesel [R2]", 0.28, 0.42),
-    "p_captive": (0.20, "USD/kWh", "Harga listrik set ke PKS ~45% di bawah biaya listrik diesel PKS (USD 0,37-0,39/kWh) [R2]", 0.15, 0.26),
-    "tariff1": (10.18, "USc/kWh", "Perpres 112/2022 PLTBg <= 1 MW, th 1-10, harga patokan tertinggi x F [R1/R2]", 9.0, 10.18),
-    "F_loc": (1.10, "-", "Faktor lokasi F Sumatera/Kalimantan (keyakinan rendah) [R2]", 1.00, 1.20),
-    "tariff2": (6.11, "USc/kWh", "Perpres 112/2022 PLTBg <= 1 MW, th 11 dst (tanpa F) [R2]", 5.89, 6.11),
+    "p_captive": (0.20, "USD/kWh", "Tarif jasa energi ke PKS ~45% di bawah biaya listrik diesel PKS (solar Rp 21.000/L terkirim: USD 0,37/kWh) [R2/R6]. Struktur kontrak: PKS pemegang IUPTLS, SPV pemilik-operator dibayar sewa kapasitas + tarif jasa, bukan jual kWh (perlu konfirmasi Ditjen Gatrik)", 0.15, 0.26),
+    "tariff1": (9.81, "USc/kWh", "Perpres 112/2022 PLTBg kelas 1-3 MW (kapasitas terpasang 1,6 MWe), th 1-10: 9,81 (media) / 9,94 (Lampiran) / 9,29 (sosialisasi ESDM) [R1/R2/R6, keyakinan sedang]. Skenario buruk: excess power 7,44", 7.44, 10.18),
+    "F_loc": (1.00, "-", "Faktor lokasi F TIDAK diasumsikan (sumber bertentangan: LPEM/R1 menyatakan tidak berlaku untuk biogas; tabel Undip memakai x F) [R6]; peluang 1,10 hanya di sisi atas", 1.00, 1.20),
+    "tariff2": (5.89, "USc/kWh", "Perpres 112/2022 PLTBg kelas 1-3 MW, th 11 dst (tanpa F) [R1/R2/R6]", 4.46, 6.11),
     # jasa pengolahan
-    "fee_ffb": (1.00, "USD/t TBS", "Jasa pengolahan POME: dipilih di dalam jendela kesepakatan (fin_mill.py: PKS hemat >= 15% vs status quo)", 0.0, 1.5),
+    "fee_ffb": (1.25, "USD/t TBS", "Jasa pengolahan POME: dipilih di dalam jendela kesepakatan (fin_mill.py: di atas fee minimum NPV=0 dan DSCR 1,30; di bawah fee maksimum PKS)", 0.75, 1.75),
     # karbon
     "p_carbon": (5.0, "USD/tCO2e", "Kredit penghindaran metana 2025 ~USD 5 (puncak 8,3 2024); IDXCarbon ~3,6 [R1]", 3.0, 8.3),
     "cer_ratio": (0.95, "-", "Rasio penerbitan setelah UF 0,89 di ER (kebocoran, data hilang)", 0.85, 1.0),
@@ -78,9 +85,9 @@ A = {
     "infl": (0.02, "/th", "Eskalasi biaya & harga dalam USD", 0.015, 0.035),
     "fx": (17948.0, "IDR/USD", "Kurs referensi BI 15 Okt 2026 [R2]", 17500.0, 18500.0),
     # CAPEX
-    "c_gfs": (200.0, "USD/m3", "Tangki GFS dibaut terpasang (panel, atap membran ganda, insulasi, internal jet) [ASUMSI - perlu penawaran CST/ESP/Center Enamel]", 150.0, 300.0),
-    "c_chp": (550.0, "USD/kWe", "Genset biogas kontainer (Asia 350-600; Eropa 700-1.100)", 450.0, 800.0),
-    "cont": (0.10, "-", "Kontingensi produk standar", 0.05, 0.20),
+    "c_gfs": (200.0, "USD/m3", "Tangki GFS dibaut terpasang (panel, atap membran ganda, insulasi, internal jet). TIDAK ADA harga vendor publik (R6: placeholder 150, rentang 100-250); 200 = asumsi tim, wajib kuotasi CST/ESP/Center Enamel sebelum FID", 150.0, 300.0),
+    "c_chp": (600.0, "USD/kWe", "Genset biogas kontainer, termasuk gas train dan instalasi; selaras efisiensi listrik 39,3% di neraca proses (mesin kelas Eropa; dealer mesin saja USD 150-360/kW, belum ada kuotasi) [R6]", 450.0, 900.0),
+    "cont": (0.20, "-", "Kontingensi kelas estimasi 4 (AACE 18R-97; akurasi -20%/+40%), produk perdana termofilik; audit mensyaratkan 20-30%", 0.10, 0.30),
     "eng": (0.06, "-", "Rekayasa & manajemen proyek (desain berulang)", 0.05, 0.12),
     "c_grid": (120000.0, "USD", "Switchgear 20 kV + meter transaksi + jaringan <= 2 km (USD 28-42k/km) [R3]", 80000.0, 250000.0),
     "vat": (0.11, "-", "PPN efektif atas CAPEX (restitusi th operasi 2)", None, None),
@@ -101,7 +108,7 @@ A = {
     "dep_life": (8, "tahun", "Penyusutan dipercepat PP 78/2019 (1/2 umur kelompok 3)", None, None),
     "allow": (0.30, "-", "Tax allowance PP 78/2019: 30% aset berwujud, 5%/th x 6 th", None, None),
     "loss_cf": (10, "tahun", "Kompensasi rugi fiskal PP 78/2019 (maks 10 th)", None, None),
-    "debt_frac": (0.60, "-", "Porsi utang proyek", None, None),
+    "debt_frac": (0.58, "-", "Porsi utang proyek, di-sizing pada DSCR minimum 1,30 (60% memberi 1,27)", 0.50, 0.65),
     "r_debt": (0.08, "/th", "Bunga pinjaman hijau USD (utang iklim Indonesia 9,1-11% IDR [R2])", 0.065, 0.10),
     "tenor": (10, "tahun", "Tenor (th operasi 1 bunga saja, anuitas th 2-10)", None, None),
     "fee_debt": (0.015, "-", "Biaya upfront pinjaman", None, None),
@@ -123,9 +130,18 @@ def cap_factor(v, tech=TECH, emult=1.0):
     P = tech["E_year_GWh"] * 1e6 / 8760.0 * kfac(v, tech, emult) * np.array(tech["month_f"])
     return float(np.minimum(P, v["cap_kW"]).mean() / P.mean())
 
+def load_kW(v, tech=TECH):
+    """beban solar PKS rata-rata (kW) pada jam PKS tidak mengolah: (L/t TBS x t TBS / sfc) / (8.760 - 6.000 x util)"""
+    return tech["ffb_ty_nom"] * v["util"] * v["diesel_L_tffb"] / v["sfc"] / (8760.0 - 6000.0 * v["util"])
+
+def match_f(v, tech=TECH):
+    """fraksi beban solar yang benar-benar dapat dilayani set per jam (simulasi 365 hari; tanpa tangki ekualisasi, atau dengan bila buffer=1)"""
+    f = tech["ffb_ty_nom"] / FFB45
+    return HM.match_f(load_kW(v, tech) / f, buffer=bool(round(v.get("buffer", 0))))
+
 def captive_GWh(v, tech=TECH):
-    """listrik yang dibeli PKS dari set = listrik genset diesel PKS yang digantikan (L solar/t TBS / L/kWh)"""
-    return tech["ffb_ty_nom"] * v["util"] * v["diesel_L_tffb"] / v["sfc"] / 1e6
+    """listrik yang dibeli PKS dari set = listrik genset diesel PKS yang dapat digantikan per jam (L solar/t TBS / L/kWh x kecocokan)"""
+    return tech["ffb_ty_nom"] * v["util"] * v["diesel_L_tffb"] / v["sfc"] / 1e6 * match_f(v, tech)
 
 def carbon_t(v, tech=TECH, emult=1.0):
     """pengurangan emisi tahunan (tCO2e, AMS-III.H): baseline kolam - emisi proyek (bocor, CH4 terlarut, slip, flare) - efluen di kolam polishing (MCF_eff)"""
@@ -150,6 +166,8 @@ def capex_items(v, tech=TECH, scale=1.0):
          ("PEC", "Pipe rack + perpipaan antar modul", 1, "lot", s(90000), "Model 3D"),
          ("PEC", "Listrik (trafo 1,25 MVA 0,4/20 kV, switchgear, kabel)", 1, "lot", s(200000), "[ASUMSI]"),
          ("PEC", "Instrumentasi, PLC/SCADA jarak jauh", 1, "lot", s(90000), "[ASUMSI]")]
+    if round(v.get("buffer", 0)):
+        I.insert(2, ("PEC", "TK-102 tangki ekualisasi POME 24 jam (GFS 600 m³, opsi PM-12)", 600.0 * scale, "m³", v["c_gfs"] * 1.3, "Tangki kecil +30%/m³"))
     rows = [(g, n, q, u, c, q * c, b) for g, n, q, u, c, b in I]
     pec = sum(r[5] for r in rows)
     D = [("LANGSUNG", "Sipil: ring beam %d tangki + pad skid + jalan/drainase" % nv, 1, "lot", 25000.0 * nv + s(120000), "USD 25k/ring beam + USD 120k [ASUMSI]"),
@@ -182,7 +200,8 @@ def opex_base(v, fci, pec, tech=TECH, emult=1.0):
             "Sewa lahan plot di PKS": (v["lease"] * tech["plot_m2"], "F")}
 
 # ------------------------------------------------------------------------------------------- model tahunan
-def run(v=None, emult=1.0, capex_mult=1.0, opex_mult=1.0, tech=TECH, scale=1.0, relocate=False):
+def run(v=None, emult=1.0, capex_mult=1.0, opex_mult=1.0, tech=None, scale=None, relocate=False):
+    tech = TECH if tech is None else tech; scale = BASE_SCALE if scale is None else scale
     v = dict(v or vals())
     y0, n = int(v["year0"]), int(v["n_op"])
     years = list(range(y0, y0 + n + 1)); T = len(years)
@@ -207,7 +226,7 @@ def run(v=None, emult=1.0, capex_mult=1.0, opex_mult=1.0, tech=TECH, scale=1.0, 
         f_[i] = f
         E[i] = tech["E_year_GWh"] * kfac(v, tech, emult) * v["avail"] * f
         Ecap[i] = min(captive_GWh(v, tech) * v["avail"] * (1 if f >= 1 else f), E[i])   # saat set tidak tersedia genset diesel PKS jalan
-        Eexp[i] = (E[i] - Ecap[i]) * capf
+        Eexp[i] = (E[i] - Ecap[i]) * capf * v["export_on"]
         tar[i] = (v["tariff1"] * v["F_loc"] if kk <= 10 else v["tariff2"]) / 100.0
         tar_c[i] = v["p_captive"] * esc
         rev_cap[i] = Ecap[i] * 1e6 * tar_c[i]; rev_exp[i] = Eexp[i] * 1e6 * tar[i]
@@ -356,27 +375,50 @@ def tornado(v=None, d=0.20):
         res.append((lab, r[0], r[1]))
     res.sort(key=lambda x: -abs(x[2] - x[1]))
     return base, res
+TORN_REAL = [  # (label, kunci, nilai bawah-hasil, nilai atas-hasil)  -> nilai input skenario buruk / baik; None = dari rentang A
+    ("Beban TBS PKS (util)", "util", 0.60, 0.90), ("Solar PKS (L/t TBS)", "diesel_L_tffb", 1.0, 3.0), ("Jasa pengolahan (USD/t TBS)", "fee_ffb", 0.75, 1.25),
+    ("CAPEX (x)", "capex_mult", 1.35, 0.90), ("Tarif ekspor PLN (USc/kWh)", "tariff_abs", 7.44, 11.20), ("Produksi biogas (x)", "emult", 0.85, 1.15),
+    ("OPEX (x)", "opex_mult", 1.20, 0.90), ("Harga karbon (USD/t)", "p_carbon", 3.0, 8.3), ("Ketersediaan genset", "avail", 0.88, 0.97),
+    ("Harga listrik ke PKS (USD/kWh)", "p_captive", 0.16, 0.24), ("Bunga utang", "r_debt", 0.10, 0.065)]
+def tornado_real(v=None):
+    """diagram tornado dengan rentang realistis per variabel (buruk, dasar, baik); mengembalikan (dasar, [(label, buruk, baik, nilai_buruk, nilai_baik)])"""
+    v = dict(v or vals()); base = run(v)["NPV"]; res = []
+    for lab, key, lo, hi in TORN_REAL:
+        r = []
+        for x in (lo, hi):
+            vv = dict(v); kw = {}
+            if key == "tariff_abs": vv["tariff1"] = x; vv["F_loc"] = 1.0; vv["tariff2"] = min(x, v["tariff2"])
+            elif key in ("emult", "capex_mult", "opex_mult"): kw[key] = x
+            else: vv[key] = x
+            r.append(run(vv, **kw)["NPV"])
+        res.append((lab, r[0], r[1], lo, hi))
+    res.sort(key=lambda x: -abs(x[2] - x[1]))
+    return base, res
 def npv_curve(v=None, rates=None):
     o = run(v); rates = rates if rates is not None else np.linspace(0.04, 0.24, 41)
     return rates, [npv(r, o["fcff"]) for r in rates]
 def tri(rng, lo, mode, hi, n): return rng.triangular(lo, mode, hi, n)
-MC_DIST = dict(emult="Lognormal median 1, P5-P95 0,85-1,15 (biologi & komposisi POME; util terpisah)", capex="Segitiga 0,90 / 1,00 / 1,35", opex="Segitiga 0,90 / 1,00 / 1,20",
-               p_carbon="Segitiga 3 / 5 / 8,3 USD/t", F_loc="Diskrit 1,00 (30%) / 1,10 (70%)", tier="25%: tarif tawar 90% patokan",
+MC_DIST = dict(emult="Lognormal median 1, P5-P95 0,85-1,15 (biologi & komposisi POME; util terpisah)", capex="Segitiga 0,90 / 1,00 / 1,40 (kelas estimasi 4: -10%/+40%)", opex="Segitiga 0,90 / 1,00 / 1,20",
+               p_carbon="Segitiga 3 / 5 / 8,3 USD/t", F_loc="Diskrit 1,00 (80%) / 1,10 (20%)", tier="Rezim tarif ekspor: 35% excess power 7,44 / 4,46 USc (struktur hukum IUPTLS), 65% kelas 1-3 MW 9,81 / 5,89",
+               diesel="Segitiga 1,0 / 2,0 / 3,0 L/t TBS (turunan PalmCo 1,9; DSNG 4,8 di sisi terpencil tidak dipakai)",
                fee="Segitiga 0,75 / 1,00 / 1,25 x dasar", avail="Segitiga 0,88 / 0,93 / 0,97", ramp1="Segitiga 0,55 / 0,70 / 0,85",
                cer_ratio="Segitiga 0,85 / 0,95 / 1,00", r_debt="Segitiga 6,5 / 8 / 10%", infl="Segitiga 1,5 / 2 / 3,5%", util="Segitiga 0,60 / 0,75 / 0,90")
-def monte_carlo(N=4000, seed=20261015, v=None):
+MC_CFG = dict(capex=(0.90, 1.0, 1.40), regimeB=0.35, diesel=(1.0, 2.0, 3.0), util=(0.60, 0.75, 0.90), fee=(0.75, 1.0, 1.25))
+def monte_carlo(N=4000, seed=20261015, v=None, cfg=None):
+    """cfg menimpa MC_CFG (untuk menghitung nilai informasi per gerbang: kuotasi mempersempit capex, konfirmasi hukum meniadakan rezim B, log solar mematok solar)"""
+    c_ = dict(MC_CFG); c_.update(cfg or {})
     v = dict(v or vals()); rng = np.random.default_rng(seed)
     sig = (math.log(1.15) - math.log(0.85)) / (2 * 1.645)
-    S = dict(emult=np.clip(rng.lognormal(0.0, sig, N), 0.6, 1.4), capex=tri(rng, 0.90, 1.0, 1.35, N), opex=tri(rng, 0.90, 1.0, 1.20, N),
-             p_carbon=tri(rng, 3.0, 5.0, 8.3, N), F_loc=rng.choice([1.0, 1.10], N, p=[0.3, 0.7]), tier=(rng.random(N) < 0.25).astype(float),
-             fee=tri(rng, 0.75, 1.0, 1.25, N), avail=tri(rng, 0.88, 0.93, 0.97, N), ramp1=tri(rng, 0.55, 0.70, 0.85, N),
-             cer_ratio=tri(rng, 0.85, 0.95, 1.0, N), r_debt=tri(rng, 0.065, 0.08, 0.10, N), infl=tri(rng, 0.015, 0.02, 0.035, N), util=tri(rng, 0.60, 0.75, 0.90, N))
+    S = dict(emult=np.clip(rng.lognormal(0.0, sig, N), 0.6, 1.4), capex=tri(rng, *c_["capex"], N), opex=tri(rng, 0.90, 1.0, 1.20, N),
+             p_carbon=tri(rng, 3.0, 5.0, 8.3, N), F_loc=rng.choice([1.0, 1.10], N, p=[0.8, 0.2]), tier=(rng.random(N) < c_["regimeB"]).astype(float), diesel=tri(rng, *c_["diesel"], N),
+             fee=tri(rng, *c_["fee"], N), avail=tri(rng, 0.88, 0.93, 0.97, N), ramp1=tri(rng, 0.55, 0.70, 0.85, N),
+             cer_ratio=tri(rng, 0.85, 0.95, 1.0, N), r_debt=tri(rng, 0.065, 0.08, 0.10, N), infl=tri(rng, 0.015, 0.02, 0.035, N), util=tri(rng, *c_["util"], N))
     NPV = np.zeros(N); IRR = np.zeros(N); PB = np.zeros(N)
     for j in range(N):
         vv = dict(v)
         for k in ("p_carbon", "F_loc", "avail", "ramp1", "cer_ratio", "r_debt", "infl", "util"): vv[k] = float(S[k][j])
-        vv["fee_ffb"] = v["fee_ffb"] * float(S["fee"][j])
-        if S["tier"][j]: vv["tariff1"], vv["tariff2"] = 0.9 * v["tariff1"], 0.9 * v["tariff2"]
+        vv["fee_ffb"] = v["fee_ffb"] * float(S["fee"][j]); vv["diesel_L_tffb"] = float(S["diesel"][j])
+        if S["tier"][j]: vv["tariff1"], vv["tariff2"], vv["F_loc"] = 7.44, 4.46, 1.0
         o = run(vv, emult=float(S["emult"][j]), capex_mult=float(S["capex"][j]), opex_mult=float(S["opex"][j]))
         NPV[j], IRR[j], PB[j] = o["NPV"], o["IRR"], o["PBP"]
     rank = lambda x: np.argsort(np.argsort(x))
@@ -387,23 +429,35 @@ def pct(x, q, fill=-1.0):
     x = np.where(np.isfinite(x), x, fill); return float(np.percentile(x, q))
 
 # ------------------------------------------------------------------------------------------- skala 30/45/60
-def tier(t):
+def tier_ctx(t):
+    """konteks tier (30/45/60 t TBS/jam): (tech, scale CAPEX, perubahan asumsi). Skala modular: jumlah tangki identik 980 m3 dan genset mengikuti process/outputs/results.json."""
     T_ = R["tiers"][t]; f = T_["ffb_tph"] / 45.0
-    tech = dict(TECH)
+    tech = dict(TECH45)
     gy = T_["GWh_y"]
     tech.update(n_vessel=T_["N_modules"], chp_kWe=T_["chp"]["P_inst"], P_net=T_["P_net"], P_gross=T_["P_gross"], A_lam=T_["settler"]["A_lam"],
-                E_year_GWh=gy, Eg_year_GWh=TECH["Eg_year_GWh"] * gy / TECH["E_year_GWh"], ffb_tph=T_["ffb_tph"], ffb_ty_nom=TECH["ffb_ty_nom"] * f,
-                base_t=TECH["base_t"] * f, proj_t=TECH["proj_t"] * f, eff_t_nom=TECH["eff_t_nom"] * f, naoh_kgd=TECH["naoh_kgd"] * f, gh_m3=TECH["gh_m3"] * f,
-                plot_m2=TECH["plot_m2"] * (0.6 + 0.4 * T_["N_modules"] / TECH["n_vessel"]),
-                truckloads=int(round(TECH["truckloads"] + 2 * (T_["N_modules"] - TECH["n_vessel"]))))
-    v = vals()
-    if T_["P_net"] > 1000: v["tariff1"], v["tariff2"], v["cap_kW"] = 9.81, 5.89, 3000.0
-    return run(v, tech=tech, scale=f ** 0.6)
+                E_year_GWh=gy, Eg_year_GWh=TECH45["Eg_year_GWh"] * gy / TECH45["E_year_GWh"], ffb_tph=T_["ffb_tph"], ffb_ty_nom=TECH45["ffb_ty_nom"] * f,
+                base_t=TECH45["base_t"] * f, proj_t=TECH45["proj_t"] * f, eff_t_nom=TECH45["eff_t_nom"] * f, naoh_kgd=TECH45["naoh_kgd"] * f, gh_m3=TECH45["gh_m3"] * f,
+                plot_m2=TECH45["plot_m2"] * (0.6 + 0.4 * T_["N_modules"] / TECH45["n_vessel"]),
+                truckloads=int(round(TECH45["truckloads"] + 2 * (T_["N_modules"] - TECH45["n_vessel"]))), pome_m3d=TECH45["pome_m3d"] * f, pome_m3y_nom=TECH45["pome_m3y_nom"] * f)
+    ov = dict(cap_kW=float(int(T_["P_net"] // 100) * 100))                                   # kontrak ekspor = daya neto hari nameplate dibulatkan ke bawah 100 kW
+    if T_["chp"]["P_inst"] <= 1000: ov.update(tariff1=10.18, tariff2=6.11)                   # kelas <= 1 MW (kapasitas terpasang)
+    return tech, f ** 0.6, ov
+
+def tier(t, v=None, **kw):
+    tech, sc, ov = tier_ctx(t)
+    v = dict(v or vals()); v.update(ov)
+    return run(v, tech=tech, scale=sc, **kw)
+
+# jadikan TECH (dipakai seluruh modul) = konfigurasi komersial BASE_TIER; modul acuan tetap TECH45
+BASE_SCALE = 1.0
+if BASE_TIER != "45":
+    _t, BASE_SCALE, _ov = tier_ctx(BASE_TIER); TECH.clear(); TECH.update(_t)
+    for _k, _x in _ov.items(): A[_k] = (_x,) + tuple(A[_k][1:])
 
 # ------------------------------------------------------------------------------------------- armada perusahaan
-ROLL = {2027: 1, 2028: 1, 2029: 2, 2030: 2, 2031: 2, 2032: 2, 2033: 2, 2034: 3}     # 15 set s/d 2034 (SOM defensif [R3]: 15-20)
+ROLL = {2027: 1, 2028: 1, 2029: 1, 2030: 1, 2031: 1, 2032: 1, 2033: 2, 2034: 2}     # 10 set s/d 2034 (~17% SAM dasar 57 PKS; ~1 MW/th = 11% laju bangun PLTBg nasional)
 LEARN_SHARE = 0.60          # porsi FCI yang turun dengan kurva belajar (tangki, skid, rekayasa, pemasangan); genset/transpor tidak
-def fleet(v=None, lr=0.90, foak=1.20, overhead0=450000.0, oh_growth=0.10):
+def fleet(v=None, lr=0.90, foak=1.20, overhead0=450000.0, oh_growth=0.07):
     v = dict(v or vals())
     last = max(ROLL) + int(v["n_op"]); years = list(range(2026, last + 1)); T = len(years)
     agg = {k: np.zeros(T) for k in ("rev", "opex", "ebitda", "capex", "fcff", "tax", "sets_new", "sets_op", "E", "co2", "rev_fee", "rev_el", "rev_c")}

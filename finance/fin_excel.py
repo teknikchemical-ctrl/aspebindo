@@ -39,7 +39,7 @@ def build(RES):
     TK = [("P_gross", T_["P_gross"], "kWe", "Daya kotor genset pada hari nameplate"), ("P_net", T_["P_net"], "kWe", "Daya neto pada hari nameplate"),
           ("E_year", T_["E_year_GWh"], "GWh/th", "Energi neto tahunan, simulasi 365 hari proses (util proses, Minggu libur, 14 hari henti)"),
           ("Eg_year", T_["Eg_year_GWh"], "GWh/th", "Energi kotor tahunan, simulasi yang sama"), ("up", T_["util_proc"], "-", "Util pada simulasi tahunan proses"),
-          ("ffb", T_["ffb_ty_nom"], "t TBS/th", "45 t/jam x 20 jam x 300 hari (dikali util)"), ("days", T_["days_yr"], "hari/th", "Hari olah"),
+          ("ffb", T_["ffb_ty_nom"], "t TBS/th", "nameplate x 20 jam x 300 hari (dikali util)"), ("days", T_["days_yr"], "hari/th", "Hari olah"),
           ("poly", T_["polymer_kg_tffb"], "kg/t TBS", "Polimer (neraca massa, 8 kg/t DS)"), ("ac", T_["ac_kg_tffb"], "kg/t TBS", "Karbon aktif penjaga (neraca massa)"),
           ("naoh", T_["naoh_kgd"], "kg/hari", "NaOH P95 (MC proses)"),
           ("base", T_["base_t"], "tCO2e/th", "Baseline kolam terbuka (AMS-III.H, UF 0,89) pada util proses"), ("proj", T_["proj_t"], "tCO2e/th", "Emisi proyek (bocor, CH4 terlarut, slip, flare, efluen MCF proses)"),
@@ -66,15 +66,33 @@ def build(RES):
     wa.write(r + 3, 4, "Fraksi energi yang dapat diekspor di bawah kapasitas kontrak PLN")
     wb.define_name("t_capf", "=Asumsi!$B$%d" % (r + 4)); r += 5
     wa.write(r, 0, "WACC"); wa.write_formula(r, 1, "=a_debt_frac*a_r_debt*(1-a_tax)+(1-a_debt_frac)*a_r_eq", BPCT, o["wacc"]); wb.define_name("WACC", "=Asumsi!$B$%d" % (r + 1))
+    # ---- kecocokan per jam: tabel dari process/hourly_match.py (simulasi 365 hari), interpolasi linier identik dengan numpy.interp
+    r += 2; wa.write(r, 0, "KECOCOKAN PER JAM beban solar PKS vs keluaran set (process/hourly_match.py)", B); r += 1
+    wa.write(r, 0, "Solar PKS dibakar hanya di jam PKS tidak mengolah (4.260 jam/th pada util 0,75); set menggantikan min(daya neto harian, beban). Kolom y2 = dengan tangki ekualisasi 24 jam (opsi PM-12).", NOTE); r += 1
+    wa.write_row(r, 0, ["Beban rata (kW)", "match tanpa tangki", "match dengan tangki"], H); r += 1
+    xs_, y1_ = F.HM.curve(False); _, y2_ = F.HM.curve(True); r_t0 = r
+    for xx, aa, bb in zip(xs_, y1_, y2_):
+        wa.write_number(r, 0, xx, NUM2); wa.write_number(r, 1, aa, NUM4); wa.write_number(r, 2, bb, NUM4); r += 1
+    XR = "Asumsi!$A$%d:$A$%d" % (r_t0 + 1, r); Y1 = "Asumsi!$B$%d:$B$%d" % (r_t0 + 1, r); Y2 = "Asumsi!$C$%d:$C$%d" % (r_t0 + 1, r)
+    wb.define_name("mt_x", "=" + XR); wb.define_name("mt_y1", "=" + Y1); wb.define_name("mt_y2", "=" + Y2)
+    r += 1
+    wa.write(r, 0, "ffb45"); wa.write_number(r, 1, F.FFB45, NUM); wa.write(r, 4, "TBS/th nameplate set acuan 45 t/jam (skala profil harian)"); wb.define_name("t_ffb45", "=Asumsi!$B$%d" % (r + 1)); r += 1
+    wa.write(r, 0, "load_kW"); wa.write_formula(r, 1, "=t_ffb*a_util*a_diesel_L_tffb/a_sfc/(8760-6000*a_util)/(t_ffb/t_ffb45)", NUM2, F.load_kW(v) / (T_["ffb_ty_nom"] / F.FFB45))
+    wa.write(r, 4, "Beban solar rata-rata pada jam tidak olah, dinormalkan ke set 45 t/jam (kW)"); wb.define_name("t_load", "=Asumsi!$B$%d" % (r + 1)); r += 1
+    wa.write(r, 0, "xc"); wa.write_formula(r, 1, "=MIN(MAX(t_load,INDEX(mt_x,1)),INDEX(mt_x,ROWS(mt_x))-0.000000001)", NUM2, min(max(F.load_kW(v), 1.0), 1500.0)); wb.define_name("t_xc", "=Asumsi!$B$%d" % (r + 1)); r += 1
+    wa.write(r, 0, "mpos"); wa.write_formula(r, 1, "=MATCH(t_xc,mt_x,1)", NUM, 1); wb.define_name("t_mpos", "=Asumsi!$B$%d" % (r + 1)); r += 1
+    ip = lambda Y: "INDEX(%s,t_mpos)+(t_xc-INDEX(mt_x,t_mpos))*(INDEX(%s,t_mpos+1)-INDEX(%s,t_mpos))/(INDEX(mt_x,t_mpos+1)-INDEX(mt_x,t_mpos))" % (Y, Y, Y)
+    wa.write(r, 0, "match"); wa.write_formula(r, 1, "=IF(a_buffer>=0.5,%s,%s)" % (ip("mt_y2"), ip("mt_y1")), NUM4, F.match_f(v))
+    wa.write(r, 4, "Fraksi beban solar yang dapat dilayani set per jam (interpolasi tabel di atas)"); wb.define_name("t_match", "=Asumsi!$B$%d" % (r + 1))
 
     # ====================================================== CAPEX
     wc = wb.add_worksheet("CAPEX"); wc.set_column(0, 0, 14); wc.set_column(1, 1, 66); wc.set_column(2, 5, 14); wc.set_column(6, 6, 56)
-    wc.write(0, 0, "CAPEX 1 set standar 45 t TBS/jam (USD 2026; dieskalasi ke tahun konstruksi)", TT)
+    wc.write(0, 0, "CAPEX 1 set komersial 60 t TBS/jam (4 tangki GFS + tangki ekualisasi PM-12) (USD 2026; dieskalasi ke tahun konstruksi)", TT)
     wc.write_row(2, 0, ["Kelompok", "Item", "Jumlah", "Satuan", "Harga satuan USD", "Total USD", "Dasar"], H)
     r = 3; first = r; pec_r = []; tang_r = []
     def unit_f(n):
         if "tangki GFS dibaut" in n: return "=a_c_gfs"
-        if n.startswith("TK-101"): return "=a_c_gfs*1.3"
+        if n.startswith("TK-101") or n.startswith("TK-102"): return "=a_c_gfs*1.3"
         if n.startswith("PM-8"): return "=a_c_chp"
         if n.startswith("PM-7"): return "=90*t_gh_m3+50000"
         return None
@@ -85,7 +103,8 @@ def build(RES):
         elif g == "KONTINGENSI":
             wc.write_formula(r, 2, "=a_cont", NUM4, q); wc.write_formula(r, 4, "=SUM(F%d:F%d)" % (first + 1, r), NUM, c)
         else:
-            wc.write_number(r, 2, q, NUM2)
+            if n.startswith("TK-102"): wc.write_formula(r, 2, "=IF(a_buffer>=0.5,%s,0)" % repr(float(q)), NUM2, q)
+            else: wc.write_number(r, 2, q, NUM2)
             if g == "PEC" and unit_f(n): wc.write_formula(r, 4, unit_f(n), NUM, c)
             elif n.startswith("Interkoneksi PLN"): wc.write_formula(r, 4, "=a_c_grid", NUM, c)
             else: wc.write_number(r, 4, c, INP)
@@ -129,7 +148,7 @@ def build(RES):
 
     # ====================================================== Arus Kas
     wf = wb.add_worksheet("Arus Kas"); wf.set_column(0, 0, 44); wf.set_column(1, 1, 3); wf.freeze_panes(3, 2)
-    wf.write(0, 0, "MODEL ARUS KAS PROYEK v3 (USD nominal; negatif = keluar). 1 set 45 t TBS/jam, BOO, segmen S3", TT)
+    wf.write(0, 0, "MODEL ARUS KAS PROYEK v3 (USD nominal; negatif = keluar). 1 set 60 t TBS/jam + PM-12, BOO, PKS solar tergantikan 2,0 L/t", TT)
     yrs = o["years"]; nY = len(yrs); C0 = 2; wf.set_column(C0, C0 + nY - 1, 11.5)
     rows = {}
     col = lambda i: coln(C0 + i)
@@ -147,8 +166,8 @@ def build(RES):
     row("yr", "Tahun kalender", lambda i: yrs[i], fmt=NUM)
     row("f", "Faktor operasi (ramp-up)", lambda i: "=IF(%s=0,0,IF(%s=1,a_ramp1,1))" % (k_(i), k_(i)), o["f"], NUM2)
     row("E", "Listrik neto (GWh)", lambda i: "=t_E_year*a_util/t_up*a_avail*%s" % R_("f", i), o["E"], NUM2)
-    row("Ecap", "  ke PKS menggantikan solar (GWh)", lambda i: "=MIN(t_ffb*a_util*a_diesel_L_tffb/a_sfc/1000000*a_avail*IF(%s>=1,1,%s),%s)" % (R_("f", i), R_("f", i), R_("E", i)), o["Ecap"], NUM2)
-    row("Eexp", "  ekspor ke PLN (GWh)", lambda i: "=(%s-%s)*t_capf" % (R_("E", i), R_("Ecap", i)), o["Eexp"], NUM2)
+    row("Ecap", "  ke PKS menggantikan solar (GWh)", lambda i: "=MIN(t_ffb*a_util*a_diesel_L_tffb/a_sfc/1000000*t_match*a_avail*IF(%s>=1,1,%s),%s)" % (R_("f", i), R_("f", i), R_("E", i)), o["Ecap"], NUM2)
+    row("Eexp", "  ekspor ke PLN (GWh)", lambda i: "=(%s-%s)*t_capf*a_export_on" % (R_("E", i), R_("Ecap", i)), o["Eexp"], NUM2)
     row("tar", "Tarif PLN (USD/kWh)", lambda i: "=IF(%s=0,0,IF(%s<=10,a_tariff1*a_F_loc,a_tariff2)/100)" % (k_(i), k_(i)), o["tariff"], NUM4)
     row("tarc", "Harga listrik ke PKS (USD/kWh)", lambda i: "=IF(%s=0,0,a_p_captive*%s)" % (k_(i), esc(i)), o["tar_c"], NUM4)
     row("rfee", "Jasa pengolahan POME & kepatuhan", lambda i: "=IF(%s=0,0,t_ffb*a_util*a_fee_ffb*%s)" % (k_(i), esc(i)), o["rev_fee"])
@@ -318,34 +337,36 @@ def build(RES):
           ("POME nasional", MK.POME_NAT, "m3/th", "M", "125-170 juta m3 [R3]"),
           ("Porsi PKS 30-60 t/jam", MK.SH_SIZE, "-", "L", "Estimasi kelas kapasitas [R3]; perlu CSV Trase"),
           ("Porsi Sumatera + Kalimantan", MK.SH_REGION, "-", "M", "Sebaran PKS [R3]"),
-          ("Porsi PKS bergantung diesel (S3/S4)", MK.SH_DIESEL, "-", "EST", "Kaltim 12/62 PKS dekat desa diesel-saja (Jakarta Post 2015) + emplasmen/KCP; rentang 0,15-0,35"),
-          ("POME per set (m3/th)", mk["pome_set"], "m3/th", "Model", "45 t/jam x 20 x 300 x util x 0,65"),
+          ("Porsi PKS solar terukur >= 2 L/t TBS", MK.SH_DIESEL, "-", "EST", "HIPOTESIS: basis lemah (Kaltim 12/62 desa diesel-saja bukan solar PKS); rentang 0,10-0,35; validasi survei 30 PKS (gerbang G0)"),
+          ("Porsi PKS dengan jaringan 20 kV <= 2 km", MK.SH_GRID, "-", "EST", "HIPOTESIS: ekspor layak; rentang 0,40-0,80"),
+          ("Porsi PKS bebas program biogas grup", MK.SH_FREE, "-", "EST", "HIPOTESIS: di luar Wilmar, Musim Mas, Asian Agri, dll.; rentang 0,60-0,90"),
+          ("POME per set (m3/th)", mk["pome_set"], "m3/th", "Model", "60 t/jam x 20 x 300 x util x 0,65"),
           ("Pendapatan rata-rata per set (USD/th)", mk["rev_avg"], "USD/th", "Model", "Arus Kas, rata-rata 20 th"),
           ("Set SOM s/d 2034 (rencana armada)", mk["sets_SOM"], "set", "Rencana", "ROLL di fin_core"),
           ("MWe terpasang per set", F.TECH["chp_kWe"] / 1000, "MWe", "Model", "2 x 600 kWe")]
     for j, (lab, val, u, cf_, src) in enumerate(MR):
         wp.write(3 + j, 0, lab); wp.write_number(3 + j, 1, float(val), INP); wp.write(3 + j, 2, u); wp.write(3 + j, 3, cf_); wp.write(3 + j, 4, src, TXT)
-    r0 = 15; wp.write_row(r0, 0, ["Tingkat", "PKS / set", "MWe", "Pendapatan USD/th", "Aturan"], H)
-    FUN = [("TAM (volume POME semua PKS tanpa penangkap metana)", "=B6*(1-B5)/B10", mk["rows"][0]),
+    r0 = 17; wp.write_row(r0, 0, ["Tingkat", "PKS / set", "MWe", "Pendapatan USD/th", "Aturan"], H)
+    FUN = [("TAM (volume POME semua PKS tanpa penangkap metana)", "=B6*(1-B5)/B12", mk["rows"][0]),
            ("SAM-luas (+30-60 t/jam, Sumatera/Kalimantan)", "=B4*(1-B5)*B7*B8", mk["rows"][1]),
-           ("SAM (+bergantung diesel: jendela kesepakatan terbuka)", "=B%d*B9" % (r0 + 3), mk["rows"][2]),
-           ("SOM 2034", "=B12", mk["rows"][3])]
+           ("SAM (+bergantung diesel: jendela kesepakatan terbuka)", "=B%d*B9*B10*B11" % (r0 + 3), mk["rows"][2]),
+           ("SOM 2034", "=B14", mk["rows"][3])]
     for j, (lab, f, rw) in enumerate(FUN):
         rr = r0 + 1 + j; wp.write(rr, 0, lab, B); wp.write_formula(rr, 1, f, BNUM, rw["sets"])
-        wp.write_formula(rr, 2, "=B%d*B13" % (rr + 1), NUM, rw["MW"]); wp.write_formula(rr, 3, "=B%d*B11" % (rr + 1), BNUM, rw["rev"]); wp.write(rr, 4, rw["rule"], TXT)
+        wp.write_formula(rr, 2, "=B%d*B15" % (rr + 1), NUM, rw["MW"]); wp.write_formula(rr, 3, "=B%d*B13" % (rr + 1), BNUM, rw["rev"]); wp.write(rr, 4, rw["rule"], TXT)
     wp.write(r0 + 6, 0, "Pangsa SOM / SAM", B); wp.write_formula(r0 + 6, 1, "=B%d/B%d" % (r0 + 5, r0 + 4), BPCT, mk["share"])
     wp.write(r0 + 7, 0, "SOM vs laju bangun PLTBg nasional (9 MW/th) [R3]", B); wp.write_formula(r0 + 7, 1, "=C%d/8/9" % (r0 + 5), BPCT, mk["build_share"])
     wp.write(r0 + 8, 0, "Ekspansi: Malaysia ~315 PKS tanpa penangkap metana [R3] -> setara-set segmen diesel", B); wp.write_number(r0 + 8, 1, mk["my_sets"], NUM)
     wp.write(r0 + 10, 0, "PKS per provinsi (estimasi [R3, L])", B); wp.write_row(r0 + 11, 0, ["Provinsi", "PKS", "SAM (estimasi)"], H)
     for j, (pv, nn) in enumerate(MK.PROV):
         wp.write(r0 + 12 + j, 0, pv); wp.write_number(r0 + 12 + j, 1, nn, NUM)
-        wp.write_formula(r0 + 12 + j, 2, "=B%d*(1-$B$5)*$B$7*$B$9%s" % (r0 + 13 + j, "" if pv == "Lainnya" else ""), NUM, nn * (1 - MK.SH_CAPTURED) * MK.SH_SIZE * MK.SH_DIESEL)
+        wp.write_formula(r0 + 12 + j, 2, "=B%d*(1-$B$5)*$B$7*$B$9*$B$10*$B$11" % (r0 + 13 + j), NUM, nn * (1 - MK.SH_CAPTURED) * MK.SH_SIZE * MK.SH_DIESEL * MK.SH_GRID * MK.SH_FREE)
 
     # ====================================================== Keputusan PKS (rumus hidup)
     mv = MI.mvals(); cm = RES["mill"]; ad = cm["detail"]
     wk = wb.add_worksheet("Keputusan PKS"); wk.set_column(0, 0, 50); wk.set_column(1, 4, 15); wk.set_column(5, 5, 70)
     wk.write(0, 0, "MODEL KEPUTUSAN PKS: apakah layanan BOO lebih murah bagi PKS daripada kolam POME? (rumus hidup)", TT)
-    wk.write(1, 0, "Sudut pandang PKS 45 t TBS/jam, 20 th, USD 2026 dieskalasi a_infl, diskonto biaya modal PKS. Ubah sel kuning di sini atau di Asumsi (fee, util, solar, harga listrik).", NOTE)
+    wk.write(1, 0, "Sudut pandang PKS 60 t TBS/jam, 20 th, USD 2026 dieskalasi a_infl, diskonto biaya modal PKS. Ubah sel kuning di sini atau di Asumsi (fee, util, solar, harga listrik).", NOTE)
     wk.write_row(3, 0, ["Input sisi PKS", "Nilai", "Satuan", "Rendah / Tinggi", "", "Sumber"], H)
     r = 4
     for k, (val, unit, src, lo, hi) in MI.M.items():
@@ -357,7 +378,7 @@ def build(RES):
            ("Enet", "Listrik neto set (kWh/th)", "=t_E_year*a_util/t_up*a_avail*1000000", ad["E_net"]),
            ("Edsl", "Listrik diesel PKS saat ini (kWh/th)", "=K_ffb*a_diesel_L_tffb/a_sfc", ad["E_dsl"]),
            ("cdsl", "Biaya listrik diesel PKS (USD/kWh)", "=a_sfc*m_p_diesel/a_fx+m_genset_om", ad["c_dsl"]),
-           ("cap", "Listrik set ke PKS (kWh/th)", "=MIN(K_Edsl*a_avail,K_Enet)", ad["cap"]),
+           ("cap", "Listrik set ke PKS (kWh/th)", "=MIN(K_Edsl*t_match*a_avail,K_Enet)", ad["cap"]),
            ("land", "Nilai lahan kolam dibebaskan (USD/th)", "=t_land_m2/10000*m_land_margin*1000000/a_fx", ad["land"]),
            ("cake", "Nilai pupuk kue lumpur (USD/th)", "=K_ffb*t_cake/1000*m_cake_val", ad["cake"]),
            ("cnet", "Pendapatan karbon neto pengembang (USD/th)", "=t_ER*a_cer_ratio*(a_p_carbon-a_c_levy)", ad["cnet"]),
@@ -491,7 +512,7 @@ def build(RES):
         wsr.write_row(3 + j, 0, [x if isinstance(x, (int, float)) and not isinstance(x, bool) else ("" if x is None else str(x)) for x in vals_])
     # ====================================================== Ringkasan
     ws0.set_column(0, 0, 46); ws0.set_column(1, 1, 18)
-    ws0.write(0, 0, "MODEL KEUANGAN v3 - SET BIOGAS KONTAK TERMOFILIK YANG DAPAT DIPINDAH (1 set PKS 45 t TBS/jam, BOO, segmen bergantung diesel)", TT)
+    ws0.write(0, 0, "MODEL KEUANGAN v3 - SET BIOGAS KONTAK TERMOFILIK YANG DAPAT DIPINDAH (1 set PKS 60 t TBS/jam + PM-12, BOO, solar tergantikan 2,0 L/t)", TT)
     ws0.write(1, 0, "Alur: Asumsi -> CAPEX/OPEX -> Arus Kas -> Indikator; Keputusan PKS (PKS vs kolam); Segmen; Pasar; Pesaing; USP; Sumber. Sel kuning = input.", NOTE)
     KP = [("FCI 2027 (USD)", "=FCI", o["fci"], BNUM), ("USD per kWe kotor (2026)", "=FCI26/t_P_gross", o["fci26"] / T_["P_gross"], BNUM),
           ("Pendapatan th 3 (USD)", "='Arus Kas'!F%d" % (rows["rev"] + 1), o["rev"][3], BNUM), ("EBITDA th 3 (USD)", "='Arus Kas'!F%d" % (rows["ebitda"] + 1), o["ebitda"][3], BNUM),

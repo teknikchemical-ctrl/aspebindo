@@ -13,13 +13,14 @@ fl = F.fleet(v)
 tiers = {t: F.tier(t) for t in ("30", "45", "60")}
 mill = MI.compare(v); fw = MI.fee_window(v); seg = MI.segments(v); wf = MI.waterfall(v)
 comp = MK.compet_matrix(mill); reloc = MK.relocation_value(); usp = MK.usp(o, mill, reloc)
-v0 = dict(v); v0["fee_ffb"] = 0.0
-vg = dict(v); vg["diesel_L_tffb"] = 0.53
-vc = dict(v); vc["p_carbon"] = 8.3
-SC = [("Dasar S3\n(fee USD %.2f/t)" % v["fee_ffb"], o), ("Tanpa fee\nPOME", F.run(v0)), ("PKS terhubung PLN\n(S1, solar 0,53 L/t)", F.run(vg)),
-      ("Karbon USD 8,3/t\n(puncak 2024)", F.run(vc)), ("Relokasi\nth-11", F.run(v, relocate=True)),
-      ("Unit ke-10\n(kurva belajar)", F.run(v, capex_mult=F.LEARN_SHARE * 10 ** np.log2(0.9) + 1 - F.LEARN_SHARE)),
-      ("Set 30 t/jam", tiers["30"]), ("Set 60 t/jam", tiers["60"])]
+def var(**kw):
+    x = dict(v); x.update(kw); return x
+LRN = F.LEARN_SHARE * 10 ** np.log2(0.9) + 1 - F.LEARN_SHARE
+SC = [("Kasus dasar\n(60 t/jam + PM-12)", o), ("Tanpa tangki\nekualisasi", F.run(var(buffer=0))), ("Solar tergantikan\n1,0 L/t", F.run(var(diesel_L_tffb=1.0))),
+      ("Solar tergantikan\n3,0 L/t", F.run(var(diesel_L_tffb=3.0))), ("Tarif excess power\n7,44 USc", F.run(var(tariff1=7.44, tariff2=4.46))),
+      ("Faktor lokasi F\n1,10", F.run(var(F_loc=1.10))), ("Karbon USD 8,3/t\n(puncak 2024)", F.run(var(p_carbon=8.3))), ("Tanpa jasa\nPOME", F.run(var(fee_ffb=0.0))),
+      ("PKS terisolasi\n(tanpa ekspor)", F.run(var(export_on=0))), ("Relokasi\nth-11", F.run(v, relocate=True)), ("Unit ke-10\n(kurva belajar)", F.run(v, capex_mult=LRN)),
+      ("Modul acuan\n45 t/jam", tiers["45"]), ("Set 30 t/jam", tiers["30"])]
 figs = dict(pasar=G.fig_market(o), porter=G.fig_porter_pestle(), capex=G.fig_capex_opex(o), cf=G.fig_cashflow(o),
             npv=G.fig_npv_tornado(o, torn, curve), pb=G.fig_payback(o), bep=G.fig_bep(o, be), mc=G.fig_mc(o, mc), fleet=G.fig_fleet(fl),
             sc=G.fig_scenarios(SC), mill=G.fig_mill(mill, wf, fw), seg=G.fig_segments(seg, v["fee_ffb"]), comp=G.fig_compet(comp))

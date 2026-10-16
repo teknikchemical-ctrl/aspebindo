@@ -58,7 +58,7 @@ def build(RES):
     # ---------------------------------------------------------------- 1
     S.append(Paragraph("1. Ringkasan", H1))
     S.append(Paragraph(
-        "<b>Pertanyaan PKS: apakah lebih murah menyerahkan POME kepada kami daripada mempertahankan kolam?</b> Untuk PKS 45 t TBS/jam yang bergantung pada solar "
+        "<b>Pertanyaan PKS: apakah lebih murah menyerahkan POME kepada kami daripada mempertahankan kolam?</b> Untuk PKS 60 t TBS/jam yang bergantung pada solar "
         "(emplasmen, bengkel, kernel plant), jawabannya <b>ya</b>: biaya pengelolaan POME + listrik turun dari USD %s menjadi USD %s per t TBS (<b>hemat %s</b>, USD %s ribu/tahun) "
         "tanpa CAPEX PKS. Penghematan berasal dari listrik biogas yang menggantikan solar (USD %s/kWh vs diesel USD %s/kWh), kolam anaerobik yang tidak perlu dikuras, "
         "risiko penyegelan yang turun, lahan dan pupuk. Ekspor listrik ke PLN dan kredit karbon milik pengembang membuat jasa pengolahan cukup USD %s/t TBS "
@@ -108,7 +108,7 @@ def build(RES):
     rows.append(["<b>Total tahunan</b>"] + ["<b>%s</b>" % n(cm[o_]["annual"]) for o_ in "ABCD"])
     rows.append(["CAPEX dibayar PKS"] + [n(cm[o_]["capex"]) for o_ in "ABCD"])
     rows.append(["<b>Biaya terlevelisasi USD/t TBS</b>"] + ["<b>%s</b>" % n(cm[o_]["per_t"], 2) for o_ in "ABCD"])
-    S.append(KT("Tabel 1. Model Keputusan PKS 45 t TBS/jam, Segmen Bergantung Diesel (negatif = manfaat)", tbl(rows, [52, 28, 30, 28, 28], num_cols=(1, 2, 3, 4))))
+    S.append(KT("Tabel 1. Model Keputusan PKS 60 t TBS/jam, Solar Tergantikan 2,0 L/t (negatif = manfaat)", tbl(rows, [52, 28, 30, 28, 28], num_cols=(1, 2, 3, 4))))
     S.append(Paragraph(
         "Opsi D <b>%s lebih murah</b> daripada status quo. Opsi B dan C bahkan lebih murah lagi di atas kertas, tetapi menuntut CAPEX PKS USD %s-%s juta, operasi oleh PKS sendiri, "
         "dan menanggung risiko kinerja (faktor kapasitas PLTBg POME nyata 57-85%%; kasus Bangka IRR 6,75%% karena POME kurang [R2]). Inilah alasan <10-15%% PKS Indonesia sudah "
@@ -160,7 +160,7 @@ def build(RES):
                                                                               [10, 58, 13, 13, 11, 65], num_cols=(2, 3, 4))))
     # ---------------------------------------------------------------- 8 lokasi
     S.append(Paragraph("8. Integrasi Fisik di Lokasi PKS", H1))
-    if os.path.exists(alir): S.append(fig(alir, 160, "Gambar 6. Diorama Lokasi PKS 45 t TBS/jam dengan Set Biogas"))
+    if os.path.exists(alir): S.append(fig(alir, 160, "Gambar 6. Diorama Lokasi PKS 45 t TBS/jam dengan Modul Acuan Set Biogas"))
     lines = [[l, n(L_), n(cm_, 0), n(c)] for l, L_, cm_, c in T_["site_lines"]]
     S.append(KT("Tabel 5. Interkoneksi dari Model 3D Lokasi (masuk CAPEX)", tbl([["Rute", "Panjang m", "USD/m", "Biaya USD"]] + lines, [100, 20, 18, 26], num_cols=(1, 2, 3))))
     # ---------------------------------------------------------------- 9 capex opex
@@ -171,7 +171,7 @@ def build(RES):
         "overhaul genset (th 8, 16) dan atap membran tangki (th 12) dimodelkan pada tahun terjadinya."
         % (T_["n_vessel"], n(T_["V_tank"]), n(v["c_gfs"]), n(T_["chp_kWe"]), n(v["c_chp"]), n(T_["A_lam"]), mu(o["fci26"]), n(o["fci26"] / T_["chp_kWe"] * 1000), n((o["opF"] + o["opV"]) / 1e3)), P))
     rows = [["Item", "Jumlah", "Total USD"]] + [[nm, "%s %s" % (n(q, 2 if q < 1 else 0), u), n(t)] for g, nm, q, u, c, t, b in o["capex_rows"]] + [["<b>FCI (2026)</b>", "", "<b>%s</b>" % n(o["fci26"])]]
-    S.append(KT("Tabel 6. Rincian CAPEX 1 Set 45 t TBS/jam (USD 2026)", tbl(rows, [110, 28, 28], bold_last=True, num_cols=(2,))))
+    S.append(KT("Tabel 6. Rincian CAPEX 1 Set 60 t TBS/jam (USD 2026)", tbl(rows, [110, 28, 28], bold_last=True, num_cols=(2,))))
     orow = [["Komponen OPEX", "Jenis", "USD/th"]] + [[k, "Tetap" if t == "F" else "Variabel", n(val)] for k, (val, t) in o["opex_items"].items()] + [["MRV karbon (selama periode kredit)", "Tetap", n(v["c_mrv"])], ["<b>Total</b>", "", "<b>%s</b>" % n(o["opF"] + o["opV"] + v["c_mrv"])]]
     S.append(KT("Tabel 7. OPEX Tahun Penuh (USD 2026)", tbl(orow, [110, 28, 28], bold_last=True, num_cols=(2,))))
     S.append(fig(FG["capex"], 168, "Gambar 7. Struktur CAPEX (a), OPEX (b), dan Bauran Pendapatan Tahun ke-3 (c)"))
@@ -214,7 +214,7 @@ def build(RES):
            ["PKS hemat vs kolam", pc(cm["saving_D_vs_A_pct"], 0), "> 0", dec(cm["saving_D_vs_A_pct"] > 0)],
            ["Fee di dalam jendela", "USD %s/t TBS" % n(v["fee_ffb"], 2), "%s-%s" % (n(fw["fee_min"], 2), n(fw["fee_max"], 2)), dec(fw["fee_min"] < v["fee_ffb"] < fw["fee_max"])],
            ["Puncak kebutuhan dana", "USD %s juta" % mu(o["peak_funding"]), "Struktur pendanaan", "Informasi"]]
-    S.append(KT("Tabel 9. Ringkasan Indikator Kelayakan (1 set 45 t TBS/jam, segmen S3)", tbl(ind, [56, 40, 44, 26], num_cols=(1,))))
+    S.append(KT("Tabel 9. Ringkasan Indikator Kelayakan (1 set 60 t TBS/jam + PM-12)", tbl(ind, [56, 40, 44, 26], num_cols=(1,))))
     # ---------------------------------------------------------------- 12 BEP
     S.append(Paragraph("12. Titik Impas", H1))
     S.append(Paragraph(

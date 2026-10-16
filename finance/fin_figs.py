@@ -157,7 +157,7 @@ def fig_cashflow(o):
     lo = min(a.get_ylim()[0], b.get_ylim()[0]); hi = max(a.get_ylim()[1], b.get_ylim()[1]); a.set_ylim(lo, hi); b.set_ylim(lo, hi)
     b.annotate("Puncak pendanaan\nUSD %.2f juta" % (o["peak_funding"] / M), (y[0], cum[0]), xytext=(y[0] + 1.5, cum[0] + .3), arrowprops=dict(arrowstyle="->"), fontsize=8)
     h1, l1 = a.get_legend_handles_labels(); h2, l2 = b.get_legend_handles_labels(); a.legend(h1 + h2, l1 + l2, frameon=False, loc="upper left", fontsize=8)
-    a.set_xticks(y[::2]); a.set_title("Arus kas tahunan dan kumulatif proyek %d-%d (1 set 45 t TBS/jam)" % (y[0], y[-1]))
+    a.set_xticks(y[::2]); a.set_title("Arus kas tahunan dan kumulatif proyek %d-%d (1 set 60 t TBS/jam)" % (y[0], y[-1]))
     return save(fig, "g04_arus_kas.png")
 
 def fig_npv_tornado(o, torn, curve):

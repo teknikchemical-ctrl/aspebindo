@@ -2,7 +2,7 @@
 """
 Model Keputusan PKS (Mill Decision Model) - apakah layanan BOO ini LEBIH MURAH bagi PKS daripada status quo kolam POME?
 
-Sudut pandang PKS 45 t TBS/jam, 20 tahun operasi (2028-2047), USD nominal, didiskonto pada biaya modal PKS.
+Sudut pandang PKS 60 t TBS/jam, 20 tahun operasi (2028-2047), USD nominal, didiskonto pada biaya modal PKS.
 Opsi:
   A  Status quo: kolam anaerobik terbuka + aplikasi lahan; listrik di luar jam olah / emplasmen dari genset diesel.
   B  PKS membangun kolam tertutup (covered lagoon) sendiri: CAPEX ditanggung PKS, operasi sendiri, ekspor PLN + karbon milik PKS.
@@ -50,20 +50,27 @@ def af(r, g, n):
 
 def dfs(r, n): return (1 - (1 + r) ** -n) / r
 
-def annual(v=None, m=None):
+def _tv(tier, v):
+    """(tech, skala capex, asumsi) untuk tier None/45 (acuan) atau 30/60"""
+    v = dict(v or F.vals())
+    if tier in (None, "45", 45): return T, 1.0, v
+    tech, sc, ov = F.tier_ctx(str(tier)); v.update(ov); return tech, sc, v
+
+def annual(v=None, m=None, tier=None):
     """biaya/manfaat tahunan (USD 2026, tahun penuh) untuk opsi A-D; positif = biaya PKS"""
-    v = dict(v or F.vals()); m = dict(m or mvals())
+    m = dict(m or mvals()); Tk, sc_, v = _tv(tier, v); T = Tk; f_t = Tk["ffb_ty_nom"] / F.TECH["ffb_ty_nom"]
     fx = v["fx"]; ffb = T["ffb_ty_nom"] * v["util"]; pome = ffb * T["pome_m3d"] / 900.0
-    eff_m3 = pome * F.R["effluent"]["Q_m3d"] / T["pome_m3d"]
-    k = F.kfac(v)
+    eff_m3 = pome * F.R["effluent"]["Q_m3d"] / F.TECH["pome_m3d"]
+    k = F.kfac(v, T)
     E_net = T["E_year_GWh"] * k * v["avail"] * 1e6                     # kWh/th netto set D
     E_dsl = ffb * v["diesel_L_tffb"] / v["sfc"]                          # kWh/th diesel PKS
     c_dsl = v["sfc"] * m["p_diesel"] / fx + m["genset_om"]               # USD/kWh listrik diesel PKS
-    cap = min(E_dsl * v["avail"], E_net)                                 # listrik set ke PKS (saat set tidak tersedia, genset diesel jalan)
+    mt = F.match_f(v, T)                                                    # kecocokan per jam beban solar dengan keluaran set (process/hourly_match.py)
+    cap = min(E_dsl * mt * v["avail"], E_net)                            # listrik set ke PKS (saat set tidak tersedia / tidak ada keluaran, genset diesel jalan)
     risk = lambda p: p * m["closure_d"] * ffb / T["days_yr"] * m["margin"]
-    land = F.SITE.get("land_freed_m2", 11081.0) / 1e4 * m["land_margin"] * 1e6 / fx
+    land = F.SITE.get("land_freed_m2", 11081.0) * f_t / 1e4 * m["land_margin"] * 1e6 / fx
     cake = ffb * T["cake_kg_tffb"] / 1000 * m["cake_val"]
-    ER, _ = F.carbon_t(v); cnet = ER * v["cer_ratio"] * (v["p_carbon"] - v["c_levy"])
+    ER, _ = F.carbon_t(v, T); cnet = ER * v["cer_ratio"] * (v["p_carbon"] - v["c_levy"])
     A = {"Listrik diesel PKS (solar + O&M genset)": E_dsl * c_dsl,
          "Pengurasan lumpur kolam": m["desludge"] * 1e6 / fx,
          "Perawatan kolam & pompa": m["pond_om"] * 1e6 / fx,
@@ -96,13 +103,13 @@ def annual(v=None, m=None):
              "Lahan kolam dibebaskan": -land * frees}
         out[o_] = X
         out[o_ + "_capex"] = cpx * 1e6 * T["chp_kWe"] / 1000.0
-    out.update(ffb=ffb, E_dsl=E_dsl, cap=cap, c_dsl=c_dsl, E_net=E_net, cnet=cnet, land=land, cake=cake)
+    out.update(ffb=ffb, E_dsl=E_dsl, cap=cap, match=mt, c_dsl=c_dsl, E_net=E_net, cnet=cnet, land=land, cake=cake)
     return out
 
-def compare(v=None, m=None):
+def compare(v=None, m=None, tier=None):
     """NPV biaya 20 th (USD nominal, 2027 = t0) dan biaya terlevelisasi USD 2026/t TBS per opsi"""
     v = dict(v or F.vals()); m = dict(m or mvals())
-    a = annual(v, m); r, g, n = m["r_mill"], v["infl"], int(v["n_op"])
+    a = annual(v, m, tier); r, g, n = m["r_mill"], v["infl"], int(v["n_op"])
     f_ = af(r, g, n); ffb_pv = a["ffb"] * f_                            # levelisasi dalam USD 2026 (biaya dibagi TBS yang 'dieskalasi' sama)
     res = {}
     for o_ in ("A", "B", "C", "D"):
@@ -114,27 +121,39 @@ def compare(v=None, m=None):
     res["af"] = f_; res["ffb_pv"] = ffb_pv; res["detail"] = a
     return res
 
-def fee_window(v=None, m=None):
+def fee_window(v=None, m=None, tier=None):
     """fee minimum (pengembang NPV=0 pada WACC) dan fee maksimum (biaya PKS opsi D = opsi A); juga fee yang membuat D = B"""
     v = dict(v or F.vals()); m = dict(m or mvals())
-    def dev(x): vv = dict(v); vv["fee_ffb"] = x; return F.run(vv)["NPV"]
-    def mill(x, o="A"): vv = dict(v); vv["fee_ffb"] = x; c = compare(vv, m); return c[o]["NPV"] - c["D"]["NPV"]
+    def dev(x): vv = dict(v); vv["fee_ffb"] = x; return F.tier(str(tier), vv)["NPV"] if tier not in (None, "45") else F.run(vv)["NPV"]
+    def mill(x, o="A"): vv = dict(v); vv["fee_ffb"] = x; c = compare(vv, m, tier); return c[o]["NPV"] - c["D"]["NPV"]
     lo = F.solve(dev, -2.0, 8.0); hi = F.solve(lambda x: mill(x, "A"), -2.0, 12.0); hB = F.solve(lambda x: mill(x, "B"), -6.0, 12.0)
-    return dict(fee_min=lo, fee_max=hi, fee_max_vs_B=hB, width=hi - lo if (lo == lo and hi == hi) else float("nan"))
+    def runf(x): vv = dict(v); vv["fee_ffb"] = x; return F.tier(str(tier), vv) if tier not in (None, "45") else F.run(vv)
+    def scan(key, target):
+        """fee terkecil (langkah USD 0,01/t) dengan indikator >= target; nilai tak-terdefinisi (NaN) dilewati"""
+        for x in np.arange(0.0, 6.0, 0.01):
+            y = runf(float(x))[key]
+            if y == y and y >= target: return float(x)
+        return float("nan")
+    dscr = scan("DSCR_min", 1.30)                                                         # DSCR minimum 1,30 (layak dibiayai)
+    eq = scan("IRR_eq", v["r_eq"])                                                        # IRR ekuitas = biaya ekuitas 15%
+    bank = max(x for x in (lo, dscr) if x == x)
+    return dict(fee_min=lo, fee_max=hi, fee_max_vs_B=hB, fee_dscr=dscr, fee_eq=eq, fee_bank=bank,
+                width=hi - lo if (lo == lo and hi == hi) else float("nan"), width_bank=hi - bank if (bank == bank and hi == hi) else float("nan"))
 
-SEGMENTS = [  # (nama, util, L solar/t TBS, catatan)
-    ("S1 PKS terhubung PLN, diesel hanya PKS", 0.75, 0.53, "Konsumsi solar PKS rata-rata [R2]"),
-    ("S2 PKS terhubung PLN, util tinggi", 0.85, 0.53, "PKS dengan pasokan TBS terjamin"),
-    ("S3 PKS bergantung diesel (emplasmen, bengkel, KCP)", 0.75, 3.0, "Kasus dasar; DSNG hemat 2-2,75 jt L/th [R2-tambahan]"),
-    ("S4 PKS off-grid penuh", 0.75, 5.0, "Kaltim: 12 dari 62 PKS dekat desa tanpa listrik/diesel [Jakarta Post 2015]"),
+SEGMENTS = [  # (nama, util, L solar tergantikan/t TBS, ekspor tersedia, catatan)
+    ("S1 PKS terhubung PLN, solar hanya untuk PKS", 0.75, 0.5, 1, "Solar PKS terukur 0,4-1,5 L/t [R6]"),
+    ("S2 PKS terhubung PLN, solar 1,0 L/t", 0.75, 1.0, 1, "Solar tergantikan sedang (emplasmen kecil)"),
+    ("S3 Kasus dasar: solar tergantikan 2,0 L/t", 0.75, 2.0, 1, "Turunan PalmCo 1,9 L/t [R6, keyakinan rendah]"),
+    ("S4 Solar tergantikan 3,0 L/t + jaringan 20 kV", 0.75, 3.0, 1, "Antara PalmCo dan DSNG; wajib log solar PKS"),
+    ("S5 PKS terisolasi 5,0 L/t, tanpa ekspor", 0.75, 5.0, 0, "DSNG 4,8-5,5 L/t [R6]; listrik berlebih tidak terjual"),
 ]
 def segments(v=None, m=None):
     v = dict(v or F.vals()); out = []
-    for nm, u, dl, note in SEGMENTS:
-        vv = dict(v); vv["util"] = u; vv["diesel_L_tffb"] = dl
+    for nm, u, dl, ex, note in SEGMENTS:
+        vv = dict(v); vv["util"] = u; vv["diesel_L_tffb"] = dl; vv["export_on"] = ex
         fw = fee_window(vv, m); o = F.run(vv); c = compare(vv, m)
-        out.append(dict(name=nm, util=u, diesel=dl, note=note, fee_min=fw["fee_min"], fee_max=fw["fee_max"], NPV_dev=o["NPV"], IRR_dev=o["IRR"],
-                        saving_pct=c["saving_D_vs_A_pct"], A_per_t=c["A"]["per_t"], D_per_t=c["D"]["per_t"]))
+        out.append(dict(name=nm, util=u, diesel=dl, note=note, fee_min=fw["fee_min"], fee_max=fw["fee_max"], fee_bank=fw["fee_bank"], NPV_dev=o["NPV"], IRR_dev=o["IRR"],
+                        DSCR=o["DSCR_min"], saving_pct=c["saving_D_vs_A_pct"], A_per_t=c["A"]["per_t"], D_per_t=c["D"]["per_t"]))
     return out
 
 def waterfall(v=None, m=None):

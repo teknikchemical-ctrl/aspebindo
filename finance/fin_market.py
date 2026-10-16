@@ -12,7 +12,9 @@ SH_CAPTURED = 0.115        # sudah menangkap metana (84 PLTBg POME ~165 MW; 10-1
 POME_NAT = 150e6           # m3/th (125-170) [R3, M]
 SH_SIZE = 0.65             # PKS 30-60 t/jam (kelas 30-45: 30%, 45-60: 35%) [R3, L - unduh CSV Trase untuk memastikan]
 SH_REGION = 0.85           # Sumatera + Kalimantan [R3, M]
-SH_DIESEL = 0.25           # PKS bergantung diesel (S3/S4): Kaltim 12/62 PKS dekat desa diesel-saja (19%) + emplasmen/KCP diesel [EST, rentang 0,15-0,35]
+SH_DIESEL = 0.20           # HIPOTESIS: PKS dengan solar terukur >= 2 L/t TBS (emplasmen/perumahan/KCP bergantung diesel); basis lemah (Kaltim 12/62 desa diesel-saja, bukan solar PKS) [EST, rentang 0,10-0,35] -> validasi survei 30 PKS pada gerbang G0
+SH_GRID = 0.60             # HIPOTESIS: jaringan 20 kV PLN <= 2 km sehingga ekspor layak [EST, rentang 0,40-0,80]
+SH_FREE = 0.75             # HIPOTESIS: tidak terikat program biogas in-house/kontrak grup besar (Wilmar, Musim Mas, Asian Agri) [EST, rentang 0,60-0,90]
 SH_INDEP = 0.34            # 442 PKS tanpa kebun / 1.300 [R3, M]
 MILLS_MY_UNCAP = 315       # Malaysia 453 PKS, ~30% menangkap metana [R3, M]
 BUILD_RATE_MW = 9.0        # laju bangun PLTBg nasional historis MW/th [R3, M]
@@ -25,15 +27,15 @@ def market(o=None):
     pome_set = F.TECH["pome_m3y_nom"] * o["v"]["util"]
     uncapt = MILLS_ID * (1 - SH_CAPTURED)
     sets_TAM = POME_NAT * (1 - SH_CAPTURED) / pome_set
-    mills_SAM = uncapt * SH_SIZE * SH_REGION * SH_DIESEL
+    mills_SAM = uncapt * SH_SIZE * SH_REGION * SH_DIESEL * SH_GRID * SH_FREE
     sets_SOM = sum(F.ROLL.values())
     L = [("TAM", "Semua PKS Indonesia tanpa penangkap metana (volume POME)", uncapt, sets_TAM),
          ("SAM-luas", "+ ukuran 30-60 t/jam + Sumatera/Kalimantan", uncapt * SH_SIZE * SH_REGION, uncapt * SH_SIZE * SH_REGION),
-         ("SAM", "+ bergantung diesel (S3/S4): jendela kesepakatan terbuka", mills_SAM, mills_SAM),
+         ("SAM", "+ solar >= 2 L/t TBS + jaringan 20 kV <= 2 km + bebas program grup: jendela kesepakatan terbuka", mills_SAM, mills_SAM),
          ("SOM 2034", "Rencana armada (ROLL) - 1 set per PKS", sets_SOM, sets_SOM)]
     rows = [dict(level=a, rule=b, mills=c, sets=d, rev=d * rev_avg, MW=d * F.TECH["chp_kWe"] / 1000) for a, b, c, d in L]
     return dict(rev_avg=rev_avg, pome_set=pome_set, rows=rows, TAM=rows[0]["rev"], SAM=rows[2]["rev"], SOM=rows[3]["rev"], sets_TAM=sets_TAM, sets_SAM=mills_SAM,
-                sets_SOM=sets_SOM, share=sets_SOM / mills_SAM, my_sets=MILLS_MY_UNCAP * SH_SIZE * SH_DIESEL,
+                sets_SOM=sets_SOM, share=sets_SOM / mills_SAM, my_sets=MILLS_MY_UNCAP * SH_SIZE * SH_DIESEL * SH_GRID * SH_FREE,
                 build_share=sets_SOM * F.TECH["chp_kWe"] / 1000 / 8 / BUILD_RATE_MW, mills=MILLS_ID)
 
 # ------------------------------------------------------------------ PESTLE: (kode, kategori, faktor, tanda, dampak 1-5, peluang 1-5, keterangan)

@@ -1,0 +1,26 @@
+module.exports = (pres, H, L) => {
+  const { C, D, fmt, FONT_H } = L; const P = D.pesaing;
+  const s = H.slide(6, "Analisis pesaing", "Pesaing: keunggulan kami bukan biaya modal, melainkan modal PKS nol dan risiko dibawa operator; pasar awal hanya PKS 60 t/jam dengan solar tergantikan ≥ 2 L/t TBS");
+  H.sec(s, "Pembanding teknologi dan model (data per MWe terpasang)", 0.4, 1.18, 7.4);
+  const rows = [["Alternatif", "CAPEX", "Lahan (ha)", "Bangun (bln)", "Modal PKS", "Referensi Indonesia", "Skor"]];
+  P.rows.forEach((r) => rows.push([r.name, String(r.capex).replace(".", ","), String(r.land).replace(".", ","), r.build, r.pays, r.ref, fmt(r.total, 2)]));
+  H.table(s, rows, 0.4, 1.43, 7.4, [2.0, 1.0, 0.7, 0.6, 0.55, 1.95, 0.6], { fs: 6.3, rh: 0.3, align: ["left", "center", "center", "center", "center", "left", "center"] });
+  H.t(s, "CAPEX: USD juta/MWe (rentang; R3, R6). Lagun tertutup USD 1.700/kWe dan CSTR 2.600/kWe (R6); kasus kami USD 3.600/kWe: lebih mahal, dibayar oleh premi portabilitas dan jaminan operator. Pesaing langsung: reNIKOLA/KIS (BOOT biometana), AANE, Gree; substitusi: PLTS, jaringan PLN.", 0.4, 4.05, 7.4, 0.5, { fontSize: 6.5 });
+  H.sec(s, "Lima kekuatan Porter (intensitas 1–5)", 0.4, 4.6, 3.6);
+  const fo = ["Pemasok", "Pembeli", "Pendatang baru", "Persaingan", "Produk substitusi"]; const val = fo.map((f) => P.rows && D.porter[f] ? D.porter[f].reduce((a, b) => a + b.s, 0) / D.porter[f].length : 3);
+  s.addChart(pres.charts.BAR, [{ name: "Intensitas", labels: fo, values: val }], { x: 0.35, y: 4.8, w: 3.7, h: 1.55, barDir: "bar", chartColors: [C.royal], showValue: true, dataLabelFormatCode: L.NF1, dataLabelFontSize: 6.5, catAxisLabelFontSize: 6.5, catAxisOrientation: "maxMin", valAxisHidden: true, valGridLine: { style: "none" }, valAxisMaxVal: 5, valAxisMinVal: 0, showLegend: false, catAxisLabelFontFace: "Calibri", dataLabelFontFace: "Calibri" });
+  H.t(s, "Pembeli (PKS, PLN) paling kuat: fee harus di bawah biaya yang dihindari PKS.", 0.4, 6.4, 3.6, 0.3, { fontSize: 6.3, bold: true, color: C.navy });
+  H.sec(s, "PESTLE: faktor penentu keputusan", 4.2, 4.6, 3.6);
+  H.table(s, [["Faktor", "Dampak → keputusan"], ["Politik", "Perpres 112/2022: tarif plafon → tarif dasar 9,81 USc"], ["Ekonomi", "solar Rp 21.000/L → fokus PKS solar-berat"], ["Sosial", "bau, kerja lokal → kontrak komunitas"], ["Teknologi", "TRL 4 → pilot wajib"], ["Hukum", "IUPTLS/PJBL → kontrak jasa energi"], ["Lingkungan", "ISPO 2027, RED II → nilai penangkapan"]], 4.2, 4.85, 3.6, [0.8, 2.8], { fs: 6.2, rh: 0.23 });
+  H.sec(s, "SWOT → TOWS (strategi)", 8.0, 1.18, 4.95);
+  const q = [["Kekuatan: modal PKS nol, portabel, HRT 5 hari", C.greenD], ["Kelemahan: TRL 4, CAPEX/kWe tinggi, skala minimum 60 t/jam", C.red], ["Peluang: ISPO 2027, ±1.150 PKS tanpa penangkap, karbon", C.royal], ["Ancaman: tarif/izin PLN, harga karbon rendah, in-house grup besar", C.amber]];
+  q.forEach(([t, c], i) => H.box(s, t, 8.0 + (i % 2) * 2.5, 1.43 + Math.floor(i / 2) * 0.55, 2.45, 0.5, { fs: 6.6, align: "left", fill: C.white, line: c, lw: 1.5, radius: 0.04, margin: [2, 4, 2, 4] }));
+  H.table(s, [["TOWS", "Strategi terpilih"], ["SO", "Kontrak percontohan di PKS solar-berat sebelum ISPO 2027"], ["WO", "Pilot 10–20 m³ untuk naik ke TRL 6; jaminan kinerja bertahap"], ["ST", "Kontrak jasa energi (bukan jual kWh); tarif dasar 9,81 USc"], ["WT", "Mulai 60 t/jam saja; kuotasi vendor sebelum FID"]], 8.0, 2.58, 4.95, [0.6, 4.35], { fs: 6.4, rh: 0.23 });
+  H.sec(s, "Matriks posisi: CAPEX vs kesiapan teknologi", 8.0, 3.85, 4.95);
+  const pts = [["Lagun tertutup", 1.7, 9], ["CSTR", 2.6, 9], ["Biometana BOOT", 4.0, 8], ["UASB/IC", 2.75, 6], ["AnMBR", 5.0, 5], ["Set kami", 3.6, 4]];
+  s.addChart(pres.charts.SCATTER, [{ name: "X", values: pts.map((x) => x[1]) }, { name: "Posisi", values: pts.map((x) => x[2]) }], { x: 7.95, y: 4.05, w: 3.1, h: 2.3, lineSize: 0, lineDataSymbolSize: 9, chartColors: [C.royal], showLegend: false, valAxisMinVal: 3, valAxisMaxVal: 10, catAxisMinVal: 1, catAxisMaxVal: 5.5, valAxisLabelFontSize: 6.5, catAxisLabelFontSize: 6.5, showCatAxisTitle: true, catAxisTitle: "CAPEX (USD juta/MWe)", catAxisTitleFontSize: 6.5, showValAxisTitle: true, valAxisTitle: "TRL", valAxisTitleFontSize: 6.5 });
+  H.t(s, pts.map((x) => x[0] + " (" + fmt(x[1], 1) + "; TRL " + x[2] + ")").join("\n"), 11.1, 4.2, 1.85, 1.6, { fontSize: 6.3 });
+  H.t(s, "Kami di kiri-bawah (TRL rendah, CAPEX menengah); pembeda ada di sumbu lain: modal PKS, risiko, portabilitas.", 11.1, 5.8, 1.85, 0.5, { fontSize: 6.3, bold: true, color: C.navy });
+  H.box(s, "Pasar awal: PKS independen 60 t TBS/jam, solar tergantikan ≥ 2 L/t, jaringan 20 kV ≤ 2 km (±57 PKS). Penetrasi: percontohan 2027, mitra EPC lokal, harga fee USD 1,25/t TBS di dalam jendela kesepakatan. Hambatan masuk: izin PLN, kontrak 20 tahun, kualifikasi PKS.", 0.4, 6.65, 12.55, 0.33, { fs: 6.8, align: "left", fill: "E7F4E2", line: C.greenD, radius: 0.04, margin: [2, 6, 2, 6] });
+  H.src(s, "research/R3 (pesaing), R6; skor tim (subjektif) diuji sensitivitas pada slide 2; Porter dan PESTLE dari fin_market.py.", "TRL kesiapan teknologi; CSTR tangki berpengaduk; IUPTLS izin usaha tenaga listrik kepentingan sendiri; FID keputusan investasi akhir.");
+};
