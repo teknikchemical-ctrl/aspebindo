@@ -11,52 +11,52 @@
    "qty": 1,
    "mass_t_each": 12.0,
    "unit": "kontainer 40 ft (skid)",
-   "note": "rotary screen, hydrocyclone desander, plate cooler 812 kWth",
+   "note": "rotary screen, grit chamber + hydrocyclone (85 % grit), plate cooler 827 kWth",
    "ship_units": 1,
    "mass_t_total": 12.0
   },
   {
    "id": "PM-2",
-   "name": "Bejana standar: tangki penyangga umpan",
+   "name": "Tangki GFS penyangga umpan",
    "tags": [
     "TK-101"
    ],
    "qty": 1,
-   "mass_t_each": 18.996815526324827,
-   "unit": "bejana di trailer low-bed",
-   "note": "same 194 m3 vessel as the reactors, 8.0 h hold-up",
+   "mass_t_each": 10.839411782815096,
+   "unit": "panel GFS dalam kontainer 40 ft",
+   "note": "D 5.73 m, 116 m3, 35 panel",
    "ship_units": 1,
-   "mass_t_total": 18.996815526324827
+   "mass_t_total": 10.839411782815096
   },
   {
    "id": "PM-3",
-   "name": "Bejana standar: reaktor AnMBR termofilik",
+   "name": "Reaktor kontak termofilik (tangki GFS dibaut)",
    "tags": [
-    "R-201..R-214",
+    "R-201..R-203",
     "P-202 (per reaktor)"
    ],
-   "qty": 14,
-   "mass_t_each": 18.996815526324827,
-   "unit": "bejana di trailer low-bed",
-   "note": "D 4.2 m x H 15.2 m, 194 m3, 55 C, jet mixing; ships 17.3 m long",
-   "ship_units": 14,
-   "mass_t_total": 265.95541736854756
+   "qty": 3,
+   "mass_t_each": 37.93368956022261,
+   "unit": "panel GFS dalam kontainer 40 ft",
+   "ship_units": 6,
+   "note": "D 11.46 m x H 10.8 m, 980 m3, 55 C, jet mixing, atap membran ganda; 140 panel/tangki, 2 kontainer/tangki",
+   "mass_t_total": 113.80106868066784
   },
   {
    "id": "PM-4",
-   "name": "Kontainer membran + CIP",
+   "name": "Skid kontak: degasser vakum + settler lamella + pompa resirkulasi",
    "tags": [
-    "MB-301",
+    "DG-301",
+    "LS-301",
     "P-301",
-    "P-302",
-    "TK-302"
+    "P-302"
    ],
    "qty": 1,
-   "mass_t_each": 16.0,
-   "unit": "kontainer 40 ft HC",
-   "note": "996 m2 tubular UF, 34 modules, cross-flow 149 m3/h",
-   "ship_units": 1,
-   "mass_t_total": 16.0
+   "mass_t_each": 18.0,
+   "unit": "2 skid 40 ft",
+   "ship_units": 2,
+   "note": "lamella 81 m2 proyeksi pada 0.6 m3/m2.jam, resirkulasi 585 m3/d, underflow x1.58",
+   "mass_t_total": 18.0
   },
   {
    "id": "PM-5",
@@ -64,14 +64,12 @@
    "tags": [
     "P-201",
     "TK-201",
-    "P-203",
-    "TK-202",
-    "P-204"
+    "P-203"
    ],
    "qty": 1,
    "mass_t_each": 8.0,
    "unit": "skid 20 ft",
-   "note": "feed pumps, NaOH and urea-N dosing",
+   "note": "feed pumps, NaOH dosing (urea-N standby only)",
    "ship_units": 1,
    "mass_t_total": 8.0
   },
@@ -89,7 +87,7 @@
    "qty": 1,
    "mass_t_each": 14.0,
    "unit": "kontainer 40 ft + bejana BTF",
-   "note": "492 Nm3/h; BTF 16 m3 packing ships as its own vessel",
+   "note": "493 Nm3/h; BTF 16 m3 packing ships as its own vessel",
    "extra_units": 1,
    "ship_units": 2,
    "mass_t_total": 14.0
@@ -104,7 +102,7 @@
    "qty": 1,
    "mass_t_each": 7.0,
    "unit": "kontainer 20 ft (membran terlipat) + skid flare",
-   "note": "double-membrane gas holder 1135 m3 (2 h), flare 624 Nm3/h",
+   "note": "double-membrane gas holder 986 m3 (2 h), flare 542 Nm3/h",
    "extra_units": 1,
    "ship_units": 2,
    "mass_t_total": 7.0
@@ -118,11 +116,11 @@
     "ST-401"
    ],
    "qty": 2,
-   "mass_t_each": 24.0,
+   "mass_t_each": 20.0,
    "unit": "kontainer 40 ft HC",
-   "note": "800 kWe biogas engine-generator per container",
+   "note": "600 kWe biogas engine-generator per container",
    "ship_units": 2,
-   "mass_t_total": 48.0
+   "mass_t_total": 40.0
   },
   {
    "id": "PM-9",
@@ -134,14 +132,14 @@
    "qty": 1,
    "mass_t_each": 9.0,
    "unit": "skid 20 ft + sel CT modular",
-   "note": "hot-water recovery 1439 kWth; cooling 832 kWth",
+   "note": "hot-water recovery 1405 kWth; cooling 847 kWth",
    "extra_units": 1,
    "ship_units": 2,
    "mass_t_total": 9.0
   },
   {
    "id": "PM-10",
-   "name": "Bejana standar: tangki permeat + skid lumpur",
+   "name": "Tangki GFS efluen + skid lumpur",
    "tags": [
     "TK-301",
     "P-303",
@@ -149,52 +147,81 @@
     "P-501"
    ],
    "qty": 1,
-   "mass_t_each": 26.996815526324827,
-   "unit": "bejana + skid 20 ft",
-   "note": "permeate tank (same vessel), screw press 226.3 m3/d waste sludge",
-   "extra_units": 1,
+   "mass_t_each": 21.26017875557602,
+   "unit": "panel GFS + skid 20 ft",
+   "note": "effluent tank D 6.88 m; screw press 110 m3/d waste underflow -> 18.9 t/d cake",
    "ship_units": 2,
-   "mass_t_total": 26.996815526324827
+   "mass_t_total": 21.26017875557602
   }
  ],
- "ship_units_total": 28,
- "mass_t_total": 425.94904842119723,
+ "option": {
+  "id": "PM-11 (opsi)",
+  "name": "Kontainer membran AnMBR (opsional, reuse air)",
+  "qty": 2,
+  "area_m2": 2026.1435670391047,
+  "kW": 48.62744560893852,
+  "capex_USD": 1515686.1402234628,
+  "note": "tidak termasuk kasus dasar: +91 Nm3 CH4/d (+15 kWe kotor) vs 49 kW cross-flow"
+ },
+ "ship_units_total": 21,
+ "mass_t_total": 253.90065921905895,
  "vessel": {
-  "D": 4.2,
-  "H_shell": 15.2,
-  "V": 193.96193043263384,
-  "mass_t": 18.996815526324827,
-  "ship_length_m": 17.3
+  "D": 11.46,
+  "H_shell": 10.8,
+  "V": 979.9021756424592,
+  "mass_t": 37.93368956022261,
+  "panels": 140,
+  "containers": 2,
+  "type": "bolted GFS"
+ },
+ "small_tanks": {
+  "feed": {
+   "D": 5.73,
+   "H": 5.0,
+   "panels": 35,
+   "mass_t": 10.839411782815096,
+   "containers": 1
+  },
+  "effluent": {
+   "D": 6.88,
+   "H": 5.0,
+   "panels": 45,
+   "mass_t": 13.260178755576021,
+   "containers": 1
+  }
  },
  "plot_area_m2_estimate": {
-  "total": 3386.6165474999993,
-  "x_m": 98.55,
-  "y_m": 34.36445,
-  "source": "GA 3D BG-GA-001 (termasuk jalan 3 m)"
+  "vessels": 1010.3148000000001,
+  "skids_and_roads": 1400.0,
+  "total": 2410.3148,
+  "source": "perkiraan rumus"
  },
  "scaling": {
   "30": {
-   "vessels": 12,
+   "vessels": 2,
    "chp_units": 2,
-   "chp_kWe": 600.0,
-   "membrane_m2": 634.3473832577921
+   "chp_kWe": 400.0,
+   "lamella_m2": 54.16666666666667
   },
   "45": {
-   "vessels": 16,
+   "vessels": 3,
    "chp_units": 2,
-   "chp_kWe": 800.0,
-   "membrane_m2": 996.419669894242
+   "chp_kWe": 600.0,
+   "lamella_m2": 81.25
   },
   "60": {
-   "vessels": 21,
-   "chp_units": 3,
-   "chp_kWe": 600.0,
-   "membrane_m2": 1313.5933615231381
+   "vessels": 4,
+   "chp_units": 2,
+   "chp_kWe": 800.0,
+   "lamella_m2": 108.33333333333334
   }
  },
- "rev0_comparison": {
+ "rev_comparison": {
   "rev0_digester_m3": 14000,
-  "rev1_reactor_m3": 2715.4670260568737
+  "rev1_reactor_m3": 2715.44,
+  "rev2_reactor_m3": 2939.7065269273776,
+  "rev1_vessels": 14,
+  "rev2_tanks": 3
  },
  "assumptions": "masses, shipping units and footprint are planning estimates [ASSUME]"
 }

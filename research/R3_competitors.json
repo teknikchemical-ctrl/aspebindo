@@ -1,0 +1,393 @@
+[
+ {
+  "option": "Open ponds (do nothing)",
+  "capex_usd_m_per_mwe": {
+   "value": 0,
+   "note": "sunk"
+  },
+  "land_ha_45tph": {
+   "value": 2.2,
+   "low": 1,
+   "high": 18,
+   "note": "site GA 2.2; lit 1-5; old review 12-18"
+  },
+  "build_months": 0,
+  "cod_removal_pct": {
+   "value": "90-95 over 100-160 d",
+   "est": false
+  },
+  "uptime_pct": null,
+  "mill_capex_burden": "none",
+  "relocatable": "N",
+  "effluent_quality": "often fails BOD 100; land application BOD<=5,000",
+  "odour_methane_leak": "high CH4 137-163 kg CO2e/t FFB; odour",
+  "score_of_45": 26,
+  "indonesian_references": [
+   "~85-90% of ID mills"
+  ],
+  "business_model": "none",
+  "operating_issues": "methane, odour, land, HRT 100-160 d",
+  "sources": [
+   "https://www.sciencedirect.com/science/article/abs/pii/S0959652620314086",
+   "https://www.mdpi.com/2227-9717/9/5/739",
+   "https://www.sciencedirect.com/science/article/pii/S004565352600007X"
+  ],
+  "notes": ""
+ },
+ {
+  "option": "Covered lagoon (HDPE)",
+  "capex_usd_m_per_mwe": {
+   "value": 2.2,
+   "low": 1.8,
+   "high": 3.7
+  },
+  "land_ha_45tph": {
+   "value": 1.5,
+   "low": 1.0,
+   "high": 2.0,
+   "est": true,
+   "note": "Sei Mangkei 2 ha for 2.4 MW"
+  },
+  "build_months": {
+   "value": 12,
+   "low": 9,
+   "high": 15,
+   "est": true
+  },
+  "cod_removal_pct": {
+   "value": 91,
+   "low": 80,
+   "high": 91
+  },
+  "uptime_pct": {
+   "value": 88,
+   "low": 85,
+   "high": 92,
+   "est": true
+  },
+  "mill_capex_burden": "high if owned; 0 under BOO",
+  "relocatable": "N",
+  "effluent_quality": "COD 3-5 g/L; polishing needed",
+  "odour_methane_leak": "low; cover/edge leaks",
+  "score_of_45": 25,
+  "indonesian_references": [
+   "PLTBg Sei Mangkei 2.4 MW (Pertamina NRE/PTPN III)",
+   "AANE Belitung (first POME IPP)",
+   "PLTBg Jangkang 1.8 MW",
+   "Asian Agri ~2 MW/plant; ISJ +1 MW PLN PPA Aug 2025"
+  ],
+  "business_model": "owner-operated or IPP/BOO",
+  "operating_issues": "scum under cover, desludging difficulty, UV liner cracking, sludge washout",
+  "sources": [
+   "https://www.apec.org/docs/default-source/Publications/2017/3/Strategy-for-LargeScale-Implementation-of-Biogas-Capture-from-Palm-Oil-Mill-Effluent-and-Reuse-for-R/217_EWG_Biogas-from-Palm-Oil-Mill-Effluent_Final-Report-for-APEC-Secretariat.pdf",
+   "https://doi.org/10.3390/EN15197265",
+   "https://www.mla.com.au/contentassets/71c5008960fe4b709543799e4b903431/info-sheet-for-cal.pdf",
+   "https://zonaebt.com/pltbg-sei-mangkei-24-mw-olah-limbah-pome-jadi-energi-hijau/"
+  ],
+  "notes": ""
+ },
+ {
+  "option": "CSTR / tank digester",
+  "capex_usd_m_per_mwe": {
+   "value": 2.5,
+   "low": 1.8,
+   "high": 3.5
+  },
+  "land_ha_45tph": {
+   "value": 0.75,
+   "low": 0.5,
+   "high": 1.0,
+   "est": true
+  },
+  "build_months": {
+   "value": 18,
+   "low": 12,
+   "high": 24
+  },
+  "cod_removal_pct": {
+   "value": 88,
+   "low": 80,
+   "high": 95
+  },
+  "uptime_pct": {
+   "value": 92,
+   "low": 90,
+   "high": 95,
+   "est": true
+  },
+  "mill_capex_burden": "high",
+  "relocatable": "N (bolted tanks partly)",
+  "effluent_quality": "COD 2.5-5 g/L",
+  "odour_methane_leak": "low",
+  "score_of_45": 28,
+  "indonesian_references": [
+   "TSE Group/Berkat Cipta Abadi 2 MW, 2x7,800 m3, USD 3.6 M, 2025",
+   "KIS PT Maya 6,975 m3 (2013)",
+   "PTPN IV Sei Garo with Aiken Kakoki (Nov 2025)"
+  ],
+  "business_model": "turnkey EPC; some BOOT",
+  "operating_issues": "VFA/low-pH upsets, mixer maintenance, foaming",
+  "sources": [
+   "https://en.infosawit.com/news/15379/tse-group-invests-us--3-6-million-to-build-biogas-plant--a-bold-step-towards-net-zero-emissions",
+   "https://www.mdpi.com/2673-8783/6/5/77",
+   "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7797170/",
+   "https://kisgroup.net/client8.html"
+  ],
+  "notes": ""
+ },
+ {
+  "option": "UASB/EGSB/IC (+pretreatment)",
+  "capex_usd_m_per_mwe": {
+   "value": 2.75,
+   "low": 2.0,
+   "high": 3.5,
+   "est": true
+  },
+  "land_ha_45tph": {
+   "value": 0.35,
+   "low": 0.2,
+   "high": 0.5,
+   "est": true
+  },
+  "build_months": {
+   "value": 15,
+   "low": 12,
+   "high": 18,
+   "est": true
+  },
+  "cod_removal_pct": {
+   "value": 85,
+   "low": 80,
+   "high": 90,
+   "note": "soluble COD"
+  },
+  "uptime_pct": {
+   "value": 88,
+   "est": true
+  },
+  "mill_capex_burden": "high",
+  "relocatable": "N",
+  "effluent_quality": "moderate",
+  "odour_methane_leak": "low",
+  "score_of_45": 26,
+  "indonesian_references": [
+   "none found in ID; MPOB UASB-hybrid/EGSB in MY"
+  ],
+  "business_model": "EPC",
+  "operating_issues": "solids/oil clogging, granule washout; needs DAF/settling",
+  "sources": [
+   "https://www.sciencedirect.com/science/article/abs/pii/S0301479722013238"
+  ],
+  "notes": ""
+ },
+ {
+  "option": "Conventional AnMBR (Veolia Memthane / Kubota)",
+  "capex_usd_m_per_mwe": {
+   "value": 5.0,
+   "est": true,
+   "note": "~2.4x CAL (AMPC)"
+  },
+  "land_ha_45tph": {
+   "value": 0.3,
+   "low": 0.2,
+   "high": 0.4,
+   "est": true
+  },
+  "build_months": {
+   "value": 15,
+   "low": 12,
+   "high": 18,
+   "est": true
+  },
+  "cod_removal_pct": {
+   "value": 95,
+   "low": 93,
+   "high": 98,
+   "note": "lab POME"
+  },
+  "uptime_pct": {
+   "value": 90,
+   "est": true
+  },
+  "mill_capex_burden": "high",
+  "relocatable": "N",
+  "effluent_quality": "TSS-free permeate; BOD<100 (food WW)",
+  "odour_methane_leak": "very low",
+  "score_of_45": 30,
+  "indonesian_references": [
+   "no POME reference worldwide found"
+  ],
+  "business_model": "EPC / technology licence",
+  "operating_issues": "membrane fouling (organic 93%), cleaning chemicals, membrane replacement",
+  "sources": [
+   "https://www.veoliawatertechnologies.com/en/solutions/technologies/memthane",
+   "https://ampc.com.au/media/vbqmc2bg/ampc_anaerobicmembranebioreactors_snapshot.pdf",
+   "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6523901/"
+  ],
+  "notes": ""
+ },
+ {
+  "option": "POME to bio-CNG / biomethane (BOOT)",
+  "capex_usd_m_per_mwe": {
+   "value": 4.0,
+   "est": true,
+   "note": "US$5.3 M/mill; ~1.3 MWe-eq"
+  },
+  "land_ha_45tph": {
+   "value": 1.5,
+   "low": 1,
+   "high": 2,
+   "est": true
+  },
+  "build_months": {
+   "value": 14
+  },
+  "cod_removal_pct": {
+   "value": 88,
+   "low": 80,
+   "high": 91
+  },
+  "uptime_pct": {
+   "value": 92,
+   "est": true
+  },
+  "mill_capex_burden": "0 (developer-funded)",
+  "relocatable": "N",
+  "effluent_quality": "as underlying digester",
+  "odour_methane_leak": "low; upgrading off-gas slip",
+  "score_of_45": 27,
+  "indonesian_references": [
+   "reNIKOLA-PTPN IV 8 mills US$40-45 M, 830k MMBtu/yr, 15-yr Pertagas GSA (2026)",
+   "Tinjowan 162k MMBtu/yr",
+   "KIS-Toyota Tsusho S. Sumatra 150k MMBtu/yr from 2027",
+   "Pertamina NRE biomethanol pilot Sei Mangkei"
+  ],
+  "business_model": "BOO/BOOT with long gas offtake",
+  "operating_issues": "needs cluster scale & gas offtake/logistics",
+  "sources": [
+   "https://www.thestar.com.my/business/business-news/2026/08/19/renikola-secures-long-term-gas-sales-agreement-in-indonesia",
+   "http://mitrapol.com/2026/09/10/cbg-palmco-renikola-pertagas-niaga/",
+   "https://sirkularium.com/en/insight/pgn-south-sumatra-biomethane-plant-toyota-industry"
+  ],
+  "notes": ""
+ },
+ {
+  "option": "EFB + POME co-composting",
+  "capex_usd_m_per_mwe": {
+   "value": "1-2.5 USD M per mill (no MWe)",
+   "est": true
+  },
+  "land_ha_45tph": {
+   "value": 3,
+   "low": 2,
+   "high": 4,
+   "est": true
+  },
+  "build_months": {
+   "value": 9,
+   "low": 6,
+   "high": 12,
+   "est": true
+  },
+  "cod_removal_pct": {
+   "value": "~100 of absorbed fraction"
+  },
+  "uptime_pct": {
+   "value": 80,
+   "est": true
+  },
+  "mill_capex_burden": "medium",
+  "relocatable": "N",
+  "effluent_quality": "zero discharge if fully absorbed",
+  "odour_methane_leak": "ponds still emit unless AD upstream",
+  "score_of_45": 26,
+  "indonesian_references": [
+   "Winrock/WIPO GREEN pilot (May 2025-Jul 2026)"
+  ],
+  "business_model": "mill-owned; compost sold/used in estate",
+  "operating_issues": "weather, leachate, EFB competes with boiler fuel/mulch",
+  "sources": [
+   "https://winrock.org/projects/the-empty-fruit-bunch-composting-project/",
+   "https://scialert.net/fulltext/?doi=ijar.2009.69.78",
+   "https://pubmed.ncbi.nlm.nih.gov/26398023/"
+  ],
+  "notes": "complementary to biogas (+0.93 MW for 45 t/h)"
+ },
+ {
+  "option": "ZLD / evaporation / membrane polishing",
+  "capex_usd_m_per_mwe": {
+   "value": "high, no figure",
+   "est": true
+  },
+  "land_ha_45tph": {
+   "value": 0.35,
+   "est": true
+  },
+  "build_months": {
+   "value": 12,
+   "est": true
+  },
+  "cod_removal_pct": {
+   "value": ">99 (BOD<20)"
+  },
+  "uptime_pct": {
+   "value": 88,
+   "est": true
+  },
+  "mill_capex_burden": "very high",
+  "relocatable": "N",
+  "effluent_quality": "best; water reuse",
+  "odour_methane_leak": "no CH4 capture unless AD upstream",
+  "score_of_45": 25,
+  "indonesian_references": [
+   "MPOB BioAX pilot (MY)"
+  ],
+  "business_model": "mill-owned",
+  "operating_issues": "high energy & capex; payback hurdle",
+  "sources": [
+   "https://doi.org/10.3390/su172310665",
+   "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4317585/"
+  ],
+  "notes": "post-treatment complement, possible upsell"
+ },
+ {
+  "option": "OURS: portable thermophilic AnMBR set (BOO + mill fee)",
+  "capex_usd_m_per_mwe": {
+   "value": 4.98,
+   "note": "gross; 5.64 net; internal FCI 2026 USD 5.42 M"
+  },
+  "land_ha_45tph": {
+   "value": 0.34,
+   "note": "3D GA"
+  },
+  "build_months": {
+   "value": 11,
+   "note": "plan"
+  },
+  "cod_removal_pct": {
+   "value": 90,
+   "note": "effluent COD ~4.8 g/L"
+  },
+  "uptime_pct": {
+   "value": 97,
+   "low": 93,
+   "high": 98.5,
+   "note": "CHP availability assumption"
+  },
+  "mill_capex_burden": "0 capex; mill fee ~50% of revenue",
+  "relocatable": "Y",
+  "effluent_quality": "TSS-free permeate; polishing still needed",
+  "odour_methane_leak": "very low (closed vessels)",
+  "score_of_45": 35,
+  "indonesian_references": [
+   "none (pre-commercial)"
+  ],
+  "business_model": "BOO, mill fee + power + carbon",
+  "operating_issues": "membrane fouling, thermophilic stability, unproven at scale",
+  "sources": [
+   "internal: finance/outputs/summary.json",
+   "internal: process/outputs/results.json"
+  ],
+  "notes": "score falls to ~33 if uptime 85-90% and fee counted as burden"
+ }
+]
