@@ -25,8 +25,8 @@ def fig_market(o):
         a.text(0, y - .02, "%s\nUSD %s juta/th" % (lab, format(round(val / M), ",").replace(",", ".")) if val < 1e9 else
                "%s\nUSD %s miliar/th" % (lab, ("%.2f" % (val / 1e9)).replace(".", ",")), ha="center", va="center", color="white", fontsize=8.5, fontweight="bold")
     a.set_xlim(-1.05, 1.05); a.set_ylim(-1.05, 1.05)
-    a.set_title("(a) Corong pasar (pendapatan energi + karbon + jasa)")
-    a.text(0, -1.12, "TAM %d PKS | SAM %d PKS | SOM %d set" % (mk["sets_TAM"], mk["sets_SAM"], mk["sets_SOM"]), ha="center", fontsize=8)
+    a.set_title("(a) Corong pasar (pendapatan rata-rata umur proyek)")
+    a.text(0, -1.12, "Setara-set (volume POME): TAM %d | SAM %d | SOM %d set" % (mk["sets_TAM"], mk["sets_SAM"], mk["sets_SOM"]), ha="center", fontsize=8)
     b = ax[1]
     names = [p for p, n in MK.PROV]; n_ = np.array([n for p, n in MK.PROV])
     sam = n_ * MK.SH_SIZE * MK.SH_NOCAP * np.array([1 if p != "Lainnya" else 0.25 for p in names])
@@ -81,12 +81,13 @@ def fig_capex_opex(o):
     ks = sorted(grp, key=lambda k: -grp[k])
     a = ax[0]; a.barh(ks[::-1], [grp[k] / M for k in ks[::-1]], color=TE)
     for i, k in enumerate(ks[::-1]): a.text(grp[k] / M + .02, i, "%.2f" % (grp[k] / M), va="center", fontsize=8)
-    a.set_xlabel("USD juta"); a.set_title("(a) CAPEX (FCI USD %.2f juta)" % (o["fci"] / M))
+    a.set_xlabel("USD juta (harga 2026)"); a.set_title("(a) CAPEX (FCI USD %.2f juta, 2026)" % (o["fci26"] / M))
     b = ax[1]; it = o["opex_items"]; ks2 = sorted(it, key=lambda k: -it[k][0])
     b.barh([k[:30] for k in ks2[::-1]], [it[k][0] / 1e3 for k in ks2[::-1]], color=[OR if it[k][1] == "V" else DK for k in ks2[::-1]])
-    b.set_xlabel("USD ribu/th (oranye = variabel)"); b.set_title("(b) OPEX tahun penuh USD %.0f ribu" % (o["opex_full"] / 1e3))
+    b.set_xlabel("USD ribu/th (oranye = variabel)"); b.set_title("(b) OPEX tahun penuh USD %.0f ribu (+ MRV karbon)" % ((o["opF"] + o["opV"]) / 1e3))
     c = ax[2]; i = 2
-    parts = [("Listrik PLN", o["rev_el"][i], DK), ("Kredit karbon", o["rev_c"][i], TE), ("Jasa POME", o["rev_fee"][i], OR), ("Panas", o["rev_h"][i], RD), ("Pupuk", o["rev_f"][i], GR)]
+    i = 3
+    parts = [("Jasa pengolahan POME", o["rev_fee"][i], OR), ("Listrik ke PLN", o["rev_exp"][i], DK), ("Listrik ke PKS", o["rev_cap"][i], BL), ("Kredit karbon", o["rev_c"][i], TE)]
     c.pie([p[1] for p in parts], labels=["%s\n%.0f%%" % (p[0], 100 * p[1] / o["rev"][i]) for p in parts], colors=[p[2] for p in parts],
           startangle=90, wedgeprops=dict(width=.42, ec="white"), textprops=dict(fontsize=8))
     c.set_title("(c) Bauran pendapatan th %d: USD %.2f juta" % (o["years"][i], o["rev"][i] / M))
@@ -143,14 +144,14 @@ def fig_payback(o):
 def fig_bep(o, be):
     fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
     a = ax[0]; u = np.linspace(0, 1.1, 50)
-    rev = be["rev_full"] * u; cost = be["fixed"] + be["var"] * u; cost2 = cost + be["dep"] + be["intr"]
-    a.plot(u * 100, rev / M, c=TE, lw=2, label="Pendapatan"); a.plot(u * 100, cost / M, c=OR, label="Biaya tunai (tetap + variabel)")
+    rev = be["fee"] + be["vol"] * u; cost = be["fixed"] + be["var"] * u; cost2 = cost + be["dep"] + be["intr"]
+    a.plot(u * 100, rev / M, c=TE, lw=2, label="Pendapatan (jasa tetap + energi/karbon)"); a.plot(u * 100, cost / M, c=OR, label="Biaya tunai (tetap + variabel)")
     a.plot(u * 100, cost2 / M, c=RD, ls="--", label="Biaya total (+ penyusutan + bunga)")
     for x, lab in ((be["BEP_cash"], "BEP tunai"), (be["BEP_acc"], "BEP akuntansi")):
         a.axvline(x * 100, c=GR, ls=":"); a.text(x * 100 + 1, rev.max() / M * .9 if lab == "BEP tunai" else rev.max() / M * .75, "%s\n%.1f%%" % (lab, x * 100), fontsize=8)
-    a.set_xlabel("Kapasitas terpakai (%)"); a.set_ylabel("USD juta/th"); a.legend(frameon=False, fontsize=8, loc="lower right"); a.set_title("(a) Titik impas operasional (th penuh)")
+    a.set_xlabel("Produksi biogas/energi terhadap dasar (%)"); a.set_ylabel("USD juta/th"); a.legend(frameon=False, fontsize=8, loc="lower right"); a.set_title("(a) Titik impas operasional (th penuh)")
     b = ax[1]
-    items = [("Tarif listrik th 1-10\n(USc/kWh, sebelum F)", be["tariff1_be"], o["v"]["tariff1"]), ("Harga karbon\n(USD/tCO2e)", be["p_carbon_be"], o["v"]["p_carbon"]),
+    items = [("Jasa POME\n(USD/t TBS x10)", be["fee_be"] * 10, o["v"]["fee_ffb"] * 10), ("Tarif PLN th 1-10\n(USc/kWh, sebelum F)", be["tariff1_be"], o["v"]["tariff1"]),
              ("Produksi energi\n(% dasar)", be["emult_be"] * 100, 100.0), ("CAPEX\n(% dasar)", be["capex_be"] * 100, 100.0)]
     x = np.arange(len(items))
     b.bar(x - .18, [i[2] for i in items], .36, color=LT, ec=TE, label="Nilai dasar"); b.bar(x + .18, [i[1] for i in items], .36, color=OR, label="Nilai impas (NPV = 0)")
@@ -164,13 +165,13 @@ def fig_mc(o, mc):
     a.hist(N, bins=50, color=TE, alpha=.85); a.axvline(0, c="k"); a.axvline(np.median(N), c=OR, ls="--")
     p = (N > 0).mean()
     a.set_title("(a) Distribusi NPV (N = %d)" % len(N)); a.set_xlabel("NPV (USD juta)")
-    a.text(.02, .95, "P(NPV>0) = %.0f%%\nP10 %.2f | P50 %.2f | P90 %.2f" % (p * 100, *np.percentile(N, [10, 50, 90])), transform=a.transAxes, va="top", fontsize=8)
-    b = ax[1]; I = np.sort(mc["IRR"][np.isfinite(mc["IRR"])]) * 100
+    a.text(.02, .95, "P(NPV>0) = %.0f%%\nP10 %.2f | P50 %.2f | P90 %.2f" % (p * 100, *np.percentile(N, [10, 50, 90])), transform=a.transAxes, va="top", fontsize=8, bbox=dict(fc="white", ec="none", alpha=.85))
+    b = ax[1]; I = np.sort(np.where(np.isfinite(mc["IRR"]), mc["IRR"], -0.5)) * 100
     b.plot(I, np.linspace(0, 1, len(I)), c=DK); b.axvline(o["wacc"] * 100, c=RD, ls=":"); b.text(o["wacc"] * 100 + .3, .1, "WACC", color=RD, fontsize=8)
     b.set_xlim(max(-5, I.min() if len(I) else -5), I.max() + 1); b.set_xlabel("IRR proyek (%%); P(IRR > WACC) = %.0f%%" % (100 * (I > o["wacc"] * 100).mean())); b.set_ylabel("Peluang kumulatif"); b.set_title("(b) Kurva S IRR"); b.grid(alpha=.2)
     c = ax[2]; sp = sorted(mc["spearman"].items(), key=lambda kv: abs(kv[1]))
     LAB = dict(emult="Produksi energi", capex="CAPEX", opex="OPEX", p_carbon="Harga karbon", F_loc="Faktor lokasi F", avail="Ketersediaan",
-               p_heat="Harga panas", heat_util="Pemanfaatan panas", r_debt="Bunga utang", infl="Inflasi")
+               tier="Tier tarif >1 MW", fee="Jasa POME", ramp1="Ramp-up th 1", cer_ratio="Rasio kredit", r_debt="Bunga utang", infl="Inflasi", util="Faktor beban PKS")
     c.barh([LAB[k] for k, v in sp], [v for k, v in sp], color=[TE if v > 0 else RD for k, v in sp]); c.axvline(0, c="k", lw=.7)
     c.set_xlabel("Korelasi Spearman terhadap NPV"); c.set_title("(c) Penggerak ketidakpastian")
     fig.tight_layout(); return save(fig, "g08_monte_carlo.png")
@@ -178,9 +179,9 @@ def fig_mc(o, mc):
 def fig_fleet(fl):
     fig, ax = plt.subplots(1, 2, figsize=(11, 4.0)); y = np.array(fl["years"])
     a = ax[0]; a.bar(y, fl["sets_op"], color=TE, label="Set beroperasi"); a.bar(y, fl["sets_new"], bottom=fl["sets_op"], color=OR, label="Set baru (konstruksi)")
-    a.set_ylabel("jumlah set"); b = a.twinx(); b.plot(y, fl["E"], c=DK, marker="o", ms=3, label="Listrik ke PLN (GWh/th)"); b.set_ylabel("GWh/th"); b.spines["right"].set_visible(True)
+    a.set_ylabel("jumlah set"); b = a.twinx(); b.plot(y, fl["E"], c=DK, marker="o", ms=3, label="Listrik (GWh/th)"); b.set_ylabel("GWh/th"); b.spines["right"].set_visible(True)
     h1, l1 = a.get_legend_handles_labels(); h2, l2 = b.get_legend_handles_labels(); a.legend(h1 + h2, l1 + l2, frameon=False, fontsize=8, loc="upper left")
-    a.set_title("(a) Rencana penggelaran armada (SOM %d set)" % sum(F.ROLL.values()))
+    a.set_ylim(0, 46); a.set_title("(a) Rencana penggelaran armada (SOM %d set)" % sum(F.ROLL.values()))
     c = ax[1]; c.bar(y, fl["rev"] / M, color=LT, ec=TE, label="Pendapatan"); c.bar(y, fl["fcff_co"] / M, color=[RD if v < 0 else TE for v in fl["fcff_co"]], width=.5, label="FCFF perusahaan")
     d = c.twinx(); d.plot(y, np.cumsum(fl["fcff_co"]) / M, c=OR, marker="o", ms=3, label="Kumulatif"); d.spines["right"].set_visible(True); d.set_ylabel("Kumulatif (USD juta)")
     lo = min(c.get_ylim()[0], d.get_ylim()[0]); hi = max(c.get_ylim()[1], d.get_ylim()[1]); c.set_ylim(lo, hi); d.set_ylim(lo, hi)
@@ -192,6 +193,6 @@ def fig_scenarios(sc):
     fig, a = plt.subplots(figsize=(9, 3.6))
     names = [s[0] for s in sc]; npv_ = [s[1]["NPV"] / M for s in sc]; irr_ = [s[1]["IRR"] * 100 for s in sc]
     x = np.arange(len(sc)); a.bar(x, npv_, color=[TE if v > 0 else RD for v in npv_]); a.axhline(0, c="k", lw=.7)
-    for i, (n_, ir) in enumerate(zip(npv_, irr_)): a.text(i, n_ + (.08 if n_ >= 0 else -.25), "IRR %.1f%%" % ir, ha="center", fontsize=8)
+    for i, (n_, ir) in enumerate(zip(npv_, irr_)): a.text(i, n_ + (.08 if n_ >= 0 else -.25), ("IRR %.1f%%" % ir) if np.isfinite(ir) else "tanpa IRR", ha="center", fontsize=8)
     a.set_xticks(x); a.set_xticklabels(names, fontsize=8); a.set_ylabel("NPV (USD juta)"); a.set_title("Skenario model bisnis & skala set")
     return save(fig, "g10_skenario.png")

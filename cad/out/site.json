@@ -1,0 +1,190 @@
+{
+ "routes": {
+  "POME": {
+   "L_m": 149.68,
+   "label": "POME 85 \u00b0C DN150 (fat pit -> PM-1)",
+   "cost_m": 140.0,
+   "cost": 20955.2
+  },
+  "EFLUEN": {
+   "L_m": 148.04285714285714,
+   "label": "Efluen AnMBR DN150 HDPE (TK-301 -> kolam fakultatif)",
+   "cost_m": 70.0,
+   "cost": 10363.0
+  },
+  "BYPASS": {
+   "L_m": 77.67500000000001,
+   "label": "Bypass darurat DN150 (TK-101 -> kolam pendingin)",
+   "cost_m": 70.0,
+   "cost": 5437.250000000001
+  },
+  "20kV": {
+   "L_m": 113.0,
+   "label": "Saluran udara 20 kV di lokasi (gardu -> jaringan PLN)",
+   "cost_m": 45.0,
+   "cost": 5085.0
+  },
+  "20kV-PKS": {
+   "L_m": 255.60000000000002,
+   "label": "Saluran 20 kV ke rumah mesin PKS (+ trafo 20/0,4 kV di PKS)",
+   "cost_m": 40.0,
+   "cost": 28224.0
+  }
+ },
+ "ponds": {
+  "CP1": {
+   "name": "Kolam pendingin 1",
+   "V_m3": 585.0,
+   "area_m2": 600.0,
+   "status": "tetap",
+   "hrt": 1.0,
+   "depth": 2.5,
+   "x": 244,
+   "y": 90,
+   "L": 26,
+   "W": 12.75
+  },
+  "CP2": {
+   "name": "Kolam pendingin 2",
+   "V_m3": 585.0,
+   "area_m2": 600.0,
+   "status": "tetap",
+   "hrt": 1.0,
+   "depth": 2.5,
+   "x": 244,
+   "y": 112,
+   "L": 26,
+   "W": 12.75
+  },
+  "AC": {
+   "name": "Kolam pengasaman",
+   "V_m3": 2925.0,
+   "area_m2": 1478.5714285714284,
+   "status": "dibebaskan",
+   "hrt": 5.0,
+   "depth": 3.5,
+   "x": 278,
+   "y": 90,
+   "L": 40,
+   "W": 26.142857142857142
+  },
+  "AN1": {
+   "name": "Kolam anaerobik 1",
+   "V_m3": 17550.0,
+   "area_m2": 4801.09090909091,
+   "status": "dibebaskan",
+   "hrt": 30.0,
+   "depth": 5.0,
+   "x": 326,
+   "y": 90,
+   "L": 66,
+   "W": 60.68181818181818
+  },
+  "AN2": {
+   "name": "Kolam anaerobik 2",
+   "V_m3": 17550.0,
+   "area_m2": 4801.09090909091,
+   "status": "dibebaskan",
+   "hrt": 30.0,
+   "depth": 5.0,
+   "x": 400,
+   "y": 90,
+   "L": 66,
+   "W": 60.68181818181818
+  },
+  "FA": {
+   "name": "Kolam fakultatif",
+   "V_m3": 8775.0,
+   "area_m2": 3973.714285714286,
+   "status": "tetap",
+   "hrt": 15.0,
+   "depth": 3.0,
+   "x": 244,
+   "y": 154,
+   "L": 70,
+   "W": 46.285714285714285
+  },
+  "AE1": {
+   "name": "Kolam aerobik 1",
+   "V_m3": 4387.5,
+   "area_m2": 3065.785714285714,
+   "status": "tetap",
+   "hrt": 7.5,
+   "depth": 2.0,
+   "x": 322,
+   "y": 154,
+   "L": 70,
+   "W": 34.339285714285715
+  },
+  "AE2": {
+   "name": "Kolam aerobik 2",
+   "V_m3": 4387.5,
+   "area_m2": 3041.1818181818185,
+   "status": "tetap",
+   "hrt": 7.5,
+   "depth": 2.0,
+   "x": 400,
+   "y": 154,
+   "L": 66,
+   "W": 36.23863636363637
+  },
+  "_total_before_m2": 22361.435064935067,
+  "_total_after_m2": 11280.681818181818
+ },
+ "safety": [
+  {
+   "item": "Flare FL-301 -> tepi GH-301",
+   "dist": 16.1,
+   "min": 15,
+   "basis": "API 537 / praktik biogas",
+   "ok": true
+  },
+  {
+   "item": "Flare FL-301 -> kontainer CHP",
+   "dist": 30.5,
+   "min": 15,
+   "basis": "Sumber nyala vs zona gas",
+   "ok": true
+  },
+  {
+   "item": "GH-301 -> rumah boiler PKS",
+   "dist": 141.9,
+   "min": 30,
+   "basis": "Sumber nyala terbuka",
+   "ok": true
+  },
+  {
+   "item": "GH-301 -> tangki CPO",
+   "dist": 203.1,
+   "min": 30,
+   "basis": "Bahan mudah terbakar",
+   "ok": true
+  },
+  {
+   "item": "Flare -> batas pagar lokasi",
+   "dist": 38.0,
+   "min": 10,
+   "basis": "Radiasi panas di batas",
+   "ok": true
+  },
+  {
+   "item": "Reaktor -> kolam pendingin (tanah)",
+   "dist": 23.9,
+   "min": 20,
+   "basis": "Stabilitas lereng / pondasi",
+   "ok": true
+  },
+  {
+   "item": "Cerobong boiler -> GH-301",
+   "dist": 136.0,
+   "min": 30,
+   "basis": "Bunga api cerobong",
+   "ok": true
+  }
+ ],
+ "palms": 1499,
+ "land_freed_m2": 11080.753246753247,
+ "pond_area_before_m2": 22361.435064935067,
+ "pond_area_after_m2": 11280.681818181818,
+ "interconnect_cost": 70064.45
+}

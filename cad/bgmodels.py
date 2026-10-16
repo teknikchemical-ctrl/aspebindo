@@ -711,10 +711,20 @@ def plant(simple=True):
         dy, r_, col = LINES[ln_]
         out.extend(pipe_run([(xg + dy, yr + dy, ZR + 2 * r_), (xg + dy, yr + dy, ZR + 2 * r_ + 1200), (xg + dy, y0 + PITCH + 5200 + 300 + (dy + 450), ZR + 2 * r_ + 1200),
                              (x0 + PITCH * 2 - 500, y0 + PITCH + 5200 + 300 + (dy + 450), ZR + 2 * r_ + 1200), (x0 + PITCH * 2 - 500, y0 + PITCH + 5200 + 300 + (dy + 450), 900)], r_, "ke-PM4-" + ln_, col))
+    # ---- jalur gas sesuai PFD: reaktor -> rack -> GH-301 (masuk utara) -> GH keluar selatan -> BTF/PM-6 -> CHP; cabang ke flare
     dy, r_, col = LINES["biogas"]
-    xe = x0 + PITCH * 8 + 300
-    out.extend(pipe_run([(xe, yr + dy, ZR + r_), (xe + 3000, yr + dy, ZR + r_), (xe + 3000, y0 + PITCH + 5200 - 600, ZR + r_), (x0 + PITCH * 4 + 1000 + 11000, y0 + PITCH + 5200 - 600, ZR + r_),
-                         (x0 + PITCH * 4 + 1000 + 11000, y0 + PITCH + 5200 - 600, 2400)], r_, "biogas-ke-PM6", col))
+    GX, GY = x0 + PITCH * 8 + 15500, y0 + PITCH + 500          # pusat GH (digeser ke utara: bebas dari kontainer CHP)
+    xe = x0 + PITCH * 8 + 300; RG = 7000 + 1200                # ujung pipa GH = Dg/2 + 1200
+    out.extend(pipe_run([(xe, yr + dy, ZR + r_), (xe + 5000, yr + dy, ZR + r_), (xe + 5000, GY + RG + 1400, ZR + r_), (GX, GY + RG + 1400, ZR + r_),
+                         (GX, GY + RG + 1400, 300), (GX, GY + RG, 300)], r_, "biogas-ke-GH", col))
+    yb_ = y0 + PITCH + 5200; xb_ = x0 + PITCH * 8 + 3500
+    out.extend(pipe_run([(GX, GY - RG, 300), (GX, GY - RG - 800, 300), (GX, GY - RG - 800, 4500), (xb_ - 2000, GY - RG - 800, 4500),
+                         (xb_ - 2000, yb_ + 1200, 4500), (xb_ - 2000, yb_ + 1200, 1558), (xb_ - 1200 - 350, yb_ + 1200, 1558)], r_, "GH-ke-BTF", col))
+    XC = 49300                                                   # kontainer CHP (PM-8) digeser ke barat
+    out.extend(pipe_run([(x0 + PITCH * 4 + 1000 + 12192, yb_ + 300, 2400), (xe + 1000, yb_ + 300, 2400), (xe + 1000, y0 - 3000, 2400),
+                         (XC + 900, y0 - 3000, 2400), (XC + 900, y0 - 3000, 3300)], 84, "gas-bersih-ke-CHP", "#c8a23a"))
+    FX, FY = 92000, 5000                                         # flare >= 15 m dari tepi GH, >= 25 m dari CHP
+    out.extend(pipe_run([(xe + 1000, y0 - 3000, 2400), (FX - 1250 - 600, y0 - 3000, 2400), (FX - 1250 - 600, FY, 2400), (FX - 1250 - 600, FY, 900), (FX - 1250, FY, 900)], 57, "gas-ke-flare", "#c8a23a"))
     # modul
     yb = y0 + PITCH + 5200
     add(pm4(), x0 + PITCH * 2, yb, pre="PM-4/")
@@ -725,10 +735,10 @@ def plant(simple=True):
     add(gas_container(), x0 + PITCH * 4 + 1000, yb, pre="PM-6/")
     add(btf(), x0 + PITCH * 8 + 3500, yb + 1200, pre="PM-6/")
     gh, Dg, hgh = gasholder()
-    add(gh, x0 + PITCH * 8 + 15500, y0 + PITCH / 2, pre="PM-7/")
-    add(flare(), x0 + PITCH * 8 + 22000, y0 - 10000, pre="PM-7/")
-    add(pm8(), x0 + PITCH * 8 + 4500, y0 - 10500, pre="PM-8A/")
-    add(pm8(), x0 + PITCH * 8 + 4500, y0 - 6500, pre="PM-8B/")
+    add(gh, GX, GY, pre="PM-7/")
+    add(flare(), FX, FY, pre="PM-7/")
+    add(pm8(), XC, y0 - 10500, pre="PM-8A/")
+    add(pm8(), XC, y0 - 6500, pre="PM-8B/")
     # jalan + pagar batas plot
     # batas plot = kotak pembatas peralatan + jalan akses 3 m
     xs, ys = [], []

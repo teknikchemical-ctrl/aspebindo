@@ -64,3 +64,9 @@ Written by the assistant after reviewing its own work. Dates: 2026-10-15.
 - Single-set economics are thin (IRR 11.7% vs WACC 9.7%; Monte Carlo P(NPV>0) ~40%). They depend on carbon price (break-even USD 9/t), the POME treatment fee paid by the mill (assumption) and the Perpres 112/2022 tariff (legal status to confirm).
 - CAPEX per kW (~4,950 USD/kWe) is above the literature average for POME biogas (2,758 USD/kW); the case relies on serial-production learning (unit 10 ~ 3,500).
 - Many unit costs are estimates, not quotations.
+
+# Phase 5 self-evaluation (site model, flow visual, financial model v2)
+- An independent audit found real flaws in financial model v1 (mixed operating basis, wrong tariff tier, false effluent claim, overstated carbon, unstable IRR, unescalated fleet capex, missing IDC/VAT/DSRA). All were fixed; v1 headline (NPV 0.61 M on power + carbon) was not defensible.
+- v2 shows the honest structure: the set is viable as a waste-treatment/compliance service (mill fee >= USD 1.49/t FFB), not as a stand-alone power plant (NPV -3.4 M without fee).
+- Product layout itself had two physical errors that the site model exposed (flare too close to gas holder; CHP container overlapping GH foundation) - fixed.
+- Remaining: mill willingness to pay the fee, PLN tier/capacity interpretation, Perpres 112 revision, captive-supply licensing and unit costs need confirmation. The mill proxy is a typical layout, not a specific mill.

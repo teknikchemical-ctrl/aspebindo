@@ -19,6 +19,7 @@ await page.goto(`http://127.0.0.1:${port}/page.html`);
 await page.waitForFunction(() => window.ready === true);
 job.parts.forEach(p => p.stl = '/@' + path.resolve(p.stl));
 const imgs = await page.evaluate(j => window.renderJob(j), job);
-imgs.forEach((u, i) => fs.writeFileSync(job.views[i].out, Buffer.from(u.split(',')[1], 'base64')));
+imgs.forEach((u, i) => { fs.writeFileSync(job.views[i].out, Buffer.from(u.img.split(',')[1], 'base64'));
+  if (job.labels) fs.writeFileSync(job.views[i].out.replace('.png', '.labels.json'), JSON.stringify(u.labels)); });
 await browser.close(); srv.close();
 console.log('rendered', imgs.length);

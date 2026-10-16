@@ -48,7 +48,7 @@ A **portable, shop-built biogas power plant for palm oil mills of 30-60 t FFB/h*
 | PM-9 Skid pemulih panas + menara pendingin | hot-water recovery 1439 kWth; cooling 832 kWth | 1 | skid 20 ft + sel CT modular | 9.0 |
 | PM-10 Bejana standar: tangki permeat + skid lumpur | permeate tank (same vessel), screw press 226.3 m3/d waste sludge | 1 | bejana + skid 20 ft | 27.0 |
 
-**Total: 28 truck loads, about 426 t; plot about 0.29 ha** (Rev 0: 0.39 ha). Planning estimates.
+**Total: 28 truck loads, about 426 t; plot about 0.34 ha** (Rev 0: 0.39 ha). Planning estimates.
 
 ## 5. Design-basis operating point (45 t FFB/h x 20 h)
 | Item | Value |
@@ -101,5 +101,5 @@ A **portable, shop-built biogas power plant for palm oil mills of 30-60 t FFB/h*
 ## 9. Limitations
 * Thermophilic ADM1 parameter ratios and membrane flux / energy / solids limit are literature-typical values, not pilot data; a pilot AnMBR on real POME is the single most important validation step.
 * POME composition is literature-based; one real mill data set would tighten every number.
-* With POME only, net power about equals the mill's own demand; the business case is diesel/grid displacement plus methane credits, not export.
+* With POME only, net power about equals the mill's own demand, but the mill keeps its fibre/shell steam turbine. The business case (finance/) is a BOO treatment + energy service: the mill pays a POME treatment/compliance fee per t FFB, takes ~0.37 GWh/yr off-shift power in place of diesel, and the rest (~5.7 GWh/yr) is exported to PLN under Perpres 112/2022; methane credits are a minor stream.
 * Economics (`economics_screen`) use placeholder costs.

@@ -41,8 +41,18 @@ window.renderJob = async (job) => {
     cam.left=cx-hw; cam.right=cx+hw; cam.top=cy+hh2; cam.bottom=cy-hh2; cam.updateProjectionMatrix();
     sun.position.copy(c.clone().add(new THREE.Vector3(...(v.sun||[0.6,-0.9,1.4])).multiplyScalar(4*R)));
     fill.position.copy(c.clone().add(new THREE.Vector3(-1,1,0.3).multiplyScalar(4*R)));
+    if (v.zoom) { // perbesar ke kotak minat [x0,y0,z0,x1,y1,z1]
+      const zb = new THREE.Box3(new THREE.Vector3(...v.zoom.slice(0,3)), new THREE.Vector3(...v.zoom.slice(3)));
+      let zx=[], zy=[];
+      for (const x of [zb.min.x,zb.max.x]) for (const y of [zb.min.y,zb.max.y]) for (const z of [zb.min.z,zb.max.z]) {
+        const q = new THREE.Vector3(x,y,z).applyMatrix4(inv); zx.push(q.x); zy.push(q.y); }
+      let a0=Math.min(...zx), a1=Math.max(...zx), b0=Math.min(...zy), b1=Math.max(...zy);
+      let w2=(a1-a0)/2*1.06, h2=(b1-b0)/2*1.06; if (w2/h2 > asp) h2 = w2/asp; else w2 = h2*asp;
+      cam.left=(a0+a1)/2-w2; cam.right=(a0+a1)/2+w2; cam.top=(b0+b1)/2+h2; cam.bottom=(b0+b1)/2-h2; cam.updateProjectionMatrix();
+    }
     renderer.render(scene, cam);
-    out.push(renderer.domElement.toDataURL('image/png'));
+    const labs = (job.labels||[]).map(p => { const q = new THREE.Vector3(...p).project(cam); return [(q.x+1)/2*W, (1-q.y)/2*H]; });
+    out.push({img: renderer.domElement.toDataURL('image/png'), labels: labs});
   }
   return out;
 };

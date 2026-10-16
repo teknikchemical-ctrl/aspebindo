@@ -10,7 +10,7 @@ skip = ('baut', 'kursi', 'rib-', 'sirip', 'anak-tangga', 'sangkar', 'rel-', 'ski
         'header-jet', 'pipa-jet', 'louvre', 'bantalan', 'kopling', 'GE-kepala', 'MB-301-tutup', '-siku-', 'MB-301-tabung', 'MB-301-cermin', 'sirip-motor', 'pelindung', '-baut-', 'GH-baut', '-pad', 'klading-sabuk', 'las-', 'TT-', '-LT', 'SG-', 'davit', 'GE-runner', 'GE-peredam', 'GE-manifold', 'BTF-rel', 'kipas-motor', 'kotak-terminal', 'flens')
 sh = [s for n, s, c in out if not any(k in n for k in skip)]
 SC = 300.0
-A = View((0, 0, 1), (1, 0, 0), SC, 22 - X0 / SC, 128 + Y0 / SC, name='denah')
+A = View((0, 0, 1), (1, 0, 0), SC, 20 - X0 / SC, 136 + Y0 / SC, name='denah')
 A.draw(sh, hidden=False, w=.3); kd.OPEN_VIEWS.add('denah')
 P = A.P
 # batas plot (garis rantai tebal)
@@ -23,7 +23,10 @@ dim_v(pb[1], pa[1], pb[0] + 8, fn(Y1 - Y0), pb[0], pb[0])
 for tg, x, y in tags:
     c = P((x, y, 0)); r = (M.VR + 300) / SC
     row_s = y < 20000
-    TC(c[0], c[1] + r + 3.6 if row_s else c[1] - r - 3.6, tg, 3.0, 'm')
+    if tg in ("R-206", "R-207"):
+        auto_leader(c, tg, pref=-60, rmin=10, rmax=30, size=3.0)
+    else:
+        TC(c[0], c[1] + r + 3.6 if row_s else c[1] - r - 3.6, tg, 3.0, 'm')
 x0v, y0v = tags[0][1], tags[0][2]
 c1, c2 = P((x0v, y0v, 0)), P((x0v + M.PITCH, y0v, 0))
 dim_h(c1[0], c2[0], c1[1] + 19, fn(M.PITCH), c1[1] + 15, c2[1] + 15)
@@ -50,7 +53,7 @@ vlabel((pa[0] + pb[0]) / 2, pa[1] + 6, "DENAH TATA LETAK (DARI MODEL 3D)", "1:30
 PMJ = json.load(open(os.path.join(ROOT, "process", "outputs", "portable_modules.json"), encoding="utf-8"))
 def cap(t): t = t.replace("Bejana standar: ", ""); return t[0].upper() + t[1:]
 rows = [[m["id"], cap(m["name"])[:40], m["qty"], m["unit"].replace(" (membran terlipat)", "")[:40], fn(m["mass_t_total"], 1)] for m in PMJ["modules"]]
-yt = table(196, 152, [("Modul", 14, 'm'), ("Nama", 70, 'l'), ("Jml", 10, 'm'), ("Pengiriman", 72, 'l'), ("Massa t", 16, 'm')], rows, "SET MODUL PORTABEL", rh=4.4, size=2.5, hsize=2.6)
+yt = table(196, 158, [("Modul", 14, 'm'), ("Nama", 70, 'l'), ("Jml", 10, 'm'), ("Pengiriman", 72, 'l'), ("Massa t", 16, 'm')], rows, "SET MODUL PORTABEL", rh=4.4, size=2.5, hsize=2.6)
 T(196, yt + 5, "Total %d muatan truk, ± %s t. Plot %s x %s m = %s ha (termasuk jalan 3 m)." % (PMJ["ship_units_total"], fn(PMJ["mass_t_total"]),
   fn((X1 - X0) / 1000, 1), fn((Y1 - Y0) / 1000, 1), fn((X1 - X0) * (Y1 - Y0) / 1e10, 2)), 3.0, 'l')
 TR = M.R["tiers"]
@@ -58,7 +61,7 @@ yt2 = table(196, yt + 10, [("PKS", 22, 'l'), ("Reaktor", 22, 'm'), ("Genset", 34
             [["%s t/jam" % k, str(TR[k]["N_modules"]), "%d x %s kWe" % (TR[k]["chp"]["N_gen"], fn(TR[k]["chp"]["P_unit"])), fn(TR[k]["P_net"]), fn(TR[k]["GWh_y"], 1), fn(TR[k]["membrane"]["area_m2"])] for k in ("30", "45", "60")],
             "SKALA SET (DESAIN BEJANA SAMA)", rh=4.4, size=2.5, hsize=2.6)
 # ---------------- isometri
-image("PLANT_iso-depan.png", 16, 150, 176, 98, name='ISO')
+image("PLANT_iso-depan.png", 16, 158, 176, 90, name="ISO")
 TC(104, 252, "ISOMETRI SUSUNAN PABRIK (TANPA SKALA)", 3.5, 'm')
 json.dump({"plot_x_m": (X1 - X0) / 1000, "plot_y_m": (Y1 - Y0) / 1000, "plot_m2": (X1 - X0) * (Y1 - Y0) / 1e6},
           open(os.path.join(ROOT, "cad", "out", "ga.json"), "w"), indent=1)
