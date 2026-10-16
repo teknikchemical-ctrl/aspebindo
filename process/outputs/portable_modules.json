@@ -191,10 +191,10 @@
   }
  },
  "plot_area_m2_estimate": {
-  "vessels": 1010.3148000000001,
-  "skids_and_roads": 1400.0,
-  "total": 2410.3148,
-  "source": "perkiraan rumus"
+  "total": 3756.805,
+  "x_m": 99.65,
+  "y_m": 37.7,
+  "source": "GA 3D BG-GA-001 (termasuk jalan 3 m)"
  },
  "scaling": {
   "30": {

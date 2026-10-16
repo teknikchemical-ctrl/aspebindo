@@ -30,17 +30,17 @@ image("PM-5_iso-depan.png", 14, 190, 96, 56, name='ISO5')
 image("PM-9_iso-depan.png", 114, 190, 52, 56, name='ISO9')
 image("PM-10_iso-depan.png", 178, 190, 80, 52, name='ISO10')
 TC(62, 250, "ISOMETRI PM-5", 3.0, 'm'); TC(140, 250, "ISOMETRI PM-9", 3.0, 'm'); TC(214, 246, "ISOMETRI PM-10", 3.0, 'm')
-bom = [["PM-5", "TK-201/202", "Tangki NaOH / urea 2 m³", "HDPE + bund", "2x260"], ["", "P-201A/B", "Pompa umpan reaktor", "CF8M, 7,5 kW", "2x260"],
+bom = [["PM-5", "TK-201/202", "Tangki NaOH / urea (siaga) 2 m³", "HDPE + bund", "2x260"], ["", "P-201A/B", "Pompa umpan reaktor", "CF8M, 7,5 kW", "2x260"],
        ["", "P-203/204", "Pompa dosing", "PVDF, 0,37 kW", "2x45"], ["", "-", "Panel dosing + skid 20 ft", "IP65 / S275", "2080"],
        ["PM-9", "CT-601", "Menara pendingin %s kWth" % fn(EQ["cooling_tower"]["duty_kW"]), "FRP, 7,5 kW", "2900"], ["", "P-601", "Pompa air pendingin", "GG25, 11 kW", "210"],
-       ["", "-", "Skid 4200 x 3400", "S275 galv.", "1500"], ["PM-10", "P-303", "Pompa lumpur (progressive cavity)", "CS/NBR, 4 kW", "380"],
+       ["", "-", "Skid 4200 x 3400", "S275 galv.", "1500"], ["PM-10", "P-501", "Pompa umpan press (PC)", "CS/NBR, 4 kW", "380"],
        ["", "PR-501", "Screw press lumpur", "SS304, 5,5 kW", "2600"], ["", "TK/P-polimer", "Tangki + pompa polimer 1 m³", "HDPE / PVDF", "160"],
        ["", "-", "Skid 20 ft + chute kue", "S275 galv.", "1900"]]
 table(262, 180, [("Skid", 14, 'm'), ("Tag", 24, 'm'), ("Uraian", 52, 'l'), ("Bahan / daya", 34, 'l'), ("kg", 22, 'm')], bom, "DAFTAR BAGIAN SKID", rh=4.4, size=2.5, hsize=2.6)
 # label komponen (rujukan)
-for V_, pt, t, pr in ((F5, (1050, 0, 258 + 1400), "TK-201 NaOH 2 m³", 120), (F5, (2650, 0, 258 + 1400), "TK-202 UREA 2 m³", 70),
+for V_, pt, t, pr in ((F5, (1050, 0, 258 + 1400), "TK-201 NaOH 2 m³", 120), (F5, (2650, 0, 258 + 1400), "TK-202 UREA (SIAGA)", 70),
                       (P5, (4300, 700, 0), "P-201A/B", -60), (P5, (1500, 1700, 0), "P-203", 120), (P5, (3100, 1700, 0), "P-204", 70),
                       (F9, (2100, 0, 258 + 3600), "CT-601 %s kWth" % fn(EQ["cooling_tower"]["duty_kW"]), 60), (P9, (3600, 3800, 0), "P-601", 20),
-                      (F10, (3300, 0, 258 + 1150), "PR-501 SCREW PRESS", 60), (P10, (950, 600, 0), "P-303", -90), (P10, (5400, 500, 0), "TK-POLIMER", -60)):
+                      (F10, (3300, 0, 258 + 1150), "PR-501 SCREW PRESS", 60), (P10, (950, 600, 0), "P-501", -90), (P10, (5400, 500, 0), "TK-POLIMER", -60)):
     auto_leader(V_.P(pt), t, pref=pr, rmin=8, rmax=55, size=3.0)
 finish("BG-M-005")

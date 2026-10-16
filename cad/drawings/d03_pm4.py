@@ -1,93 +1,66 @@
 # -*- coding: utf-8 -*-
-"""Lembar 3: PM-4 Kontainer membran 40 ft HC (denah atap dilepas, tampak samping dinding dilepas, tampak ujung, isometri potong, daftar bagian)."""
+"""Lembar 3 (Rev 2): PM-4 skid kontak - PM-4A degasser vakum DG-301 + pompa resirkulasi, PM-4B settler lamella LS-301
+(denah + tampak samping PM-4A, potongan memanjang B-B LS-301 memperlihatkan pelat miring 60° dan corong lumpur, tampak ujung, isometri, daftar bagian)."""
 from dcommon import *
 import bgmodels as M
 
-frame(3, "PM-4 Kontainer Membran UF\n(MB-301, P-301, P-302, TK-302)", "BG-M-004", "1 : 60", "Assembly Drawing")
-SC = 60.0
-full = M.pm4()
-def pick(excl): return [s for n, s, c in full if not any(e in n for e in excl)]
-plan_sh = pick(("-atap", "-rib-", "-louvre", "-sirip", "-cetakan"))
-elev_sh = pick(("-dinding-left", "-rib-left", "-pintu-samping", "-rib-right", "-louvre", "-sirip", "-dinding-right"))
-# ---------------- denah
-A = View((0, 0, 1), (1, 0, 0), SC, 25, 72, name='denah')
-A.draw(plan_sh, hidden=False, w=.35)
-kd.OPEN_VIEWS.add('denah')
-P = A.P
-x0, x1 = P((0, 0, 0))[0], P((M.CL, 0, 0))[0]; yb, yt = P((0, 0, 0))[1], P((0, M.CW, 0))[1]
-dim_v(yt, yb, x1 + 8, fn(M.CW), x1, x1, out=True, side=1)
-vlabel((x0 + x1) / 2, yb + 6, "DENAH (ATAP DILEPAS)", "1:60")
-# ---------------- tampak samping
-B = View((0, -1, 0), (1, 0, 0), SC, 25, 160, name='samping')
-B.draw(elev_sh, hidden=False, w=.35)
-kd.OPEN_VIEWS.add('samping')
-Q = B.P
-yg, yh = Q((0, 0, 0))[1], Q((0, 0, M.CH))[1]
-dim_v(yg, yh, x1 + 8, fn(M.CH), x1, x1, out=True, side=1)
-for k, xb in enumerate((900, 4500)):
-    dim_h(Q((xb, 0, 0))[0], Q((xb + M.MOD_L, 0, 0))[0], yg + 7, fn(M.MOD_L), yg, yg)
-dim_h(x0, x1, yg + 15, fn(M.CL), yg, yg)
-vlabel((x0 + x1) / 2, yg + 20, "TAMPAK SAMPING (DINDING DILEPAS)", "1:60")
-# ---------------- tampak ujung (pintu)
-C = View((1, 0, 0), (0, 1, 0), SC, 274, 226, name='ujung')
-C.draw(pick(("-rib-", "-louvre", "-sirip")), hidden=False, w=.35)
+frame(3, "PM-4 Skid Kontak\nDG-301 + LS-301", "BG-M-004", "1 : 80", "Assembly Drawing", rev="2")
+SC = 80.0
+A4 = M.pm4a(); B4 = M.pm4b()
+LS = M.EQ["lamella_settler"]
+shA = [s for n, s, c in A4]
+# ---------------- PM-4A denah + tampak samping
+PA = View((0, 0, 1), (1, 0, 0), SC, 24, 50, name='denahA'); PA.draw(shA, hidden=False, w=.35); kd.OPEN_VIEWS.add('denahA')
+EA = View((0, -1, 0), (1, 0, 0), SC, 24, 128, name='sampingA'); EA.draw(shA, hidden=False, w=.35); kd.OPEN_VIEWS.add('sampingA')
+x0, x1 = EA.P((0, 0, 0))[0], EA.P((M.CL, 0, 0))[0]; yg = EA.P((0, 0, 0))[1]
+dim_h(x0, x1, yg + 7, fn(M.CL), yg, yg)
+dim_v(PA.P((0, M.CW, 0))[1], PA.P((0, 0, 0))[1], x0 - 7, fn(M.CW), x0, x0)
+dim_v(yg, EA.P((0, 0, 258 + 4600 + 400))[1], x1 + 9, fn(258 + 5000), x1, x1, out=True, side=1)
+TC((x0 + x1) / 2, PA.P((0, 0, 0))[1] + 6, "PM-4A DENAH  1:80", 3.2, 'm')
+TC((x0 + x1) / 2, yg + 15, "PM-4A TAMPAK SAMPING  1:80", 3.5, 'm')
+# ---------------- PM-4B potongan memanjang B-B (bidang tengah LS-301)
+ymid = 69 + 2300 / 2
+B = View((0, -1, 0), (1, 0, 0), SC, 0, 0, origin=(0, ymid, 0), name='potB')
+B.ox, B.oy = 36, 238
+B.section([s for n, s, c in B4 if n.startswith(("LS-301-badan", "LS-301-pelat-0", "LS-301-pelat-1", "LS-301-talang"))], (0, ymid, 0), hatch_sp=1.2, ang=45, draw_rest=False)
+B.draw([s for n, s, c in B4 if not n.startswith(("LS-301-badan", "LS-301-pelat-0", "LS-301-pelat-1", "LS-301-talang", "LS-301-penutup", "LS-301-pelat-nama"))], hidden=False, w=.3)
+kd.OPEN_VIEWS.add('potB')
+bx0, bx1 = B.P((0, ymid, 0))[0], B.P((M.CL, ymid, 0))[0]; byg = B.P((0, ymid, 0))[1]
+zt = 258 + 1500
+dim_h(B.P((400, ymid, 0))[0], B.P((7400, ymid, 0))[0], byg + 7, "7000", byg, byg)
+dim_v(byg, B.P((0, ymid, zt + 3400))[1], bx0 - 7, fn(zt + 3400), bx0, bx0)
+dim_v(byg, B.P((0, ymid, zt))[1], bx0 - 15, fn(zt), bx0, bx0)
+TC((bx0 + bx1) / 2, byg + 15, "PM-4B POTONGAN B-B (SETTLER LAMELLA)  1:80", 3.5, 'm')
+for lab_, pt, pr in (("PELAT MIRING 60° @80 (%d)" % int((7000 - 1600) // 80), (3900, ymid, zt + 1600), 75), ("CORONG LUMPUR 2x", (2150, ymid, zt - 600), -150),
+                     ("TALANG LUAPAN 4x", (6500, ymid, zt + 3200), 45),
+                     ("EFLUEN KE TK-301", (7800, ymid, zt + 3000), 20)):
+    auto_leader(B.P(pt), lab_, pref=pr, rmin=8, rmax=40, size=3.0)
+# ---------------- tampak ujung PM-4B 1:60
+C = View((1, 0, 0), (0, 1, 0), 80.0, 212, 222, name='ujungB')
+C.draw([s for n, s, c in B4 if "pelat-0" not in n], hidden=False, w=.35); kd.OPEN_VIEWS.add('ujungB')
 cx0, cx1 = C.P((0, 0, 0))[0], C.P((0, M.CW, 0))[0]
 dim_h(cx0, cx1, C.P((0, 0, 0))[1] + 7, fn(M.CW), C.P((0, 0, 0))[1], C.P((0, 0, 0))[1])
-vlabel((cx0 + cx1) / 2, C.P((0, 0, 0))[1] + 12, "TAMPAK UJUNG", "1:60")
-# chain dimensi posisi bank modul (denah, sisi atas)
-yA = yt - 6
-xs_ = [0, 900 - 300, 4500 - 300, 4500 + M.MOD_L + 300, M.CL]
-for i in range(len(xs_) - 1):
-    dim_h(P((xs_[i], 0, 0))[0], P((xs_[i + 1], 0, 0))[0], yA, fn(xs_[i + 1] - xs_[i]), yt, yt, size=3.0)
-# tanda potongan C-C pada tampak samping
-xc_ = Q((1500, 0, 0))[0]
-for yy_, dd in ((Q((0, 0, M.CH))[1] - 3, -1), (yg + 16.5, 1)):
-    with own(('cutC', yy_)):
-        L([(xc_, yy_), (xc_, yy_ + dd * 4)], .7, None, 'inst')
-    TC(xc_ - 3.5, yy_ + dd * 2, "C", 3.5, 'm')
-# ---------------- balon
-items = [(1, "MB-301", "Modul UF tubular \u00d8220 x 3000, 30 m\u00b2", "%d (+%d cad.)" % (M.EQ["membrane"]["modules"], 40 - M.EQ["membrane"]["modules"]), ('B', (2400, 0, 1700), 90)),
-         (2, "-", "Rak modul baja galvanis 2 bank", "2", ('B', (4500 + 3240, 0, 2000), 90)),
-         (3, "P-301A/B", "Pompa cross-flow %s m\u00b3/jam, 30 kW" % fn(M.EQ["membrane"]["loop_m3h"]), "2", ('B', (8900, 0, 600), 90)),
-         (4, "P-302", "Pompa permeat, VSD", "1", ('A', (10400, 600, 0), -90)),
-         (5, "TK-302", "Tangki CIP \u00d81600 x 1800, 4 m\u00b3", "1", ('B', (10900, 0, 2150), 90)),
-         (6, "P-304", "Pompa CIP", "1", ('A', (10350, 1650, 0), 90)),
-         (7, "-", "Panel MCC + PLC membran", "1", ('B', (700, 0, 2200), 90)),
-         (8, "-", "Header umpan / retentat DN150", "4", ('A', (900 - 160, 300, 0), -90)),
-         (9, "-", "Header permeat DN80", "2", ('A', (900 + 1500, 300 + 5 * 270 + 120, 0), 120)),
-         (10, "-", "Nosel dinding ke reaktor (DN150/80)", "3", ('B', (0, 0, 900), 180))]
-for num, tg, ds, q, (vw_, p, pr) in items:
-    auto_balloon(num, (A if vw_ == 'A' else B).P(p), pref=pr, rmin=9, rmax=60)
-# ---------------- POTONGAN C-C: modul UF (19 tabung PVDF) 1:4
-mod0 = [s_ for n, s_, c in full if n in ("MB-301-modul-00", "MB-301-tabung-00")]
-z00 = 160 + 300; y00 = 380
-SCc = 4.0
-Cc = View((1, 0, 0), (0, 1, 0), SCc, 0, 0, origin=(1500, y00, z00), name='potC')
-Cc.ox, Cc.oy = 70, 222
-Cc.section(mod0, (1500, y00, z00), hatch_sp=1.0, ang=45, draw_rest=False)
-kd.OPEN_VIEWS.add('potC')
-pc = Cc.P((1500, y00, z00))
-cl((pc[0] - 32, pc[1]), (pc[0] + 32, pc[1])); cl((pc[0], pc[1] - 32), (pc[0], pc[1] + 32))
-dim_h(Cc.P((0, y00 - 110, 0))[0], Cc.P((0, y00 + 110, 0))[0], pc[1] - 32, "Ø220", pc[1] - 27.5, pc[1] - 27.5, size=3.0)
-auto_leader(Cc.P((1500, y00 + 42, z00)), "TABUNG PVDF Ø32 x 19", pref=-20, rmin=8, rmax=30, size=3.0)
-pr_ = Cc.P((1500, y00 + 76, z00 - 76)); leader(pr_[0], pr_[1], pr_[0] + 9, pr_[1] + 5, "RUMAH PVC-U t6", 3.0, "l")
-auto_leader(Cc.P((1500, y00 + 21, z00 + 36)), "PITCH 42", pref=30, rmin=8, rmax=30, size=3.0)
-vlabel(pc[0], pc[1] + 30, "POTONGAN C-C (MODUL UF)", "1:4", size=3.5)
-# ---------------- daftar bagian (bahan + massa)
-mat = {1: ("PVDF/PVC-U", "%d" % (34 * 62)), 2: ("S275 galv.", "1450"), 3: ("CF8M, 30 kW", "2x520"), 4: ("CF8M, 5,5 kW", "140"),
-       5: ("SS304", "380"), 6: ("CF8M, 4 kW", "110"), 7: ("IP54, VSD", "650"), 8: ("SS316L Sch10S", "4x60"), 9: ("PVC-U PN10", "2x15"), 10: ("SS316L", "3x25")}
-short = {1: "Modul UF tubular Ø220x3000, 30 m²", 2: "Rak modul 2 bank", 3: "Pompa cross-flow %s m³/jam" % fn(M.EQ["membrane"]["loop_m3h"]),
-         4: "Pompa permeat", 5: "Tangki CIP 4 m³", 6: "Pompa CIP", 7: "Panel MCC + PLC", 8: "Header umpan/retentat DN150",
-         9: "Header permeat DN80", 10: "Nosel dinding DN150/80"}
-rows = [[n, t, short[n], mat[n][0], q.split(" ")[0], mat[n][1]] for n, t, ds, q, p in items]
-rows += [[11, "-", "Kontainer ISO 40 ft HC", "Corten, insul.", "1", "4200"], [12, "-", "Pipa, katup, kabel, CIP", "-", "1 lot", "900"]]
-yb_ = table(262, 104, [("No", 7, 'm'), ("Tag", 18, 'm'), ("Uraian", 55, 'l'), ("Bahan", 32, 'l'), ("Jml", 12, 'm'), ("kg", 22, 'm')], rows, "DAFTAR BAGIAN", rh=4.4, size=2.5, hsize=2.6)
-T(262, yb_ + 4.5, "Total kering ± 12,1 t; transport ± 16 t (berisi air uji).", 3.0, 'l')
-# ---------------- isometri potong
-image("PM-4-potong_iso-potong.png", 262, 14, 146, 80, name='ISO')
-TC(335, 98, "ISOMETRI POTONG (TANPA SKALA)", 3.5, 'm')
-note(122, 198, ["1. 2 bank x 5 kolom x 4 tingkat (40 posisi),", "   34 terpasang + 6 cadangan.",
-                "2. Fluks %s LMH, luas %s m², cross-flow 4 m/s." % (fn(M.EQ["membrane"]["flux"]), fn(M.EQ["membrane"]["area_m2"])),
-                "3. Lorong servis 850 mm di sisi pompa.", "4. Dinding kiri & atap dilepas untuk kejelasan.",
-                "5. CIP: NaOCl 500 ppm + asam sitrat 2 %, tiap 30 hari."], 3.0)
+TC((cx0 + cx1) / 2, C.P((0, 0, 0))[1] + 15, "PM-4B UJUNG 1:80", 3.2, 'm')
+# ---------------- balon komponen
+items = [(1, "DG-301", "Degasser vakum Ø1600 x 4000, 8 m³", "SA-516-70 / epoksi", "1", "1850", (EA, (2200, 0, 258 + 2800), 120)),
+         (2, "K-303", "Pompa vakum cincin cair + separator", "CF8M, 5,5 kW", "1", "420", (PA, (4800, 500, 0), 90)),
+         (3, "P-301A/B", "Pompa resirkulasi lumpur %s m³/hari" % fn(LS["recycle_m3d"]), "CF8M, 7,5 kW, VSD", "2", "2x560", (PA, (6600, 1450, 0), 60)),
+         (4, "P-302", "Pompa umpan settler", "CF8M, 5,5 kW", "1", "430", (PA, (8900, 250, 0), -60)),
+         (5, "P-303", "Pompa lumpur buangan -> PM-10", "PC, 3 kW", "1", "260", (PA, (8600, 1450, 0), 60)),
+         (6, "-", "Panel MCC + PLC + analis FOS/TAC", "IP54", "1", "820", (EA, (10900, 0, 258 + 1500), 60)),
+         (7, "LS-301", "Settler lamella %s m² proyeksi" % fn(LS["A_proj_m2"]), "S275 + epoksi", "1", "6900", (B, (1000, ymid, zt + 3000), 150)),
+         (8, "-", "Paket pelat miring 60°, jarak 80 mm", "PP / FRP", "1", "1300", (B, (5000, ymid, zt + 900), -60)),
+         (9, "-", "Tangga + platform akses", "S275 galv.", "1", "540", (B, (7400 + 800, ymid, zt + 2000), 30))]
+for num, tg, ds, mt, q, kg, (vw_, p, pr) in items:
+    auto_balloon(num, vw_.P(p), pref=pr, rmin=9, rmax=60)
+rows = [[n, t, ds, mt, q, kg] for n, t, ds, mt, q, kg, _ in items] + [[10, "-", "Skid 40 ft x 2 + perpipaan, katup", "S275 galv.", "2", "2x2600"]]
+yb_ = table(262, 104, [("No", 7, 'm'), ("Tag", 18, 'm'), ("Uraian", 62, 'l'), ("Bahan", 30, 'l'), ("Jml", 10, 'm'), ("kg", 19, 'm')], rows, "DAFTAR BAGIAN", rh=4.4, size=2.5, hsize=2.6)
+note(262, yb_ + 5, ["1. Proses kontak: reaktor -> DG-301 (vakum -0,3 bar, CH4",
+                    "   terlarut kembali ke jalur gas) -> LS-301 -> underflow",
+                    "   %s m³/hari kembali ke reaktor (P-301), buangan" % fn(LS["recycle_m3d"]),
+                    "   %s m³/hari ke screw press (P-303)." % fn(M.EQ["waste_sludge"]["Qw_m3d"]),
+                    "2. Tangkapan padatan %d %%; SRT %s hari." % (round(LS["capture"] * 100), fn(M.R["process_decisions"]["srt_d"])),
+                    "3. Masuk LS-301 dari DG-301 di ujung barat (kiri B-B).", "4. Membran AnMBR = opsi PM-11 (tidak termasuk)."], 3.0)
+image("PM-4_iso-depan.png", 262, 14, 146, 82, name='ISO')
+TC(335, 99, "ISOMETRI PM-4A + PM-4B (TANPA SKALA)", 3.5, 'm')
 finish("BG-M-004")

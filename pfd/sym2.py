@@ -317,7 +317,20 @@ def spress(d, e):
     d.poly([(x + w * .5, y + h * .8), (x + w * .66, y + h * .74), (x + w * .64, y + h + 1.8), (x + w * .56, y + h + 1.8)], .3, WF)
 
 
-for _n in ('reactor', 'vtank', 'pump', 'pd_pump', 'membrane', 'gasholder', 'btf', 'hcyc', 'rscreen', 'phe', 'shtx', 'kopot', 'blower',
+def lamella(d, e):
+    """settler lamella: badan persegi + paket pelat miring + 2 corong lumpur di bawah"""
+    x, y, w, h = e.x, e.y, e.w, e.h; hb = h * .66
+    d.rect(x, y, w, hb, OL, WF)
+    for i in range(9):
+        xx = x + w * (.18 + .07 * i)
+        d.line([(xx, y + hb * .78), (xx + w * .1, y + hb * .22)], .2)
+    d.line([(x + w * .05, y + hb * .12), (x + w * .95, y + hb * .12)], .15, [1.0, .6])
+    for k in range(2):
+        x0 = x + w * k / 2
+        d.poly([(x0, y + hb), (x0 + w / 2, y + hb), (x0 + w * .29, y + h), (x0 + w * .21, y + h)], OL, WF)
+
+
+for _n in ('reactor', 'vtank', 'pump', 'pd_pump', 'membrane', 'lamella', 'gasholder', 'btf', 'hcyc', 'rscreen', 'phe', 'shtx', 'kopot', 'blower',
            'acf', 'flare', 'genset', 'wherb', 'stack', 'ctower', 'dtank', 'ftank', 'spress'):
     setattr(Sym, _n + '2', staticmethod(globals()[_n]))
 

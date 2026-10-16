@@ -3,7 +3,7 @@
 from dcommon import *
 import bgmodels as M
 
-frame(6, "PM-8 Kontainer CHP 800 kWe\n+ HX-401 / ST-401 (PM-9)", "BG-M-008", "1 : 75", "Assembly Drawing")
+frame(6, "PM-8 Kontainer CHP %s kWe\n+ HX-401 / ST-401 (PM-9)" % fn(M.EQ["chp"]["unit_kWe"]), "BG-M-008", "1 : 75", "Assembly Drawing")
 SC = 75.0
 full = M.pm8()
 elev_sh = [s for n, s, c in full if not any(e in n for e in ("-dinding-left", "-rib-left", "-pintu-samping", "-rib-right", "-louvre", "-sirip", "-dinding-right"))]

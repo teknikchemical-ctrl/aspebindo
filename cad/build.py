@@ -12,8 +12,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "out"); STEP = os.path.join(OUT, "step"); STL = os.path.join(OUT, "stl"); IMG = os.path.join(OUT, "render")
 for p in (STEP, STL, IMG): os.makedirs(p, exist_ok=True)
 
-TITLE = {"R-201": "Reaktor AnMBR standar R-201..R-214", "TK-101": "Bejana standar TK-101 / TK-301", "PM-1": "PM-1 skid praolah",
-         "PM-4": "PM-4 kontainer membran", "PM-5": "PM-5 skid dosing + pompa umpan", "PM-6": "PM-6 skid pengolahan gas",
+TITLE = {"R-201": "Reaktor kontak termofilik GFS R-201..R-203", "TK-101": "Tangki GFS TK-101 / TK-301", "PM-1": "PM-1 skid praolah",
+         "PM-4": "PM-4 skid kontak (degasser + settler lamella)", "PM-5": "PM-5 skid dosing + pompa umpan", "PM-6": "PM-6 skid pengolahan gas",
          "PM-7": "PM-7 penampung gas + flare", "PM-8": "PM-8 kontainer CHP + PM-9 HX-401", "PM-9": "PM-9 menara pendingin",
          "PM-10": "PM-10 skid lumpur", "PLANT": "Susunan pabrik 45 t TBS/jam"}
 VIEWS = {"iso-depan": ((1, -1.25, .85), (0, 0, 1)), "iso-belakang": ((-1.2, 1, .75), (0, 0, 1)),
@@ -57,4 +57,4 @@ if __name__ == "__main__":
         else:
             P = M.MODULES[k]()
             export(k, P)
-            if k in ("PM-4", "PM-6", "PM-8"): cutaway(k, P)
+            if k in ("PM-6", "PM-8"): cutaway(k, P)

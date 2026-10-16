@@ -57,19 +57,20 @@ def ribbon(name, pts, col, r=260, every=14.0, arrow_r=1050, arrow_L=3000):
     return out
 
 def flows(info):
-    p = info["pts"]; A = info["ponds"]; dx, dy = SI.PRODUCT_ORIGIN
-    L = lambda x, y: (x / m + dx, y / m + dy)
-    R1 = L(9500 + 6400, 15500); R7 = L(9500 + 6400 * 7, 15500); RN = L(9500, 15500 + 6400)
-    TK1 = L(9500, 15500); TK3 = L(9500, 21900); PM1 = L(14000, 7200); PM4 = L(9500 + 12800 + 6000, 15500 + 6400 + 5200 + 1200)
-    GH = p["GH"]; BTF = L(9500 + 51200 + 3500, 15500 + 6400 + 5200 + 1200); PM6 = L(9500 + 25600 + 1000 + 6000, 15500 + 6400 + 5200 + 1200)
-    CHP = L(49300 + 6000, 15500 - 8500); PM10 = L(9500 + 25600 + 1000 + 3000, 15500 - 8300)
+    p = info["pts"]; A = info["ponds"]
+    MD = {nm: (x, y, l, w) for nm, x, y, l, w in p["mods"]}
+    cen = lambda nm: (MD[nm][0] + MD[nm][2] / 2, MD[nm][1] + MD[nm][3] / 2)
+    PM1 = cen("PM-1"); PM10 = cen("PM-10"); PM6 = p["PM6"]; BTF = p["BTF"]; GH = p["GH"]; CHP = p["CHP"]
+    TK1 = p["TK101"]; TK3 = p["TK301"]; RX = p["reactors"]; dx, dy = SI.PRODUCT_ORIGIN
+    yrack = 9.5 + dy; yhead = 27.2 + dy
     gx, gy = p["mill_power"][0]; ER = p["mill_power"][-1]
     fa, ae1, ae2 = A["FA"], A["AE1"], A["AE2"]
-    yr = (R1[1] + RN[1]) / 2
     F = []
-    F += ribbon("POME", [(208, 146, 2.5), (230, 146, 2.5), (230, PM1[1], 2.5), (PM1[0] - 3, PM1[1], 2.5), (PM1[0] - 3, TK1[1] - 3.2, 2.5), (R7[0], TK1[1] - 3.2, 2.5)], FLOW["POME"])
-    F += ribbon("BIOGAS", [(R1[0], yr, 21.5), (R7[0] + 1, yr, 21.5), (GH[0], GH[1], 13.5)], FLOW["BIOGAS"])
-    F += ribbon("BIOGAS2", [(GH[0] - 7, GH[1] + 4, 6), (BTF[0], BTF[1], 6), (PM6[0] + 6, PM6[1], 4.5), (PM6[0] + 6, CHP[1] + 7, 4.5), (CHP[0], CHP[1] + 7, 4.5), (CHP[0], CHP[1] + 3, 4.5)], FLOW["BIOGAS"])
+    F += ribbon("POME", [(208, 146, 2.5), (230, 146, 2.5), (230, PM1[1], 2.5), (PM1[0], PM1[1], 2.5), (PM1[0], TK1[1], 3.0), (TK1[0] + 3.5, TK1[1], 3.0)], FLOW["POME"])
+    F += ribbon("POME2", [(TK1[0] + 3.5, TK1[1] - 2, 6.0), (TK1[0] + 3.5, yrack, 6.0), (RX[-1][0], yrack, 6.0)], FLOW["POME"])
+    F += ribbon("BIOGAS", [(RX[0][0], yhead, 7.5), (GH[0] - 9.5, yhead, 7.5), (GH[0] - 9.5, GH[1], 7.5), (GH[0] - 6.5, GH[1], 7.5)], FLOW["BIOGAS"])
+    F += ribbon("BIOGAS2", [(GH[0], GH[1] + 7.5, 5), (GH[0], BTF[1], 5), (BTF[0] + 2.5, BTF[1], 5), (PM6[0] + 12.6, BTF[1], 4.5), (PM6[0] + 12.6, PM6[1] + .6, 4.5),
+                            (58.3 + dx, PM6[1] + .6, 4.5), (58.3 + dx, CHP[1] + 3.4, 4.5), (CHP[0] - 5, CHP[1] + 3.4, 4.5)], FLOW["BIOGAS"])
     F += ribbon("LISTRIK-PKS", [(CHP[0] - 4, CHP[1] - 1, 4), (gx, gy, 4), (gx, 2, 4), (228, 2, 4), (228, ER[1], 4), (ER[0], ER[1], 4)], FLOW["LISTRIK"])
     F += ribbon("LISTRIK-PLN", [(gx + 2, gy, 4), (gx + 2, -24, 4)], FLOW["LISTRIK"])
     F += ribbon("EFLUEN", [(TK3[0], TK3[1], 2.5), (232, TK3[1], 2.5), (232, fa["y"] + fa["W"] / 2, 2.5), (fa["x"] + fa["L"] / 2, fa["y"] + fa["W"] / 2, 2.5),
@@ -117,17 +118,20 @@ def labels(info):
     p = info["pts"]; A = info["ponds"]; dx, dy = SI.PRODUCT_ORIGIN
     L = lambda x, y, z: ((x / m + dx) * m, (y / m + dy) * m, z)
     bb = p["prod_bb"]
-    over = [("SET BIOGAS PORTABEL", ((bb[0] + bb[2]) / 2 * m - 10 * m, (bb[1] + bb[3]) / 2 * m, 20 * m)), ("Fat pit (POME)", (203, 146, 1.5)),
+    over = [("SET BIOGAS", ((bb[0] + bb[2]) / 2 * m - 10 * m, (bb[1] + bb[3]) / 2 * m, 20 * m)), ("Fat pit (POME)", (203, 146, 1.5)),
             ("Pabrik utama", (95, 110, 22)), ("Boiler", (170, 106, 22)), ("Rumah mesin", (169, 130, 11)), ("Tangki CPO", (126, 169, 13)),
             ("Loading ramp TBS", (90, 65, 11)), ("Rebusan", (85, 87, 4)), ("Pengolahan air", (82, 170, 23)), ("Kantor", (16, 19, 9)), ("Jembatan timbang", (55, 16, 1)),
             ("Kolam pendingin", (A["CP2"]["x"] + 13, A["CP2"]["y"] + 5, 1)), ("Kolam lama dibebaskan", (A["AN1"]["x"] + 33, A["AN1"]["y"] + 27, 1)),
             ("Kolam polishing", (A["AE1"]["x"] + 35, A["AE1"]["y"] + 17, 1)), ("Aplikasi lahan", (330, 186, 1))]
-    over = [(t, (x * m, y * m, z * m)) if t != "SET BIOGAS PORTABEL" else (t, (x, y, z)) for t, (x, y, z) in over]
-    prod = [("Praolah PM-1", L(14000, 7200, 3500)), ("Tangki umpan", L(9500, 15500, 19500)), ("14 reaktor AnMBR", L(9500 + 6400 * 4, 15500 + 3200, 20000)),
-            ("Membran UF", L(9500 + 12800 + 6000, 15500 + 6400 + 5200 + 1200, 3000)), ("Penampung gas", (p["GH"][0] * m, p["GH"][1] * m, 11 * m)),
-            ("Pembersih biogas", L(9500 + 51200 + 3500, 15500 + 6400 + 5200 + 1200, 10000)), ("Genset 2 x 800 kWe", L(49300 + 6000, 15500 - 8500, 4000)),
-            ("Flare", (p["FL"][0] * m, p["FL"][1] * m, 7 * m)), ("Gardu 20 kV", (p["mill_power"][0][0] * m, p["mill_power"][0][1] * m, 3 * m)),
-            ("Skid lumpur", L(9500 + 25600 + 1000 + 3000, 15500 - 8300, 2500)), ("Menara pendingin", L(9500 - 8800 + 2100, 15500 + 3200 - 1700 + 1700, 5000))]
+    over = [(t, (x * m, y * m, z * m)) if t != "SET BIOGAS" else (t, (x, y, z)) for t, (x, y, z) in over]
+    MD = {nm: (x, y, l, w) for nm, x, y, l, w in p["mods"]}
+    c3 = lambda nm, z: ((MD[nm][0] + MD[nm][2] / 2) * m, (MD[nm][1] + MD[nm][3] / 2) * m, z * m)
+    q3 = lambda q, z: (q[0] * m, q[1] * m, z * m)
+    RX = p["reactors"]
+    prod = [("Praolah PM-1", c3("PM-1", 3.0)), ("Tangki umpan", q3(p["TK101"], 6.0)), ("3 reaktor kontak (GFS)", q3(RX[1], 14.0)),
+            ("Degasser + settler lamella", c3("PM-4B", 5.2)), ("Penampung gas", q3(p["GH"], 11)), ("Pembersih biogas", q3(p["BTF"], 9.5)),
+            ("Genset 2 x 600 kWe", c3("PM-8B", 3.5)), ("Flare", q3(p["FL"], 7)), ("Gardu 20 kV", (p["mill_power"][0][0] * m, p["mill_power"][0][1] * m, 3 * m)),
+            ("Skid lumpur", c3("PM-10", 2.5)), ("Menara pendingin", c3("PM-9", 4.5)), ("Tangki efluen", q3(p["TK301"], 6.0))]
     return over, prod
 
 def seg_hits(a, b, q, n=20):
@@ -193,9 +197,9 @@ def main(render=True):
         jf = os.path.join(STL, "job.json"); json.dump(job, open(jf, "w"))
         r = subprocess.run(["node", "render.mjs", jf], cwd=os.path.join(HERE, "render"), capture_output=True, text=True, timeout=3000)
         print(r.stdout.strip(), r.stderr.strip()[:400], "%.0f s" % (time.time() - t0))
-    T = {"DIORAMA_lokasi": ("PKS 45 t TBS/jam + Set Generator Biogas Portabel", "POME -> biogas -> listrik untuk PKS dan PLN; efluen ke kolam polishing"),
-         "DIORAMA_lokasi-barat": ("PKS 45 t TBS/jam + Set Generator Biogas Portabel", "Tampak dari barat daya"),
-         "DIORAMA_produk": ("Set Generator Biogas Portabel", "14 reaktor AnMBR, membran, gas holder, pembersih gas, genset, flare"),
+    T = {"DIORAMA_lokasi": ("PKS 45 t TBS/jam + Set Biogas yang Dapat Dipindah", "POME -> biogas -> listrik pengganti solar PKS + PLN; efluen ke kolam polishing"),
+         "DIORAMA_lokasi-barat": ("PKS 45 t TBS/jam + Set Biogas yang Dapat Dipindah", "Tampak dari barat daya"),
+         "DIORAMA_produk": ("Set Biogas Kontak Termofilik", "3 reaktor GFS, degasser + settler, gas holder, pembersih gas, genset 2 x 600 kWe, flare"),
          "DIORAMA_atas": ("Denah lokasi", "Tampak atas")}
     for vn in V:
         raw = os.path.join(IMG, vn + "_raw.png"); lp = json.load(open(raw.replace(".png", ".labels.json")))

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-PFD A2 Rev 2 - Generator Biogas Portabel: AnMBR termofilik POME (EIC 2026).
+PFD A2 Rev 3 - Set biogas kontak termofilik yang dapat dipindah (tangki GFS) untuk POME (EIC 2026).
 Tata letak mengikuti acuan PEFD Rute B: area proses penuh-lebar dengan label area, header utilitas (PW, CWS, CWR)
 dan air panas digambar, nomor aliran belah ketupat; pita bawah berisi legenda, daftar peralatan, kondisi aliran,
 loop kendali, catatan, dan blok judul. Simbol detail: sym2.py (ISO 10628-2). Instrumen: ISA-5.1.
@@ -18,9 +18,9 @@ TEAM = "NAMA TIM"
 UNIV = "UNIVERSITAS"
 EVENT = "ASPEBINDO Energy Innovation Strategy Competition 2026"
 DWG_NO = "PFD-BG-002"
-REV = "2"
+REV = "3"
 DWG_DATE = "15-10-2026"
-eng.DOC_TITLE = "PFD Generator Biogas Portabel AnMBR Termofilik"
+eng.DOC_TITLE = "PFD Set Biogas Kontak Termofilik"
 eng.DOC_AUTHOR = TEAM
 # ketebalan garis (mm) dan kepala panah
 eng.LW_PROC = .75; eng.LW_UTIL = .42; eng.LW_SIG = .25
@@ -31,7 +31,7 @@ R = json.load(open(os.path.join(HERE, "..", "process", "outputs", "results.json"
 PM = json.load(open(os.path.join(HERE, "..", "process", "outputs", "portable_modules.json"), encoding="utf-8"))
 OUT = os.path.join(HERE, "outputs"); os.makedirs(OUT, exist_ok=True)
 EQ = R["equipment"]; EN = R["energy"]; NOM = R["nominal"]; STR = {r["id"]: r for r in R["streams"]}
-RV = EQ["reactor_vessel"]; NR = RV["count"]; MB = EQ["membrane"]
+RV = EQ["reactor_vessel"]; NR = RV["count"]; LS = EQ["lamella_settler"]
 RT = 'R-2%02d' % NR
 d = Doc()
 
@@ -92,19 +92,17 @@ def equipment():
     for tg, x in (('R-201', X_R1), (RT, X_R2)):
         E('reactor2', tg, x, RY, RW, RH, lab=(x + RW / 2, 260.5, 'm'), hitbox=[(.04, .02, .96, 1.03)],
           nz={'gas': (.5, 0, 'U'), 'fd': (0, (236 - RY) / RH, 'L'), 'js': (1, .86, 'R'), 'jr': (1, (222 - RY) / RH, 'R'),
-              'mo': (1, (235.2 - RY) / RH, 'R'), 'ret': (1, (205.8 - RY) / RH, 'R'), 'ws': (1, (243.6 - RY) / RH, 'R')})
+              'mo': (1, (200 - RY) / RH, 'R'), 'ret': (1, (226 - RY) / RH, 'R')})
     E('pump2', 'P-202', 206, 236.24, 8, 8, lab=(210, 251.5, 'm'))
     E('dtank2', 'TK-201', 178, 282, 14, 18, lab=(185, 304.8, 'm'), nz={'out': (1, (293.5 - 282) / 18, 'R'), 'pw': (0, .85, 'L'), 'li': (.5, 0, 'U')})
     E('pd_pump2', 'P-203', 196, 290, 7, 7, lab=(199.5, 302.4, 'm'))
     E('dtank2', 'TK-202', 214, 282, 14, 18, lab=(221, 304.8, 'm'), nz={'out': (1, (293.5 - 282) / 18, 'R'), 'pw': (0, .85, 'L'), 'li': (.5, 0, 'U')})
     E('pd_pump2', 'P-204', 232, 290, 7, 7, lab=(235.5, 302.4, 'm'))
-    # ---- A-300 membran (PM-4) + efluen/lumpur (PM-10)
-    E('pump2', 'P-301', 266, 231.2, 8, 8, lab=(270, 246.5, 'm'))
-    E('membrane2', 'MB-301', 284, 206, 42, 12, lab=(305, 203, 'm'), inner_label=True,
-      nz={'in': (0, .5, 'L'), 'ret': (1, .25, 'R'), 'perm': (.9, 1, 'D'), 'cip': ((309 - 284) / 42, 1, 'D')})
-    E('pump2', 'P-302', 330, 226, 8, 8, lab=(334, 241.6, 'm'))
-    E('ftank2', 'TK-302', 302, 230, 14, 18, lab=(299.6, 240, 'r'), nz={'out': (.5, 0, 'U'), 'pw': (1, .85, 'R')})
-    E('pd_pump2', 'P-303', 276, 256, 8, 8, lab=(280, 270.5, 'm'))
+    # ---- A-300 proses kontak (PM-4: degasser + settler lamella) + efluen/lumpur (PM-10)
+    E('kopot2', 'DG-301', 278, 188, 12, 26, lab=(276.5, 196, 'r'), nz={'in': (0, (200 - 188) / 26, 'L'), 'gas': (.5, 0, 'U'), 'out': (.5, 1, 'D')})
+    E('lamella2', 'LS-301', 300, 204, 40, 24, lab=(320, 201.2, 'm'), nz={'in': (0, (216 - 204) / 24, 'L'), 'of': (1, (207 - 204) / 24, 'R'), 'uf1': (.25, 1, 'D'), 'uf2': (.75, 1, 'D')})
+    E('pump2', 'P-301', 296, 238, 8, 8, lab=(294.5, 249.5, 'r'))
+    E('pd_pump2', 'P-303', 334, 240, 8, 8, lab=(331, 251.5, 'r'))
     E('spress2', 'PR-501', 290, 268, 40, 16, lab=(318, 291.6, 'l'), nz={'in': (.23, -.16, 'U'), 'poly': (.40, -.16, 'U'), 'cake': (0, .6, 'L'), 'f': (.625, 1.12, 'D')})
     E('vtank2', 'TK-301', X_TK3, RY, RW, RH, lab=(X_TK3 + 12, 260.5, 'm'), hitbox=[(.04, .02, .96, 1.03)],
       nz={'in': (0, (193.2 - RY) / RH, 'L'), 'fi': (0, (218.4 - RY) / RH, 'L'), 'out': (1, .9, 'R')})
@@ -168,17 +166,15 @@ def streams():
     jt = P('P-202.t'); jr = P('R-201.jr'); L('jm2', [jt, (jt[0], jr[1]), jr])
     xm = (X_R1 + RW + X_R2) / 2
     d.text(xm, 186, "R-202 s/d", 1.8, 'm', True); d.text(xm, 189.8, "R-2%02d" % (NR - 1), 1.8, 'm', True); d.text(xm, 193.4, "identik", 1.45, 'm', False)
-    # ---------------- A-300 membran
-    mo = P(RT + '.mo'); L('s8a', [mo, P('P-301.l')])
-    pt = P('P-301.t'); mi = P('MB-301.in'); L('s8', [pt, (pt[0], mi[1]), mi], 8, dseg=0, dpos=.75)
-    mr = P('MB-301.ret'); ret = P(RT + '.ret')
-    L('s9', [mr, (331, mr[1]), (331, 198), (264, 198), (264, ret[1]), ret], 9, dseg=2, dpos=.5)
-    pp = P('MB-301.perm'); pl = P('P-302.l'); L('s10a', [pp, (pp[0], pl[1]), pl])
-    pt = P('P-302.t'); tin = P('TK-301.in'); L('s10', [pt, (pt[0], tin[1]), tin], 10, dseg=1, dpos=.25)
-    co = P('TK-302.out'); ci = P('MB-301.cip'); d.conn('cip', None, None, pts=[co, ci], dash=UD['CIP'])
-    # lumpur buangan
-    ws = P(RT + '.ws'); pl = P('P-303.l'); L('s11a', [ws, (263, ws[1]), (263, pl[1]), pl])
-    pt = P('P-303.t'); pin = P('PR-501.in'); L('s11', [pt, (pt[0], 252), (pin[0], 252), pin], 11, dseg=1, dpos=.28)
+    # ---------------- A-300 proses kontak
+    mo = P(RT + '.mo'); L('s8', [mo, P('DG-301.in')], 8, dpos=.45)
+    do = P('DG-301.out'); li = P('LS-301.in'); L('s8b', [do, (do[0], li[1]), li])
+    dg = P('DG-301.gas'); gx = P(RT + '.gas')[0]; L('s8g', [dg, (dg[0], YG), (gx, YG)], arrow=False); J(gx, YG)
+    of = P('LS-301.of'); tin = P('TK-301.in'); L('s10', [of, (345, of[1]), (345, tin[1]), tin], 10, dseg=1, dpos=.5)
+    u1 = P('LS-301.uf1'); pr = P('P-301.r'); L('s9a', [u1, (u1[0], pr[1]), pr])
+    pt = P('P-301.t'); ret = P(RT + '.ret'); L('s9', [pt, (pt[0], 234), (264, 234), (264, ret[1]), ret], 9, dseg=1, dpos=.5)
+    u2 = P('LS-301.uf2'); pl = P('P-303.l'); L('s11a', [u2, (u2[0], pl[1]), pl])
+    pt = P('P-303.t'); pin = P('PR-501.in'); L('s11', [pt, (pt[0], 236), (343.5, 236), (343.5, 255), (pin[0], 255), pin], 11, dseg=3, dpos=.2)
     po = P('PR-501.poly'); fp = flag("Polimer", 318, 258, 'l', 'in'); L('s26', [fp['pt'][:2], (po[0], 258), po], 26, dseg=0, dpos=.45)
     ck = P('PR-501.cake'); fk = flag("Kue lumpur ke kebun", 286, ck[1], 'l', 'out'); L('s12', [ck, fk['pt'][:2]])
     fi = P('PR-501.f'); tf = P('TK-301.fi'); L('s13', [fi, (fi[0], 294), (347, 294), (347, tf[1]), tf], 13, dseg=1, dpos=.55)
@@ -231,9 +227,10 @@ def streams():
     d.text(a[0] - 1.2, 100, "CWS 30 \u00b0C", 1.4, 'r', True); d.text(b[0] + 1.2, 100, "CWR 40 \u00b0C", 1.4, 'l', True)
     mk = P('CT-601.mk'); fm = flag("Air baku", 28, mk[1], 'r', 'in', util=True); U('mk', [fm['pt'][:2], mk], 'PW')
     fpw = flag("Air baku (PW)", 40, Y_PW, 'r', 'in', util=True)
-    U('pw0', [fpw['pt'][:2], (336, Y_PW), (336, P('TK-302.pw')[1]), P('TK-302.pw')], 'PW')
+    U('pw0', [fpw['pt'][:2], (210, Y_PW)], 'PW')
     for k, (tg, x) in enumerate((('TK-201', 174), ('TK-202', 210))):
-        q = P(tg + '.pw'); U('pw%d' % (k + 1), [(x, Y_PW), (x, q[1]), q], 'PW'); J(x, Y_PW)
+        q = P(tg + '.pw'); U('pw%d' % (k + 1), [(x, Y_PW), (x, q[1]), q], 'PW')
+        if x != 210: J(x, Y_PW)
     d.text(44, Y_PW + 3.4, "Header air baku / proses (PW)", 1.4, 'l', True)
 
 # =====================================================================================================
@@ -255,13 +252,13 @@ LOOPS = [("TIC-102", "T umpan reaktor → katup CWR E-101 (SP dari TIC-206)"),
          ("LIC-103", "Level TK-101 → VSD P-201"),
          ("FQI-201", "Laju + total umpan reaktor (OLR)"),
          ("AIC-202", "pH reaktor 7,0 → pompa NaOH P-203"),
-         ("AIC-203", "NH₄-N ≥ 100 mg/L → pompa urea P-204"),
+         ("AIC-203", "NH₄-N < 50 mg/L → pompa urea P-204 (siaga)"),
          ("LI-204/205", "Level tangki dosing, alarm rendah"),
          ("TIC-206", "T reaktor 55 °C → SP kaskade TIC-102"),
-         ("LIC-207", "Level reaktor → VSD pompa permeat P-302"),
-         ("FIC-301", "Laju cross-flow → VSD P-301"),
-         ("PDI-302", "TMP membran → backflush / CIP"),
-         ("LI-303", "Level tangki CIP TK-302"),
+         ("LIA-207", "Level reaktor (luapan gravitasi), alarm"),
+         ("FIC-301", "Resirkulasi lumpur %s m³/hari → VSD P-301" % idn(LS["recycle_m3d"])),
+         ("PIC-302", "Vakum DG-301 -0,3 bar → VSD pompa vakum"),
+         ("LIC-303", "Selimut lumpur LS-301 → P-303"),
          ("FIC-304", "Lumpur buangan → P-303 (SRT %.0f d)" % RV["srt_d"]),
          ("LIC-305", "Level TK-301 → VSD P-501"),
          ("LIC-401", "Isi GH-301 → SP beban JIC-501"),
@@ -290,12 +287,12 @@ def instruments():
     loop('AIC', 203, 243.5, 283, [(243.5, 283), (243.5, 293.5), (239, 293.5)])
     # reaktor
     loop('TIC', 206, 166, 200, [(166, 200), (176, 200)])
-    loop('LIC', 207, 270, 180, [(270, 180), (260, 180)], [(270, 180), (342, 180), (342, 230), (338, 230)])
-    # membran
-    loop('FIC', 301, 278, 224, [(278, 224), (270, 224)], [(278, 224), (278, 235.2), (274, 235.2)])
-    loop('PDI', 302, 292, 226, [(292, 226), (292, 218)])
-    loop('LI', 303, 324, 240, [(324, 240), (316, 240)])
-    loop('FIC', 304, 290, 260, [(290, 260), (290, 252)], [(290, 260), (284, 260)])
+    loop('LIA', 207, 270, 180, [(270, 180), (260, 180)])
+    # proses kontak
+    loop('FIC', 301, 276, 228, [(276, 228), (276, 234)])
+    loop('PIC', 302, 296, 192, [(296, 192), (290, 192)])
+    loop('LIC', 303, 330, 196, [(330, 196), (330, 204)])
+    loop('FIC', 304, 318, 248, [(318, 248), (318, 255)])
     loop('LIC', 305, 382, 185, [(382, 185), (374, 185)], [(382, 185), (390, 185), (390, 243.6), (388, 243.6)])
     # gas
     loop('LIC', 401, 170, 110, [(170, 110), (180.3, 110)])
@@ -332,19 +329,18 @@ EQL = [
  ("P-101", "Pompa umpan desander, H %.0f m, VSD" % R["EQ"]["H_desander"], "PM-1"),
  ("HC-101", "Hidrosiklon desander, η pasir %.0f %%" % (EQ["desander"]["grit_removal"] * 100), "PM-1"),
  ("E-101", "Pendingin POME pelat, %s kWth, 85 → %s °C" % (idn(EQ["pome_cooler"]["duty_kW"]), idn(EQ["pome_cooler"]["T_out"])), "PM-1"),
- ("TK-101", "Tangki penyangga umpan, bejana standar %s m³" % idn(RV["V_liq_m3"]), "PM-2"),
+ ("TK-101", "Tangki penyangga umpan, GFS Ø5,73 m, ± 100 m³", "PM-2"),
  ("P-201 A/B", "Pompa umpan reaktor, %s m³/jam, H %.0f m, VSD" % (idn(EQ["feed_pump"]["flow_m3_h"], 1), R["EQ"]["H_feed"]), "PM-5"),
- ("R-201..2%02d" % NR, "Reaktor AnMBR 55 °C, %d × %s m³, Ø%s × %s m" % (NR, idn(RV["V_liq_m3"]), idn(RV["D_m"], 1), idn(RV["H_shell_m"], 1)), "PM-3"),
+ ("R-201..2%02d" % NR, "Reaktor kontak 55 °C, GFS %d × %s m³, Ø%s × %s m" % (NR, idn(RV["V_liq_m3"]), idn(RV["D_m"], 2), idn(RV["H_shell_m"], 1)), "PM-3"),
  ("P-202", "Pompa jet mixing, 1 per reaktor, %s kW" % idn(RV["mixer_kW"], 1), "PM-3"),
  ("TK-201/P-203", "Dosing NaOH 30 %%, P95 %s kg/hari" % idn(EQ["alkali_dosing"]["NaOH_kg_d_P95"]), "PM-5"),
- ("TK-202/P-204", "Dosing urea-N, P95 %s kg N/hari" % idn(EQ["nutrient_dosing"]["N_kg_d_P95"]), "PM-5"),
- ("P-301 A/B", "Pompa cross-flow, %s m³/jam, H 40 m, VSD" % idn(MB["loop_m3h"]), "PM-4"),
- ("MB-301", "Membran UF tubular, %s m², %d modul, %.0f LMH" % (idn(MB["area_m2"]), MB["modules"], MB["flux"]), "PM-4"),
- ("P-302", "Pompa permeat, %s m³/jam, VSD" % idn(MB["Q_perm"] / 24, 1), "PM-4"),
- ("TK-302", "Tangki CIP 4 m³, pemanas listrik", "PM-4"),
- ("P-303", "Pompa lumpur buangan (PC), %s m³/hari" % idn(EQ["waste_sludge"]["Qw_m3d"]), "PM-10"),
+ ("TK-202/P-204", "Dosing urea-N (siaga), P95 %s kg N/hari" % idn(EQ["nutrient_dosing"]["N_kg_d_P95"]), "PM-5"),
+ ("DG-301", "Degasser vakum Ø1,6 × 4 m, CH₄ terlarut → gas", "PM-4"),
+ ("LS-301", "Settler lamella %s m² proyeksi, tangkapan %.0f %%" % (idn(LS["A_proj_m2"]), LS["capture"] * 100), "PM-4"),
+ ("P-301 A/B", "Pompa resirkulasi lumpur %s m³/hari, VSD" % idn(LS["recycle_m3d"]), "PM-4"),
+ ("P-303", "Pompa lumpur buangan (PC), %s m³/hari" % idn(EQ["waste_sludge"]["Qw_m3d"]), "PM-4"),
  ("PR-501", "Screw press, kue %s t/hari, 20 %% DS" % idn(EQ["waste_sludge"]["cake_t_d"], 1), "PM-10"),
- ("TK-301", "Tangki permeat, bejana standar %s m³" % idn(RV["V_liq_m3"]), "PM-10"),
+ ("TK-301", "Tangki efluen, GFS Ø6,88 m, ± 150 m³", "PM-10"),
  ("P-501", "Pompa efluen ke kolam polishing", "PM-10"),
  ("GH-301", "Penampung gas membran ganda, %s m³" % idn(EQ["gas_holder"]["V_m3"]), "PM-7"),
  ("BTF-301", "Bio-trickling filter, %s m³ media, η H₂S %.0f %%" % (idn(EQ["bio_desulfurizer"]["V_m3"], 1), EQ["bio_desulfurizer"]["eff"] * 100), "PM-6"),
@@ -363,12 +359,12 @@ EQL = [
  ("P-601", "Pompa air pendingin", "PM-9"),
 ]
 SN = {1: "POME mentah", 2: "Residu + pasir", 3: "POME bebas pasir", 4: "POME dingin", 5: "Larutan NaOH", 6: "Urea-N", 7: "Umpan reaktor",
-      8: "Lumpur ke membran", 9: "Retentat", 10: "Permeat", 11: "Lumpur buangan", 12: "Kue lumpur", 13: "Filtrat", 14: "Efluen akhir",
+      8: "Ke degasser + settler", 9: "Resirkulasi lumpur", 10: "Luapan settler", 11: "Lumpur buangan", 12: "Kue lumpur", 13: "Filtrat", 14: "Efluen akhir",
       15: "Biogas mentah", 16: "Biogas ke BTF", 17: "Udara BTF", 18: "Biogas keluar BTF", 19: "Blowdown BTF", 20: "Kondensat",
       21: "Biogas ke genset", 22: "Gas ke flare", 23: "Udara bakar", 24: "Gas buang", 25: "Karbon jenuh", 26: "Polimer"}
 NOTES = ["Neraca massa dan energi lengkap: process/biogas_balance.py → outputs/results.json.",
          "Titik rancangan 45 t TBS/jam × 20 jam/hari; laju aliran rata-rata harian.",
-         "R-201 s/d R-2%02d paralel; loop membran, jet mixing, sensor digambar pada satu reaktor." % NR,
+         "R-201 s/d R-2%02d paralel; jet mixing & sensor digambar pada satu reaktor; membran = opsi PM-11." % NR,
          "A/B = 1 operasi + 1 cadangan. PSV/PVRV dan katup manual hanya di P&ID.",
          "Aliran 22 nol saat normal; 25 berkala (penggantian karbon)."]
 
@@ -452,12 +448,12 @@ def ribbon():
     T(Y0 + 12.0, "ASPEBINDO EIC 2026 - Business Plan Competition", 1.25, True)
     hl(x0, x1, Y0 + 13.4, .3)
     T(Y0 + 17.6, "PROCESS FLOW DIAGRAM", 2.7, True)
-    T(Y0 + 21.0, "GENERATOR BIOGAS PORTABEL", 1.5, True); T(Y0 + 23.7, "AnMBR TERMOFILIK 55 \u00b0C - POME", 1.5, True)
+    T(Y0 + 21.0, "SET BIOGAS DAPAT DIPINDAH", 1.5, True); T(Y0 + 23.7, "KONTAK TERMOFILIK 55 \u00b0C - POME", 1.5, True)
     T(Y0 + 26.4, "PKS 45 t TBS/jam (set 30 / 45 / 60 t/jam)", 1.15)
     hl(x0, x1, Y0 + 27.8, .3)
     T(Y0 + 30.6, "Biogas %s Nm\u00b3/hari, CH\u2084 %s %%; listrik %s / %s kWe" % (idn(NOM["biogas_Nm3d"]), idn(NOM["ch4_frac"] * 100, 1), idn(EN["P_gross"]), idn(EN["P_net"])), 1.08)
     T(Y0 + 33.0, "MC P5/P50/P95 neto %s / %s / %s kWe" % tuple(idn(R["monte_carlo"]["P_net"][k]) for k in ("P5", "P50", "P95")), 1.08)
-    T(Y0 + 35.4, "%d muatan truk, \u00b1 %s t, plot \u00b1 %s ha" % (PM["ship_units_total"], idn(PM["mass_t_total"]), idn(PM["plot_area_m2_estimate"]["total"] / 1e4, 2)), 1.08)
+    T(Y0 + 35.4, "%d muatan kontainer, \u00b1 %s t, plot \u00b1 %s ha" % (PM["ship_units_total"], idn(PM["mass_t_total"]), idn(PM["plot_area_m2_estimate"]["total"] / 1e4, 2)), 1.08)
     hl(x0, x1, Y0 + 37.0, .3)
     xs = [x0, x0 + 24, x0 + 46, x1]
     for xx in xs[1:-1]: vl(xx, Y0 + 37.0, Y0 + 45.6)
@@ -466,7 +462,7 @@ def ribbon():
     hl(x0, x1, Y0 + 45.6, .3)
     tc(x0 + 1.0, Y0 + 47.8, "Rev", 1.05, 'l', True); tc(x0 + 7, Y0 + 47.8, "Tgl", 1.05, 'l', True); tc(x0 + 21, Y0 + 47.8, "Keterangan", 1.05, 'l', True)
     hl(x0, x1, Y0 + 48.8, .12)
-    revs = [("0", "11-10-26", "CSTR mesofilik POME+TKKS"), ("1", "15-10-26", "AnMBR 55 \u00b0C portabel"), ("2", "15-10-26", "Tata letak EPC, utilitas, simbol detail")]
+    revs = [("1", "15-10-26", "AnMBR 55 \u00b0C portabel"), ("2", "15-10-26", "Tata letak EPC, utilitas, simbol"), ("3", "16-10-26", "Kontak termofilik + tangki GFS")]
     for k, (a, b, c) in enumerate(revs):
         yy = Y0 + 51.2 + 2.4 * k; tc(x0 + 1.0, yy, a, 1.08); tc(x0 + 7, yy, b, 1.08); tc(x0 + 21, yy, c, 1.08)
     hl(x0, x1, Y0 + 57.6, .12)
@@ -477,8 +473,8 @@ def scale_table():
     T = R["tiers"]; S = PM["scaling"]; ks = ("30", "45", "60")
     rows = [("Kapasitas PKS, t TBS/jam", ks),
             ("POME, m\u00b3/hari", [idn(T[k]["POME_m3d"]) for k in ks]),
-            ("Reaktor standar 194 m\u00b3", ["%d" % T[k]["N_modules"] for k in ks]),
-            ("Membran UF, m\u00b2", [idn(S[k]["membrane_m2"]) for k in ks]),
+            ("Tangki GFS standar %s m\u00b3" % idn(RV["V_liq_m3"]), ["%d" % T[k]["N_modules"] for k in ks]),
+            ("Settler lamella, m\u00b2", [idn(S[k]["lamella_m2"]) for k in ks]),
             ("Genset", ["%d \u00d7 %s kWe" % (T[k]["chp"]["N_gen"], idn(T[k]["chp"]["P_unit"])) for k in ks]),
             ("Listrik neto / kebutuhan PKS, kW", ["%s / %s" % (idn(T[k]["P_net"]), idn(T[k]["P_mill"])) for k in ks]),
             ("Listrik neto, GWh/tahun", [idn(T[k]["GWh_y"], 1) for k in ks])]
@@ -497,15 +493,15 @@ def scale_table():
 def areas():
     area(14, 146, "A-100  PRAOLAH POME", "PM-1 skid praolah, PM-2 tangki umpan")
     area(150, 18, "A-400  PENGOLAHAN DAN PENYIMPANAN BIOGAS", "PM-6 skid gas, PM-7 penampung gas + flare")
-    area(252, 160.5, "A-200  REAKTOR AnMBR 55 \u00b0C", "PM-3 reaktor (\u00d7%d), PM-5 dosing + pompa umpan" % NR)
-    area(392, 262, "A-300  MEMBRAN, EFLUEN, LUMPUR", "PM-4 kontainer membran, PM-10 permeat + lumpur")
+    area(252, 160.5, "A-200  REAKTOR KONTAK 55 \u00b0C", "PM-3 reaktor GFS (\u00d7%d), PM-5 dosing + pompa umpan" % NR)
+    area(392, 262, "A-300  DEGASSER, SETTLER, EFLUEN, LUMPUR", "PM-4 skid kontak, PM-10 efluen + lumpur")
     area(452, 182, "A-500  CHP DAN PEMULIHAN PANAS", "PM-8 kontainer genset (\u00d72), PM-9 HX-401")
     area(14, 18, "A-600  UTILITAS", "PM-9 menara pendingin, air baku")
 
 if __name__ == "__main__":
     frame(); equipment(); streams(); instruments(); areas(); scale_table(); ribbon()
     d.finalize()
-    d.pdf(os.path.join(OUT, "PFD_BG-002_Rev2.pdf")); d.svg(os.path.join(OUT, "PFD_BG-002_Rev2.svg")); d.dxf(os.path.join(OUT, "PFD_BG-002_Rev2.dxf"))
+    d.pdf(os.path.join(OUT, "PFD_BG-002_Rev3.pdf")); d.svg(os.path.join(OUT, "PFD_BG-002_Rev3.svg")); d.dxf(os.path.join(OUT, "PFD_BG-002_Rev3.dxf"))
     iss = d.check(verbose=False)
     print("isu pemeriksa:", len(iss))
     for q in iss[:80]: print("  !", q)

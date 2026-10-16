@@ -6,7 +6,7 @@ import json, math
 import site3d as SI
 import bgmodels as M
 
-frame(9, "Denah Lokasi PKS 45 t TBS/jam\n+ Set Generator Biogas", "BG-GA-002", "1 : 1750", "Site Plan")
+frame(9, "Denah Lokasi PKS 45 t TBS/jam\n+ Set Biogas (Rev 2)", "BG-GA-002", "1 : 1750", "Site Plan", rev="2")
 P_, info = SI.site(); js = SI.write_info(info)
 SC = 1750.0; k = 1000.0 / SC
 OX, OY = 20.0, 147.5                       # kertas untuk (x=0, y=0) m
@@ -50,7 +50,8 @@ for f in info["foot"]:
                 d.rect(c[0] - 4.2, c[1] - 2.2, 8.4, 4.4, 0, '#ffffff', 'inst')
             TC(c[0], c[1], f["tag"], 3.0, 'm', owner=('fpt', f["tag"]))
         else:
-            auto_leader(c, f["tag"], pref={"WB": -20, "GI": -20}.get(f["tag"], 135), rmin=6, rmax=26, size=3.0)
+            if f["tag"] == "GI": leader(c[0], c[1], c[0] + 24, c[1] - 4, "GI", 3.0, 'l', shoulder=2.0); continue
+            auto_leader(c, f["tag"], pref={"WB": -20, "GI": 45}.get(f["tag"], 135), rmin=6, rmax=26, size=3.0)
     else:
         cx, cy, r = f["geom"]
         with own(('fp', f["tag"])):
@@ -59,19 +60,17 @@ for f in info["foot"]:
 bb = info["pts"]["prod_bb"]
 with own(('produk',)):
     rect(bb[0], bb[1], bb[2] - bb[0], bb[3] - bb[1], .7, None, [4, 1])
-dx, dy = SI.PRODUCT_ORIGIN
-out, tags, _ = M.plant(simple=True)
-for tg, x, y in tags:
-    with own(('rx', tg)):
-        C(*PT(x / 1000 + dx, y / 1000 + dy), 2.21 * k, .3)
-gh = info["pts"]["GH"]
+pp_ = info["pts"]
+for i_, (cx_, cy_) in enumerate(pp_["reactors"]):
+    with own(('rx', i_)):
+        C(*PT(cx_, cy_), pp_["R_out"] * k, .3)
+gh = pp_["GH"]
 with own(('gh',)):
-    C(*PT(*gh), 7.4 * k, .35)
-for tg, x0, y0, L_, W_ in (("CHP", 49.3 + dx, 5.0 + dy, 12.2, 2.4), ("CHP2", 49.3 + dx, 9.0 + dy, 12.2, 2.4), ("PM4", 22.3 + dx, 27.1 + dy, 12.2, 2.4), ("PM6", 36.1 + dx, 27.1 + dy, 12.2, 2.4),
-                           ("PM1", 8.0 + dx, 6.0 + dy, 12.2, 2.4), ("PM5", 24.3 + dx, 6.0 + dy, 6.1, 2.4), ("PM10", 36.1 + dx, 6.0 + dy, 6.1, 2.4)):
+    C(*PT(*gh), pp_["GH_R"] * k, .35)
+for tg, x0, y0, L_, W_ in pp_["mods"]:
     with own(('mod', tg)):
         rect(x0, y0, L_, W_, .25)
-codes.append(("PRODUK", "Set biogas portabel, plot %s m²" % fn((bb[2] - bb[0]) * (bb[3] - bb[1]))))
+codes.append(("PRODUK", "Set biogas kontak, plot %s m²" % fn((bb[2] - bb[0]) * (bb[3] - bb[1]))))
 pp = PT(bb[0] + 30, bb[1] - 4)
 auto_leader(PT(bb[2], bb[3] - 6), "PRODUK", pref=10, rmin=6, rmax=30, size=3.5)
 # rute (panjang = CAPEX)

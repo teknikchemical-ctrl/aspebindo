@@ -69,7 +69,7 @@ Residual risks not closed by modelling: thermophilic VFA may run 200-800 mg/L in
 | PM-10 Tangki GFS efluen + skid lumpur | effluent tank D 6.88 m; screw press 110 m3/d waste underflow -> 18.9 t/d cake | 1 | panel GFS + skid 20 ft | 21.3 |
 | PM-11 (opsi) Kontainer membran AnMBR (opsional, reuse air) | tidak termasuk kasus dasar: +91 Nm3 CH4/d (+15 kWe kotor) vs 49 kW cross-flow | 2 | kontainer 40 ft | - |
 
-**Total: 21 truck/container loads, about 254 t; plot about 0.24 ha** (perkiraan rumus). Planning estimates.
+**Total: 21 truck/container loads, about 254 t; plot about 0.38 ha** (GA 3D BG-GA-001 (termasuk jalan 3 m)). Planning estimates.
 
 ## 6. Operating points
 | Item | Nameplate day (equipment sizing) | Annual average (finance) |

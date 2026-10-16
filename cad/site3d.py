@@ -213,22 +213,20 @@ def palms(S, region, exclude, sp=9.0):
     return n
 
 # ============================================================================================ produk + interkoneksi
-PRODUCT_ORIGIN = (239.3, 7.25)        # m: pergeseran koordinat lokal model pabrik produk -> koordinat site
+PRODUCT_ORIGIN = (239.3, 5.5)         # m: pergeseran koordinat lokal model pabrik produk -> koordinat site (Rev 2: >= 20 m ke kolam pendingin)
 def product(S):
     out, tags, (X0, Y0, X1, Y1) = M.plant(simple=False)
-    dx, dy = PRODUCT_ORIGIN
+    dx, dy = PRODUCT_ORIGIN; K = M.KP
     for n, sh, c in out:
         if n == "plot-lantai": c = "#c9c4b8"
         S.P.append(("PRODUK/" + n, mv(sh, dx * m, dy * m, 0), c))
-    S.fp("rect", "PRODUK", (X0 / m + dx, Y0 / m + dy, (X1 - X0) / m, (Y1 - Y0) / m), "PRODUK: set generator biogas portabel", grp="PRODUK")
+    S.fp("rect", "PRODUK", (X0 / m + dx, Y0 / m + dy, (X1 - X0) / m, (Y1 - Y0) / m), "PRODUK: set biogas kontak termofilik (dapat dipindah)", grp="PRODUK")
     S.pts["prod_bb"] = (X0 / m + dx, Y0 / m + dy, X1 / m + dx, Y1 / m + dy)
-    S.pts["PM1_in"] = ((9500 - 1500 - 400) / m + dx, (15500 - 9500 + 1220) / m + dy)        # nosel masuk POME PM-1
-    S.pts["TK301"] = (9500 / m + dx, (15500 + 6400) / m + dy)                             # tangki permeat (efluen)
-    S.pts["HX401"] = ((49300 - 1600) / m + dx, (15500 - 10500 + 1200) / m + dy)           # HX-401 pemulih panas
-    S.pts["CHP"] = ((49300 + 6000) / m + dx, (15500 - 10500) / m + dy)
-    S.pts["GH"] = ((9500 + 51200 + 15500) / m + dx, (15500 + 6900) / m + dy)
-    S.pts["FL"] = (92.0 + dx, 5.0 + dy)
-    S.pts["TK101"] = (9500 / m + dx, 15500 / m + dy)
+    L_ = lambda q: (q[0] / m + dx, q[1] / m + dy)
+    for k in ("PM1_in", "TK301", "TK101", "HX401", "CHP", "GH", "FL", "PM6", "BTF"): S.pts[k] = L_(K[k])
+    S.pts["GH_R"] = K["GH_R"] / m
+    S.pts["reactors"] = [L_(q) for q in K["reactors"]]; S.pts["R_out"] = K["R_out"] / m
+    S.pts["mods"] = [(nm, x / m + dx, y / m + dy, l / m, w / m) for nm, x, y, l, w in K["mods"]]
     return out
 
 def route(S, name, pts, r, color, z=600, factor=1, label=None, cost_m=0.0):
@@ -250,7 +248,7 @@ def interconnect(S):
     # 2 efluen DN150 HDPE TK-301 -> kolam fakultatif (dipertahankan sbg kolam polishing)
     fa = S.area["FA"]
     route(S, "EFLUEN", [p["TK301"], (232, p["TK301"][1]), (232, fa["y"] + fa["W"] / 2), (fa["x"], fa["y"] + fa["W"] / 2)], 84, "#5f8a6a", z=400,
-          label="Efluen AnMBR DN150 HDPE (TK-301 -> kolam fakultatif)", cost_m=70.0)
+          label="Efluen settler DN150 HDPE (TK-301 -> kolam fakultatif)", cost_m=70.0)
     # 3 bypass darurat DN150 TK-101 -> kolam pendingin CP1 (saat set berhenti)
     cp = S.area["CP1"]
     route(S, "BYPASS", [p["TK101"], (234, p["TK101"][1]), (234, cp["y"] + cp["W"] / 2), (cp["x"], cp["y"] + cp["W"] / 2)], 84, "#9c6b4e", z=900,
@@ -313,13 +311,14 @@ def safety(S):
     p = S.pts
     def d(a, b, ra=0, rb=0): return math.dist(a, b) - ra - rb
     bh = (170, 106)
-    chk = [("Flare FL-301 -> tepi GH-301", d(p["FL"], p["GH"], 0, 7.4), 15, "API 537 / praktik biogas"),
+    rg = p.get("GH_R", 7.0)
+    chk = [("Flare FL-301 -> tepi GH-301", d(p["FL"], p["GH"], 0, rg), 15, "API 537 / praktik biogas"),
            ("Flare FL-301 -> kontainer CHP", d(p["FL"], (p["CHP"][0] + 6.2, p["CHP"][1])), 15, "Sumber nyala vs zona gas"),
-           ("GH-301 -> rumah boiler PKS", d(p["GH"], bh, 7.4, 14), 30, "Sumber nyala terbuka"),
-           ("GH-301 -> tangki CPO", d(p["GH"], (140, 169), 7.4, 8), 30, "Bahan mudah terbakar"),
+           ("GH-301 -> rumah boiler PKS", d(p["GH"], bh, rg, 14), 30, "Sumber nyala terbuka"),
+           ("GH-301 -> tangki CPO", d(p["GH"], (140, 169), rg, 8), 30, "Bahan mudah terbakar"),
            ("Flare -> batas pagar lokasi", min(p["FL"][1] - (-5), 475 - p["FL"][0]), 10, "Radiasi panas di batas"),
            ("Reaktor -> kolam pendingin (tanah)", S.area["CP1"]["y"] - 3 - S.pts["prod_bb"][3], 20, "Stabilitas lereng / pondasi"),
-           ("Cerobong boiler -> GH-301", d((190, 106), p["GH"], 1.25, 7.4), 30, "Bunga api cerobong")]
+           ("Cerobong boiler -> GH-301", d((190, 106), p["GH"], 1.25, rg), 30, "Bunga api cerobong")]
     return [dict(item=a, dist=round(b, 1), min=c, basis=e, ok=b >= c) for a, b, c, e in chk]
 
 def site():

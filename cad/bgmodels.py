@@ -280,6 +280,119 @@ def vessel_mass():
     return st * 7.85e-9
 
 # =====================================================================================================
+# 1b. Rev 2: TANGKI GFS DIBAUT (reaktor kontak termofilik R-201..R-203, TK-101 umpan, TK-301 efluen)
+# =====================================================================================================
+GFS = "#2f5d50"                    # enamel hijau tua (panel glass-fused-to-steel)
+TD = RV["D_m"] * 1000.0            # 11460
+TR = TD / 2
+THs = RV["H_shell_m"] * 1000.0     # 10800 tinggi dinding
+TZ0 = 600.0                        # lantai tangki di atas ring beam + pelat beton
+TLIQ = RV["H_liq_m"] * 1000.0      # 9500
+PANEL_W, PANEL_H, TP = 2700.0, 1200.0, 6.0
+TINS = 100.0
+TNOZ = [("N1", "Umpan reaktor (dari P-201)", 150, 200, TZ0 + 1200, 400),
+        ("N2", "Isap jet mixing (ke P-202)", 200, 160, TZ0 + 800, 400),
+        ("N3", "Balik jet mixing (header nosel jet)", 150, 180, TZ0 + 1700, 400),
+        ("N4", "Keluaran ke degasser DG-301 (luapan)", 200, 20, TZ0 + TLIQ - 400, 400),
+        ("N5", "Resirkulasi lumpur dari LS-301", 150, 0, TZ0 + 2200, 400),
+        ("N6", "Pengurasan dasar / pasir", 100, 340, TZ0 + 300, 400),
+        ("N7", "Keluaran biogas (ruang gas)", 200, 110, TZ0 + THs - 500, 500),
+        ("N8", "PVRV tekanan-vakum", 150, 70, TZ0 + THs - 500, 400),
+        ("N9", "Pemancar level LT atas", 50, 90, TZ0 + TLIQ + 300, 300),
+        ("N10", "Pemancar level LT bawah", 50, 90, TZ0 + 600, 300),
+        ("N11", "Termometer TT / pH", 50, 120, TZ0 + 3000, 300),
+        ("N12", "Titik sampel", 50, 135, TZ0 + 1500, 250),
+        ("M1", "Lubang orang dinding (bawah)", 600, 270, TZ0 + 900, 350),
+        ("M2", "Lubang orang dinding (seberang)", 600, 45, TZ0 + 900, 350)]
+
+def sph_cap(Rb, hc, ztop, color_r=None):
+    """tutup bola dengan jari-jari dasar Rb, tinggi hc, dasar pada z = ztop"""
+    Rs = (Rb ** 2 + hc ** 2) / (2 * hc)
+    sp = cq.Solid.makeSphere(Rs, pnt=cq.Vector(0, 0, ztop + hc - Rs), angleDegrees1=-90, angleDegrees2=90)
+    return sp.intersect(box(2 * Rb + 200, 2 * Rb + 200, hc + 10, -Rb - 100, -Rb - 100, ztop))
+
+def gfs_tank(kind="reactor", D=None, Hs=None, ladder=True):
+    """tangki GFS dibaut di atas ring beam beton. kind: 'reactor' (insulasi + atap membran ganda + jet) | 'tank' (atap kerucut aluminium)"""
+    D = D or TD; Hs = Hs or THs; R_ = D / 2; P_ = []
+    P_.append(("pelat-dasar-beton", cyl(R_ + 600, TZ0 - 150, 0, 0, 0), CONC))
+    P_.append(("ring-beam", tube(R_ + 450, R_ - 350, 150, 0, 0, TZ0 - 150), "#a9a49a"))
+    P_.append(("dinding-GFS", tube(R_ + TP, R_, Hs, 0, 0, TZ0), GFS))
+    nv = int(math.ceil(math.pi * D / PANEL_W)); nh = int(math.ceil(Hs / PANEL_H))
+    ins = kind == "reactor"
+    Ro = R_ + TP + (TINS if ins else 0)
+    if ins:
+        P_.append(("klading-insulasi", tube(Ro + 1, Ro, Hs - 150, 0, 0, TZ0 + 150), CLAD))
+        for k in range(nh + 1):
+            P_.append(("klading-sabuk-%d" % k, tube(Ro + 6, Ro + 1, 30, 0, 0, TZ0 + 150 + min(k * PANEL_H, Hs - 180)), "#aeb5bc"))
+        P_.append(("cincin-awal-GFS", tube(R_ + TP + 8, R_ + TP, 150, 0, 0, TZ0), GFS))
+    else:
+        for k in range(1, nh):                                         # kampuh baut horizontal
+            P_.append(("kampuh-h-%d" % k, cq.Solid.makeTorus(R_ + TP, 9).translate(cq.Vector(0, 0, TZ0 + PANEL_H * k)), "#1f3f36"))
+        for k in range(nv):                                            # kampuh baut vertikal (selang-seling tiap baris dilebur jadi satu rusuk tipis)
+            a = 2 * math.pi * k / nv
+            P_.append(("kampuh-v-%d" % k, box(14, 40, Hs, -7, -20, TZ0).translate(cq.Vector(0, 0, 0)).rotate(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), math.degrees(a))
+                       .translate(cq.Vector((R_ + TP + 4) * math.cos(a), (R_ + TP + 4) * math.sin(a), 0)), "#1f3f36"))
+    # sudut penahan dasar + angkur
+    for k in range(24):
+        a = 2 * math.pi * (k + .5) / 24
+        P_.append(("angkur-%d" % k, box(120, 80, 250, (R_ + TP + 40) * math.cos(a) - 60, (R_ + TP + 40) * math.sin(a) - 40, TZ0), DARK))
+    zt = TZ0 + Hs
+    if ins:
+        hc = 0.25 * D
+        P_.append(("atap-membran-luar", sph_cap(R_ + TP, hc, zt), MEMB))
+        P_.append(("atap-klem-tepi", tube(R_ + TP + 60, R_ - 40, 160, 0, 0, zt - 80), DARK))
+        P_.append(("blower-membran", box(700, 500, 600, -(Ro + 1400), -300, TZ0), PAINT_B))
+        P_.append(("blower-pipa", cyl_dir(50, 1200, (-(Ro + 900), 0, TZ0 + 400), (1, 0, 0)), PIPE))
+        P_.append(("sensor-level-atap", box(300, 300, 250, -150, -150, zt + hc - 40), "#3b6fb0"))
+    else:
+        hc = 0.10 * D
+        P_.append(("atap-kerucut-Al", cone(R_ + TP + 80, 400, hc, 0, 0, zt), "#c7ccd1"))
+        P_.append(("atap-ventilasi", cyl(300, 500, 0, 0, zt + hc), "#9aa3ab"))
+    # nosel dinding
+    for tag, srv, dn, ang, z, proj in TNOZ:
+        if kind != "reactor" and tag in ("N2", "N3", "N5", "N7", "N8", "N11"): continue
+        if kind != "reactor" and tag == "N4": z = TZ0 + Hs - 900
+        P_.append((tag, nozzle_radial(R_, ang, z, dn, (Ro - R_) + proj), STEEL))
+        ux, uy = math.cos(math.radians(ang)), math.sin(math.radians(ang)); rf = Ro + proj
+        if tag in ("N9", "N10"):
+            P_.append((tag + "-LT", cyl_dir(45, 160, (ux * rf, uy * rf, z), (ux, uy, 0)), "#3b6fb0"))
+        if tag == "N8":
+            P_.append(("PVRV", box(420, 420, 380, ux * (rf + 50) - 210, uy * (rf + 50) - 210, z + 150), YELLOW))
+    if ins:   # header cincin jet di dalam
+        zr = TZ0 + 450
+        P_.append(("header-jet", cq.Solid.makeTorus(R_ * 0.6, 84).translate(cq.Vector(0, 0, zr)), PIPE))
+        for k in range(8):
+            a = 2 * math.pi * k / 8 + .3
+            P_.append(("nosel-jet-%d" % k, cyl_dir(55, 500, (R_ * .6 * math.cos(a), R_ * .6 * math.sin(a), zr), (-math.sin(a), math.cos(a), -0.25)), PIPE))
+    if ladder:
+        a = math.radians(225); rL = Ro + 250
+        lx, ly = rL * math.cos(a), rL * math.sin(a); px, py = -math.sin(a), math.cos(a)
+        ztop = zt + 200
+        for sg in (-1, 1): P_.append(("tangga-rel%+d" % sg, cyl(25, ztop + 1100 - 300, lx + px * 230 * sg, ly + py * 230 * sg, 300), YELLOW))
+        for k in range(int((ztop - 300) // 300)):
+            P_.append(("anak-tangga-%d" % k, cyl_dir(12, 460, (lx - px * 230, ly - py * 230, 300 + 300 * (k + 1)), (px, py, 0)), YELLOW))
+        hc_ = (lx + math.cos(a) * 330, ly + math.sin(a) * 330)
+        for k in range(int((ztop + 1000 - 2400) // 1200) + 1):
+            hoop = cq.Solid.makeTorus(360, 12).translate(cq.Vector(hc_[0], hc_[1], 2400 + 1200 * k))
+            P_.append(("sangkar-%d" % k, hoop.cut(cyl(330, 40, lx - math.cos(a) * 60, ly - math.sin(a) * 60, 2400 + 1200 * k - 20)), YELLOW))
+        for j in range(5):
+            t_ = a + math.radians(-80 + 40 * j)
+            P_.append(("sangkar-tali-%d" % j, box(50, 8, ztop + 1100 - 2400, hc_[0] + 360 * math.cos(t_) - 25, hc_[1] + 360 * math.sin(t_) - 4, 2400), YELLOW))
+        plat = cq.Workplane("XY").circle(Ro + 1000).circle(Ro + 50).extrude(40).val().translate(cq.Vector(0, 0, ztop))
+        plat = plat.intersect(box(4000, 4000, 200, lx - 2000, ly - 2000, ztop - 50))
+        P_.append(("platform-puncak", plat, GRATE))
+        pts = [((Ro + 950) * math.cos(math.radians(t)), (Ro + 950) * math.sin(math.radians(t))) for t in range(213, 238, 6)]
+        for i_, s_ in enumerate(handrail(pts, ztop + 40, 1100, 1300, 20)): P_.append(("rel-%d" % i_, s_, YELLOW))
+    return [p for p in P_ if p]
+
+def gfs_mass(kind="reactor", D=None, Hs=None):
+    """massa baja panel (t) dari model; dipakai d02 dan pemeriksaan portable_modules"""
+    st = 0.0
+    for n, s_, c in gfs_tank(kind, D, Hs, ladder=False):
+        if n.startswith(("dinding", "cincin-awal", "N", "M", "kampuh")): st += s_.Volume()
+    return st * 7.85e-9
+
+# =====================================================================================================
 # 2. KONTAINER ISO 40 ft HC (rangka + dinding bergelombang; dinding dapat dibuang untuk tampilan potong)
 # =====================================================================================================
 CL, CW, CH = 12192.0, 2438.0, 2896.0
@@ -353,59 +466,72 @@ def pipe_run(pts, r, name, color=PIPE):
     return out
 
 # =====================================================================================================
-# 3. PM-4 KONTAINER MEMBRAN
+# 3. PM-4 SKID KONTAK: PM-4A degasser vakum + pompa resirkulasi, PM-4B settler lamella (Rev 2; membran = opsi PM-11)
 # =====================================================================================================
-MOD_D, MOD_L = 220.0, 3000.0
-# 19 tabung membran PVDF Ø32 (ID 26) susunan heksagonal pitch 42 di dalam rumah Ø220
-HEX19 = [(0, 0)] + [(42 * math.cos(math.radians(60 * k)), 42 * math.sin(math.radians(60 * k))) for k in range(6)] + \
-        [(84 * math.cos(math.radians(30 * k)) if k % 2 == 0 else 72.7 * math.cos(math.radians(30 * k)), 84 * math.sin(math.radians(30 * k)) if k % 2 == 0 else 72.7 * math.sin(math.radians(30 * k))) for k in range(12)]
-def TUBES(x, y, z, L_): return [cyl(13, L_ + 2, x, y + dy, z + dz, "x") for dy, dz in HEX19]
-def pm4(walls=("back", "left", "roof", "front", "right")):
-    P_ = container("C4", walls=walls, louvres=2, side_doors=1)
-    z0 = 160
-    # dua rak modul UF (5 kolom x 4 tingkat), modul horizontal sepanjang kontainer; 34 terpasang
-    n = 0
-    for b, xb in enumerate((900, 4500)):
-        for yy in (230, 230 + 5 * 270 + 70):
-            for xx in (xb - 300, xb + MOD_L / 2 - 30, xb + MOD_L + 240):
-                P_.append(("rak-tiang-%d-%d-%d" % (b, xx, yy), box(60, 60, 2300, xx, yy, z0 + 40), PAINT_G))
-            for j in range(5):
-                P_.append(("rak-rel-%d-%d-%d" % (b, yy, j), box(MOD_L + 600, 60, 50, xb - 300, yy, z0 + 40 + 120 + j * 520), PAINT_G))
-        for j in range(4):
-            for xx in (xb - 300, xb + MOD_L / 2 - 30, xb + MOD_L + 240):
-                P_.append(("rak-lintang-%d-%d-%d" % (b, xx, j), box(60, 5 * 270 + 70, 40, xx, 290, z0 + 300 - 150 + j * 520), PAINT_G))
-        for i in range(5):
-            for j in range(4):
-                if n >= 40: break
-                yy = 380 + i * 270; zz = z0 + 300 + j * 520
-                inst = n < EQ["membrane"]["modules"]
-                if inst:
-                    P_.append(("MB-301-modul-%02d" % n, tube(MOD_D / 2, MOD_D / 2 - 6, MOD_L, xb, yy, zz, "x"), MEMB))
-                    P_.append(("MB-301-cermin-%02d" % n, tube(MOD_D / 2 - 6, 0.1, 25, xb, yy, zz, "x").cut(union(TUBES(xb - 1, yy, zz, 27))), "#b9c4cc"))
-                    P_.append(("MB-301-tabung-%02d" % n, union([tube(16, 13, MOD_L, xb, yy + dy, zz + dz, "x") for dy, dz in HEX19]), "#e2ddc4"))
-                else:
-                    P_.append(("MB-301-modul-%02d" % n, cyl(MOD_D / 2, MOD_L, xb, yy, zz, "x"), "#cfd4d9"))
-                if inst:
-                    P_.append(("MB-301-tutup-a%02d" % n, cyl(MOD_D / 2 + 15, 90, xb - 90, yy, zz, "x"), PAINT_B))
-                    P_.append(("MB-301-tutup-b%02d" % n, cyl(MOD_D / 2 + 15, 90, xb + MOD_L, yy, zz, "x"), PAINT_B))
-                n += 1
-        # header umpan / retentat / permeat
-        P_ += pipe_run([(xb - 160, 300, z0 + 300), (xb - 160, 300, z0 + 1860)], 84, "header-umpan-%d" % b, PAINT_B)
-        P_ += pipe_run([(xb + MOD_L + 160, 300, z0 + 300), (xb + MOD_L + 160, 300, z0 + 1860)], 84, "header-retentat-%d" % b, PAINT_B)
-        P_ += pipe_run([(xb + MOD_L / 2, 300 + 5 * 270 + 120, z0 + 250), (xb + MOD_L / 2, 300 + 5 * 270 + 120, z0 + 2150)], 45, "header-permeat-%d" % b, "#4e8fbf")
-    # pompa cross-flow A/B + permeat + CIP di ujung belakang (lorong 850 mm di sisi kanan)
-    P_ += pump(1500, 600, 230, 300, 8200, 620, z0 + 30, "P-301A")
-    P_ += pump(1500, 600, 230, 300, 8200, 1400, z0 + 30, "P-301B")
-    P_ += pump(900, 420, 140, 170, 10000, 600, z0 + 30, "P-302")
-    P_.append(("TK-302", tube(800, 794, 1800, 10900, 1250, z0 + 30).fuse(cyl(800, 6, 10900, 1250, z0 + 30)), "#d8dcd2"))
-    P_.append(("TK-302-tutup", cone(806, 300, 250, 10900, 1250, z0 + 1830), "#d8dcd2"))
-    P_ += pump(700, 360, 110, 140, 10050, 1650, z0 + 30, "P-304")
-    P_.append(("MCC-panel", box(600, 1600, 2200, 400, 400, z0 + 30), "#c7c9b8"))
-    P_.append(("MCC-pintu", box(10, 1500, 2000, 1000, 450, z0 + 130), "#b5b7a6"))
-    # nosel dinding (sambungan ke reaktor)
-    for k, (yy, r_) in enumerate(((600, 84), (1000, 84), (1800, 45))):
-        P_.append(("nosel-dinding-%d" % k, cyl(r_, 300, 0, yy, 600 + 300 * k, "-x"), PAINT_B))
+LAM = EQ["lamella_settler"]
+def pm4a():
+    P_ = frame_skid(CL, CW)
+    z0 = 258
+    # DG-301 degasser vakum vertikal D1600 x 4000 dengan kepala elips + pompa vakum
+    P_.append(("DG-301-shell", tube(800, 792, 3600, 2200, 1219, z0 + 600), STEEL))
+    P_.append(("DG-301-kepala-atas", ellhead(800, 400, 8, z0 + 4200, True, 2200, 1219), STEEL))
+    P_.append(("DG-301-kepala-bawah", ellhead(800, 400, 8, z0 + 600, False, 2200, 1219), STEEL))
+    for k in range(4):
+        a = math.pi / 4 + k * math.pi / 2
+        P_.append(("DG-301-kaki-%d" % k, box(120, 120, 700, 2200 + 700 * math.cos(a) - 60, 1219 + 700 * math.sin(a) - 60, z0), DARK))
+    P_.append(("DG-301-nosel-masuk", cyl_dir(110, 500, (2200 - 800, 1219, z0 + 3600), (-1, 0, 0)), STEEL))
+    P_.append(("DG-301-nosel-gas", nozzle_vert(2200, 1219, z0 + 4600, 100, 400), STEEL))
+    P_.append(("DG-301-nosel-keluar", cyl(110, 900, 2200, 1219, z0 - 100), STEEL))
+    P_ += pump(1300, 520, 170, 210, 4200, 300, z0, "K-303-pompa-vakum")
+    P_.append(("K-303-separator", tube(300, 294, 900, 4500, 1700, z0).fuse(cyl(300, 6, 4500, 1700, z0)), STEEL))
+    # P-301A/B resirkulasi lumpur (underflow LS-301 -> reaktor), P-302 umpan settler, P-303 lumpur buangan
+    P_ += pump(1700, 650, 240, 300, 5800, 250, z0, "P-301A")
+    P_ += pump(1700, 650, 240, 300, 5800, 1450, z0, "P-301B")
+    P_ += pump(1400, 560, 200, 250, 8200, 250, z0, "P-302")
+    P_ += pump(1000, 440, 140, 170, 8200, 1450, z0, "P-303")
+    P_ += pipe_run([(2200, 1219, z0 - 100), (2200, 1219, z0 + 150), (8200, 1219, z0 + 150)], 110, "header-isap", PAINT_B)
+    P_ += pipe_run([(5800, 500, z0 + 900), (5800, 500, z0 + 2300), (11900, 500, z0 + 2300)], 84, "header-resirkulasi", "#7a6a55")
+    P_.append(("MCC-panel", box(600, 1800, 2200, 10600, 500, z0), "#c7c9b8"))
+    P_.append(("analis-FOS-TAC", box(700, 600, 1500, 10600, 1700 - 300, z0), "#d9d6c3"))
     return P_
+
+def pm4b():
+    P_ = frame_skid(CL, CW)
+    z0 = 258; L_, W_, H_ = 7000.0, 2300.0, 3400.0; x0 = 400; y0 = 69
+    zt = z0 + 1500                                                     # dasar kotak di atas corong
+    t = 8
+    shellb = box(L_, W_, H_, x0, y0, zt).cut(box(L_ - 2 * t, W_ - 2 * t, H_, x0 + t, y0 + t, zt + t))
+    P_.append(("LS-301-badan", shellb, PAINT_G))
+    for k in range(2):                                                  # dua corong lumpur piramida terbalik
+        cx = x0 + L_ / 4 + k * L_ / 2
+        hop = cq.Solid.makeLoft([cq.Wire.makePolygon([cq.Vector(cx - L_ / 4, y0, zt), cq.Vector(cx + L_ / 4, y0, zt), cq.Vector(cx + L_ / 4, y0 + W_, zt), cq.Vector(cx - L_ / 4, y0 + W_, zt)], True),
+                                 cq.Wire.makePolygon([cq.Vector(cx - 200, y0 + W_ / 2 - 200, z0 + 300), cq.Vector(cx + 200, y0 + W_ / 2 - 200, z0 + 300), cq.Vector(cx + 200, y0 + W_ / 2 + 200, z0 + 300), cq.Vector(cx - 200, y0 + W_ / 2 + 200, z0 + 300)], True)], True)
+        P_.append(("LS-301-corong-%d" % k, hop, PAINT_G))
+        P_.append(("LS-301-keluar-lumpur-%d" % k, cyl(84, 300, cx, y0 + W_ / 2, z0), PAINT_B))
+    for k in range(6):
+        P_.append(("LS-301-kaki-%d" % k, box(150, 150, zt - z0, x0 + k * (L_ - 150) / 5, y0 if k % 2 == 0 else y0 + W_ - 150, z0), DARK))
+    # paket pelat miring 60 derajat (jarak 80 mm), terlihat dari atas
+    npl = int((L_ - 1600) // 80)
+    for k in range(npl):
+        xx = x0 + 800 + k * 80
+        pl = box(6, W_ - 2 * t - 40, 1700, xx, y0 + t + 20, zt + 700).rotate(cq.Vector(xx, 0, zt + 700), cq.Vector(xx, 1, zt + 700), -30)
+        P_.append(("LS-301-pelat-%03d" % k, pl, "#d9dcd2"))
+    for k in range(4):                                                  # talang luapan
+        P_.append(("LS-301-talang-%d" % k, box(L_ - 600, 160, 200, x0 + 300, y0 + 300 + k * 500, zt + H_ - 300), "#9aa7b4"))
+    P_.append(("LS-301-penutup-grating", box(L_, W_, 40, x0, y0, zt + H_), GRATE))
+    P_.append(("LS-301-nosel-masuk", cyl_dir(110, 600, (x0, y0 + W_ / 2, zt + 1200), (-1, 0, 0)), STEEL))
+    P_.append(("LS-301-nosel-efluen", cyl_dir(110, 600, (x0 + L_, y0 + W_ / 2, zt + H_ - 400), (1, 0, 0)), STEEL))
+    # tangga akses + platform samping
+    P_.append(("tangga-LS", box(800, 60, zt + H_ - z0, x0 + L_ + 600, y0 + 200, z0), YELLOW))
+    P_.append(("platform-LS", box(1600, 1200, 40, x0 + L_ + 200, y0 + 100, zt + H_ - 40), GRATE))
+    for i_, s_ in enumerate(handrail([(x0 + L_ + 200, y0 + 100), (x0 + L_ + 1800, y0 + 100), (x0 + L_ + 1800, y0 + 1300)], zt + H_, 1100, 800, 20)): P_.append(("rel-LS-%d" % i_, s_, YELLOW))
+    P_.append(("LS-301-pelat-nama", box(400, 8, 260, x0 + 600, y0 - 8, zt + 1500), "#d9c27a"))
+    return P_
+
+def pm4():
+    out = list(pm4a())
+    out += [(n.replace("LS-", "LS-") if n.startswith("LS-") else "B-" + n, mv(s_, 0, 3200, 0), c) for n, s_, c in pm4b()]
+    return out
 
 # =====================================================================================================
 # 4. PM-1 SKID PRAOLAH (40 ft, terbuka)
@@ -656,98 +782,100 @@ def pm10():
 # =====================================================================================================
 # 11. SUSUNAN PABRIK 45 t TBS/jam
 # =====================================================================================================
-PITCH = 6400.0
+PITCH = 15000.0
+KP = {}
 def plant(simple=True):
-    """reaktor 2 baris x 7, TK-101 dan TK-301 di ujung, modul di sekitarnya. Origin: sudut barat-daya plot."""
+    """Rev 2: 3 reaktor GFS satu baris, TK-101/TK-301 di barat, rak pipa di selatan, header biogas di utara,
+    skid di baris selatan/utara, GH + CHP + flare di timur (jarak aman: flare >= 15 m dari tepi GH dan kontainer CHP).
+    Origin: sudut barat-daya. Titik kunci untuk lokasi/gambar disimpan di KP (mm)."""
     out = []
     def add(parts, dx, dy, dz=0, rz=0, pre=""):
-        for n, s, c in parts:
-            s2 = s.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), rz) if rz else s
+        for n, s_, c in parts:
+            s2 = s_.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), rz) if rz else s_
             out.append((pre + n, mv(s2, dx, dy, dz), c))
-    rv = vessel("reactor", ladder=not simple)
-    tk = vessel("tank", ladder=not simple)
-    x0, y0 = 9500, 15500
+    rx = gfs_tank("reactor", ladder=not simple)
+    D1, D3 = 5730.0, 6880.0
+    tk1 = gfs_tank("tank", D1, 5000.0, ladder=not simple); tk3 = gfs_tank("tank", D3, 5000.0, ladder=not simple)
+    YR = 20000.0; XS = [21000.0, 36000.0, 51000.0]
     tags = []
-    for row in range(2):
-        for k in range(7):
-            n = row * 7 + k + 1
-            add(rv, x0 + PITCH * (k + 1), y0 + PITCH * row, pre="R-2%02d/" % n); tags.append(("R-2%02d" % n, x0 + PITCH * (k + 1), y0 + PITCH * row))
-    add(tk, x0, y0, pre="TK-101/"); tags.append(("TK-101", x0, y0))
-    add(tk, x0, y0 + PITCH, pre="TK-301/"); tags.append(("TK-301", x0, y0 + PITCH))
-    # pipe rack di tengah antar baris: 4 jalur proses + baki kabel
-    yr = y0 + PITCH / 2; ZR = 5250.0
-    for k in range(9):
-        xx = x0 + PITCH * k - 300
-        out.append(("rack-tiang-%d" % k, box(250, 1200, 5000, xx, yr - 600, 0), PAINT_B))
-        out.append(("rack-tapak-%d" % k, box(500, 1450, 60, xx - 125, yr - 725, 0), CONC))
-        out.append(("rack-baki-kabel-tiang-%d" % k, box(100, 100, 900, xx + 75, yr - 50, ZR), PAINT_B))
-    out.append(("rack-balok", box(PITCH * 8 + 600, 1200, 250, x0 - 300, yr - 600, 5000), PAINT_B))
-    out.append(("rack-baki-kabel", box(PITCH * 8 + 600, 600, 100, x0 - 300, yr - 300, ZR + 900), "#8a8f55"))
-    LINES = {"umpan": (-450, 57, PIPE), "lumpur": (-150, 84, "#7a6a55"), "retentat": (150, 84, "#7a6a55"), "biogas": (450, 109, "#c8a23a")}
-    for j, (ln_, (dy, r_, col)) in enumerate(LINES.items()):
-        out.append(("rack-pipa-%s" % ln_, cyl(r_, PITCH * 8 + 600, x0 - 300, yr + dy, ZR + r_, "x"), col))
-    # sambungan tiap reaktor ke jalur rack (umpan N1, lumpur N4, retentat N5, biogas N7)
-    Ro = VR + VT + INS
-    def nzp(ang, rr): a = math.radians(ang); return rr * math.cos(a), rr * math.sin(a)
-    for row in range(2):
-        sgn = 1 if row == 0 else -1
-        for k in range(7):
-            cx, cy = x0 + PITCH * (k + 1), y0 + PITCH * row
-            yedge = yr - sgn * 750
-            for ln_, ang, zn in (("umpan", 200, ZB + 1200), ("lumpur", 20, ZB + 900), ("retentat", 0, ZB + 11400)):
-                dy, r_, col = LINES[ln_]
-                fx, fy = nzp(ang, Ro + 400 + 40); ex, ey = nzp(ang, Ro + 400 + 260)
-                pts = [(cx + fx, cy + fy, zn), (cx + ex, cy + ey, zn), (cx + ex, yedge, zn)]
-                ztop = ZR + 2 * r_ + 350
-                pts += [(cx + ex, yedge, ztop), (cx + ex, yr + dy, ztop), (cx + ex, yr + dy, ZR + 2 * r_)]
-                out.extend(pipe_run(pts, r_, "R%d%d-%s" % (row, k, ln_), col))
-            dy, r_, col = LINES["biogas"]
-            zg = ZT + HB - 60 + 600
-            out.extend(pipe_run([(cx, cy, zg), (cx, cy, zg + 350), (cx, yr + dy, zg + 350), (cx, yr + dy, ZR + 2 * r_)], r_, "R%d%d-biogas" % (row, k), col))
-            out.append(("R%d%d-katup-biogas" % (row, k), box(260, 260, 300, cx - 130, yr + dy - 130, ZR + 2 * r_ + 1200), RED))
-    # jalur ke PM-4 (lewat celah R-201/R-202) dan biogas ke PM-6 (ujung timur rack)
-    xg = x0 + PITCH * 1.5
-    for ln_ in ("lumpur", "retentat"):
-        dy, r_, col = LINES[ln_]
-        out.extend(pipe_run([(xg + dy, yr + dy, ZR + 2 * r_), (xg + dy, yr + dy, ZR + 2 * r_ + 1200), (xg + dy, y0 + PITCH + 5200 + 300 + (dy + 450), ZR + 2 * r_ + 1200),
-                             (x0 + PITCH * 2 - 500, y0 + PITCH + 5200 + 300 + (dy + 450), ZR + 2 * r_ + 1200), (x0 + PITCH * 2 - 500, y0 + PITCH + 5200 + 300 + (dy + 450), 900)], r_, "ke-PM4-" + ln_, col))
-    # ---- jalur gas sesuai PFD: reaktor -> rack -> GH-301 (masuk utara) -> GH keluar selatan -> BTF/PM-6 -> CHP; cabang ke flare
-    dy, r_, col = LINES["biogas"]
-    GX, GY = x0 + PITCH * 8 + 15500, y0 + PITCH + 500          # pusat GH (digeser ke utara: bebas dari kontainer CHP)
-    xe = x0 + PITCH * 8 + 300; RG = 7000 + 1200                # ujung pipa GH = Dg/2 + 1200
-    out.extend(pipe_run([(xe, yr + dy, ZR + r_), (xe + 5000, yr + dy, ZR + r_), (xe + 5000, GY + RG + 1400, ZR + r_), (GX, GY + RG + 1400, ZR + r_),
-                         (GX, GY + RG + 1400, 300), (GX, GY + RG, 300)], r_, "biogas-ke-GH", col))
-    yb_ = y0 + PITCH + 5200; xb_ = x0 + PITCH * 8 + 3500
-    out.extend(pipe_run([(GX, GY - RG, 300), (GX, GY - RG - 800, 300), (GX, GY - RG - 800, 4500), (xb_ - 2000, GY - RG - 800, 4500),
-                         (xb_ - 2000, yb_ + 1200, 4500), (xb_ - 2000, yb_ + 1200, 1558), (xb_ - 1200 - 350, yb_ + 1200, 1558)], r_, "GH-ke-BTF", col))
-    XC = 49300                                                   # kontainer CHP (PM-8) digeser ke barat
-    out.extend(pipe_run([(x0 + PITCH * 4 + 1000 + 12192, yb_ + 300, 2400), (xe + 1000, yb_ + 300, 2400), (xe + 1000, y0 - 3000, 2400),
-                         (XC + 900, y0 - 3000, 2400), (XC + 900, y0 - 3000, 3300)], 84, "gas-bersih-ke-CHP", "#c8a23a"))
-    FX, FY = 92000, 5000                                         # flare >= 15 m dari tepi GH, >= 25 m dari CHP
-    out.extend(pipe_run([(xe + 1000, y0 - 3000, 2400), (FX - 1250 - 600, y0 - 3000, 2400), (FX - 1250 - 600, FY, 2400), (FX - 1250 - 600, FY, 900), (FX - 1250, FY, 900)], 57, "gas-ke-flare", "#c8a23a"))
-    # modul
-    yb = y0 + PITCH + 5200
-    add(pm4(), x0 + PITCH * 2, yb, pre="PM-4/")
-    add(pm1(), x0 - 1500, y0 - 9500, pre="PM-1/")
-    add(pm5(), x0 + PITCH * 2 + 2000, y0 - 9500, pre="PM-5/")
-    add(pm10(), x0 + PITCH * 4 + 1000, y0 - 9500, pre="PM-10/")
-    add(pm9_ct(), x0 - 8800, y0 + PITCH / 2 - 1700, pre="PM-9/")
-    add(gas_container(), x0 + PITCH * 4 + 1000, yb, pre="PM-6/")
-    add(btf(), x0 + PITCH * 8 + 3500, yb + 1200, pre="PM-6/")
+    for k, xx in enumerate(XS):
+        add(rx, xx, YR, pre="R-2%02d/" % (k + 1)); tags.append(("R-2%02d" % (k + 1), xx, YR))
+    T1 = (6500.0, 23500.0); T3 = (6500.0, 14800.0)
+    add(tk1, *T1, pre="TK-101/"); tags.append(("TK-101", *T1))
+    add(tk3, *T3, pre="TK-301/"); tags.append(("TK-301", *T3))
+    Ro = TR + TP + TINS
+    # ---- rak pipa selatan (5 jalur) y = 9500
+    yr = 9500.0; ZR = 5250.0; xa, xb = 2000.0, 64000.0
+    for k in range(int((xb - xa) // 6000) + 1):
+        xx = xa + 6000 * k
+        out.append(("rack-tiang-%d" % k, box(250, 1400, 5000, xx, yr - 700, 0), PAINT_B))
+        out.append(("rack-tapak-%d" % k, box(500, 1650, 60, xx - 125, yr - 825, 0), CONC))
+    out.append(("rack-balok", box(xb - xa + 250, 1400, 250, xa, yr - 700, 5000), PAINT_B))
+    out.append(("rack-baki-kabel", box(xb - xa + 250, 500, 100, xa, yr - 250, ZR + 900), "#8a8f55"))
+    LINES = {"umpan": (-560, 84, PIPE), "keluaran": (-280, 109, "#7a6a55"), "resirkulasi": (0, 84, "#7a6a55"), "efluen": (280, 84, "#5f8a6a"), "lumpur": (560, 57, "#6b5a45")}
+    for ln_, (dy, r_, col) in LINES.items():
+        out.append(("rack-pipa-%s" % ln_, cyl(r_, xb - xa + 250, xa, yr + dy, ZR + r_, "x"), col))
+    def nz(cx, cy, ang, rr): a = math.radians(ang); return cx + rr * math.cos(a), cy + rr * math.sin(a)
+    for k, cx in enumerate(XS):
+        for ln_, ang, zn, ofs in (("umpan", 200, TZ0 + 1200, -1500), ("keluaran", 20, TZ0 + TLIQ - 400, 1500), ("resirkulasi", 340, TZ0 + 2200, 2400)):
+            dy, r_, col = LINES[ln_]
+            fx, fy = nz(cx, YR, ang, Ro + 440); ex, ey = nz(cx, YR, ang, Ro + 700)
+            ztop = ZR + 2 * r_ + 300
+            pts = [(fx, fy, zn), (ex, ey, zn), (ex, ey, ztop), (ex, yr + dy, ztop), (ex, yr + dy, ZR + 2 * r_)] if ey > yr + 1000 else [(fx, fy, zn), (ex, ey, zn)]
+            out.extend(pipe_run(pts, r_, "R%d-%s" % (k, ln_), col))
+    # ---- header biogas utara (y = 27200, z = 6000) -> GH-301
+    GX, GY, RG = 73000.0, 22000.0, 7000.0
+    yg, zg = 27200.0, 6000.0
+    for k, cx in enumerate(XS):
+        fx, fy = nz(cx, YR, 110, Ro + 540)
+        out.extend(pipe_run([(fx, fy, TZ0 + THs - 500), (fx, fy, TZ0 + THs + 300), (fx, yg, TZ0 + THs + 300), (fx, yg, zg)], 109, "R%d-biogas" % k, "#c8a23a"))
+        out.append(("R%d-katup-biogas" % k, box(280, 280, 320, fx - 140, yg - 140, zg + 900), RED))
+    for k in range(5):
+        out.append(("header-gas-tiang-%d" % k, box(200, 200, zg, 16000 + 12000 * k, yg - 100, 0), PAINT_B))
+    out.extend(pipe_run([(XS[0] - 2000, yg, zg), (GX - RG - 2500, yg, zg), (GX - RG - 2500, GY, zg), (GX - RG - 2500, GY, 400), (GX - RG - 200, GY, 400)], 109, "biogas-ke-GH", "#c8a23a"))
+    # GH -> BTF -> PM-6 -> CHP; cabang flare
+    BX, BY = 61000.0, 31800.0; X6, Y6 = 44000.0, 29600.0
+    out.extend(pipe_run([(GX, GY + RG + 200, 400), (GX, GY + RG + 1300, 400), (GX, GY + RG + 1300, 3000), (BX + 2600, GY + RG + 1300, 3000), (BX + 2600, BY, 3000), (BX + 2200, BY, 3000)], 109, "GH-ke-BTF", "#c8a23a"))
+    out.extend(pipe_run([(BX - 2200, BY, 1600), (X6 + 12192 + 400, BY, 1600), (X6 + 12192 + 400, Y6 + 1200, 1600), (X6 + 12192, Y6 + 1200, 1600)], 84, "BTF-ke-PM6", "#c8a23a"))
+    XC, YC = 62000.0, 2000.0; xg = 58300.0
+    out.extend(pipe_run([(X6 + 12192, Y6 + 600, 2400), (xg, Y6 + 600, 2400), (xg, YC + 2438 + 900, 2400), (XC + 900, YC + 2438 + 900, 2400), (XC + 900, YC + 2438 + 900, 3300)], 84, "gas-bersih-ke-CHP", "#c8a23a"))
+    FX, FY = 93000.0, 11000.0
+    out.extend(pipe_run([(xg, 12500, 2400), (FX - 1250 - 600, 12500, 2400), (FX - 1250 - 600, FY, 2400), (FX - 1250 - 600, FY, 900), (FX - 1250, FY, 900)], 57, "gas-ke-flare", "#c8a23a"))
+    # ---- modul
+    YS = 2000.0
+    add(pm1(), 1000.0, YS, pre="PM-1/")
+    add(pm5(), 15000.0, YS, pre="PM-5/")
+    add(pm4a(), 23000.0, YS, pre="PM-4A/")
+    add(pm4b(), 37000.0, YS, pre="PM-4B/")
+    add(pm10(), 51000.0, YS, pre="PM-10/")
+    add(pm9_ct(), 1500.0, 28500.0, pre="PM-9/")
+    add(gas_container(), X6, Y6, pre="PM-6/")
+    add(btf(), BX, BY, pre="PM-6/")
     gh, Dg, hgh = gasholder()
     add(gh, GX, GY, pre="PM-7/")
     add(flare(), FX, FY, pre="PM-7/")
-    add(pm8(), XC, y0 - 10500, pre="PM-8A/")
-    add(pm8(), XC, y0 - 6500, pre="PM-8B/")
-    # jalan + pagar batas plot
-    # batas plot = kotak pembatas peralatan + jalan akses 3 m
+    add(pm8(), XC, YC, pre="PM-8A/")
+    add(pm8(), XC, YC + 4000, pre="PM-8B/")
+    # sambungan modul ke rak (vertikal dari skid ke rak)
+    for nm_, x_, ln_ in (("PM5-umpan", 15000 + 5000, "umpan"), ("PM4A-keluaran", 23000 + 2200, "keluaran"), ("PM4A-resirk", 23000 + 11900, "resirkulasi"),
+                         ("PM4B-efluen", 37000 + 7400 + 600, "efluen"), ("PM4A-lumpur", 23000 + 8200, "lumpur")):
+        dy, r_, col = LINES[ln_]
+        out.extend(pipe_run([(x_, YS + 2438 + 200, 1500), (x_, YS + 2438 + 200, ZR + 2 * r_ + 300), (x_, yr + dy, ZR + 2 * r_ + 300), (x_, yr + dy, ZR + 2 * r_)], r_, "sambung-" + nm_, col))
+    for nm_, (tx, ty), ln_, rT in (("TK101-umpan", T1, "umpan", D1 / 2), ("TK301-efluen", T3, "efluen", D3 / 2)):
+        dy, r_, col = LINES[ln_]
+        out.extend(pipe_run([(tx + rT + 400, ty, 1500), (xa + 600, ty, 1500), (xa + 600, yr + dy, 1500), (xa + 600, yr + dy, ZR + r_)], r_, "sambung-" + nm_, col))
+    # batas plot
     xs, ys = [], []
     for n, s_, c in out:
         bb = s_.BoundingBox(); xs += [bb.xmin, bb.xmax]; ys += [bb.ymin, bb.ymax]
     X0, X1, Y0, Y1 = min(xs) - 3000, max(xs) + 3000, min(ys) - 3000, max(ys) + 3000
     out.append(("plot-lantai", box(X1 - X0, Y1 - Y0, 10, X0, Y0, -10), "#dcd8cf"))
+    KP.clear(); KP.update(PM1_in=(1000.0 - 400.0, YS + 1220.0), TK301=T3, TK101=T1, HX401=(XC - 1600.0, YC + 1200.0), CHP=(XC + 6000.0, YC), CHP_B=(XC + 6000.0, YC + 4000.0),
+                          GH=(GX, GY), GH_R=Dg / 2, FL=(FX, FY), reactors=[(x, YR) for x in XS], R_out=Ro, T1_R=D1 / 2, T3_R=D3 / 2, PM6=(X6, Y6), BTF=(BX, BY),
+                          mods=[("PM-1", 1000.0 - 400, YS, 12800.0, 2438.0), ("PM-5", 15000.0, YS, 6358.0, 2438.0), ("PM-4A", 23000.0, YS, CL, CW), ("PM-4B", 37000.0, YS, CL, CW),
+                                ("PM-10", 51000.0, YS, 6058.0, 2438.0), ("PM-9", 1500.0, 28500.0, 4210.0, 3825.0), ("PM-6", X6, Y6, CL, CW),
+                                ("PM-8A", XC, YC, CL, CW), ("PM-8B", XC, YC + 4000, CL, CW)], bb=(X0, Y0, X1, Y1))
     if not simple:
-        # pagar BRC 2,1 m + gerbang, lampu penerangan
         per = [(X0, Y0), (X1, Y0), (X1, Y1), (X0, Y1), (X0, Y0)]
         for i, ((ax, ay), (bx, by)) in enumerate(zip(per[:-1], per[1:])):
             Lg = math.hypot(bx - ax, by - ay); ux, uy = (bx - ax) / Lg, (by - ay) / Lg
@@ -765,5 +893,5 @@ def plant(simple=True):
             out.append(("lampu-kepala-%d" % k, box(600, 300, 120, lx - 300, ly - 150, 8000), "#e8e3c0"))
     return out, tags, (X0, Y0, X1, Y1)
 
-MODULES = {"R-201": lambda: vessel("reactor"), "TK-101": lambda: vessel("tank"), "PM-1": pm1, "PM-4": pm4, "PM-5": pm5,
+MODULES = {"R-201": lambda: gfs_tank("reactor"), "TK-101": lambda: gfs_tank("tank", 5730.0, 5000.0), "PM-1": pm1, "PM-4": pm4, "PM-5": pm5,
            "PM-6": pm6, "PM-7": pm7, "PM-8": pm8, "PM-9": pm9_ct, "PM-10": pm10}
