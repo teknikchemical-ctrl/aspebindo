@@ -18,24 +18,75 @@ def save(fig, name):
 
 def fig_market(o):
     mk = MK.market(o)
-    fig, ax = plt.subplots(1, 2, figsize=(10.5, 4.0), gridspec_kw=dict(width_ratios=[1, 1.35]))
-    a = ax[0]; a.set_aspect("equal"); a.axis("off")
-    for r, c, lab, val, y in ((1.0, DK, "TAM", mk["TAM"], .62), (.68, TE, "SAM", mk["SAM"], .06), (.36, OR, "SOM (2034)", mk["SOM"], -.62)):
-        a.add_patch(Circle((0, r - 1.0), r, color=c, ec="white", lw=1.5))
-        a.text(0, y - .02, "%s\nUSD %s juta/th" % (lab, format(round(val / M), ",").replace(",", ".")) if val < 1e9 else
-               "%s\nUSD %s miliar/th" % (lab, ("%.2f" % (val / 1e9)).replace(".", ",")), ha="center", va="center", color="white", fontsize=8.5, fontweight="bold")
-    a.set_xlim(-1.05, 1.05); a.set_ylim(-1.05, 1.05)
-    a.set_title("(a) Corong pasar (pendapatan rata-rata umur proyek)")
-    a.text(0, -1.12, "Setara-set (volume POME): TAM %d | SAM %d | SOM %d set" % (mk["sets_TAM"], mk["sets_SAM"], mk["sets_SOM"]), ha="center", fontsize=8)
+    fig, ax = plt.subplots(1, 2, figsize=(11, 4.1), gridspec_kw=dict(width_ratios=[1.25, 1]))
+    a = ax[0]; rows = mk["rows"]; cols = [DK, TE, OR, RD]
+    mx = rows[0]["sets"]
+    for i, (rw, c) in enumerate(zip(rows, cols)):
+        w = max(rw["sets"] / mx, .06); y = len(rows) - 1 - i
+        a.barh(y, w, left=(1 - w) / 2, color=c, height=.78)
+        a.text(.5, y, "%s: %s set | %s MWe | USD %s jt/th" % (rw["level"], "{:,.0f}".format(rw["sets"]).replace(",", "."), "{:,.0f}".format(rw["MW"]).replace(",", "."),
+                                                          "{:,.0f}".format(rw["rev"] / M).replace(",", ".")), ha="center", va="center", color="white" if w > .62 else "k", fontsize=8, fontweight="bold",
+               bbox=None if w > .62 else dict(fc="white", ec="none", alpha=.85, pad=1.5))
+    a.set_xlim(0, 1); a.axis("off"); a.set_title("(a) Corong pasar bottom-up (1 set per PKS; pendapatan rata-rata 20 th)")
+    a.text(.5, -.75, "SOM = %.0f%% SAM; %.0f%% laju bangun PLTBg nasional (9 MW/th) [R3]" % (mk["share"] * 100, mk["build_share"] * 100), ha="center", fontsize=8)
     b = ax[1]
     names = [p for p, n in MK.PROV]; n_ = np.array([n for p, n in MK.PROV])
-    sam = n_ * MK.SH_SIZE * MK.SH_NOCAP * np.array([1 if p != "Lainnya" else 0.25 for p in names])
+    sam = n_ * (1 - MK.SH_CAPTURED) * MK.SH_SIZE * MK.SH_DIESEL
     x = np.arange(len(names))
-    b.bar(x - .2, n_, .4, color=LT, ec=TE, label="Jumlah PKS (estimasi)")
-    b.bar(x + .2, sam, .4, color=TE, label="PKS sasaran (30-60 t/jam, tanpa penangkap metana)")
+    b.bar(x - .2, n_, .4, color=LT, ec=TE, label="Jumlah PKS (estimasi [R3])")
+    b.bar(x + .2, sam, .4, color=TE, label="SAM: 30-60 t/jam, tanpa metana, bergantung diesel")
     b.set_xticks(x); b.set_xticklabels(names, rotation=30, ha="right"); b.set_ylabel("jumlah PKS")
     b.set_title("(b) Sebaran PKS & pasar sasaran per provinsi"); b.legend(frameon=False, fontsize=7.5)
     return save(fig, "g01_pasar.png")
+
+def fig_mill(c, wf, fw):
+    """Model Keputusan PKS: biaya terlevelisasi A-D + langkah A -> D"""
+    fig, ax = plt.subplots(1, 2, figsize=(11.5, 4.4), gridspec_kw=dict(width_ratios=[1, 1.35]))
+    a = ax[0]; L = ["A Status quo\nkolam", "B Kolam tertutup\nmilik PKS", "C Tangki\nmilik PKS", "D Layanan BOO\n(produk ini)"]
+    vals = [c[o]["per_t"] for o in "ABCD"]; cols = [RD, GR, GR, DK]
+    a.bar(range(4), vals, color=cols, width=.62)
+    for i, o in enumerate("ABCD"):
+        a.text(i, vals[i] + .06, "%.2f" % vals[i], ha="center", fontsize=8.5, fontweight="bold")
+        if c[o]["capex"] > 0: a.text(i, vals[i] / 2, "CAPEX PKS\nUSD %.1f jt" % (c[o]["capex"] / M), ha="center", color="white", fontsize=7.5)
+    a.text(3, vals[3] / 2, "CAPEX PKS\n0", ha="center", color="white", fontsize=7.5)
+    a.set_xticks(range(4)); a.set_xticklabels(L, fontsize=7.8); a.set_ylabel("Biaya POME bagi PKS (USD 2026 / t TBS, 20 th)")
+    a.set_title("(a) D %.0f%% lebih murah dari kolam (segmen S3)" % (c["saving_D_vs_A_pct"] * 100))
+    b = ax[1]; run_ = 0.0
+    for i, (lab, v) in enumerate(wf):
+        if i == 0 or i == len(wf) - 1:
+            b.bar(i, v, color=RD if i == 0 else DK, width=.65); b.text(i, v + .06, "%.2f" % v, ha="center", fontsize=8); run_ = v
+        else:
+            b.bar(i, v, bottom=run_, color=TE if v < 0 else OR, width=.65)
+            b.text(i, max(run_, run_ + v) + .06, "%+.2f" % v, ha="center", fontsize=7.5); run_ += v
+    b.set_xticks(range(len(wf))); b.set_xticklabels([w[0] for w in wf], rotation=32, ha="right", fontsize=7.5)
+    b.set_ylim(0, max(w[1] for w in wf) * 1.15); b.set_ylabel("USD 2026 / t TBS"); b.set_title("(b) Dari kolam ke layanan BOO; jendela fee USD %.2f-%.2f/t TBS" % (fw["fee_min"], fw["fee_max"]))
+    fig.tight_layout(); return save(fig, "g11_keputusan_pks.png")
+
+def fig_segments(seg, fee):
+    fig, a = plt.subplots(figsize=(10.5, 3.8))
+    for i, sg in enumerate(seg):
+        lo, hi = sg["fee_min"], sg["fee_max"]; ok = hi > lo
+        a.plot([lo, hi], [i, i], c=TE if ok else RD, lw=7 if ok else 2.5, solid_capstyle="butt", alpha=.9)
+        a.scatter([lo], [i], marker="|", s=200, c="k"); a.scatter([hi], [i], marker="|", s=200, c="k")
+        a.text(max(lo, hi) + .06, i, ("jendela %.2f-%.2f" % (lo, hi)) if ok else ("TANPA jendela: pengembang butuh %.2f, PKS maks %.2f" % (lo, hi)), va="center", fontsize=7.8)
+    a.axvline(fee, c=OR, ls="--"); a.text(fee + .04, -.55, "fee dasar %.2f" % fee, color=OR, fontsize=8, ha="left")
+    a.set_yticks(range(len(seg))); a.set_yticklabels([sg["name"] for sg in seg], fontsize=8); a.invert_yaxis()
+    a.set_xlabel("Fee jasa POME (USD/t TBS): kiri = minimum pengembang (NPV = 0), kanan = maksimum PKS (biaya = kolam)")
+    a.set_xlim(min(-0.5, min(sg["fee_min"] for sg in seg) - .2), max(sg["fee_max"] for sg in seg) + 2.2)
+    a.set_title("Jendela kesepakatan per segmen PKS: pasar sasaran = PKS bergantung diesel")
+    fig.tight_layout(); return save(fig, "g12_segmen.png")
+
+def fig_compet(comp):
+    fig, a = plt.subplots(figsize=(11, 4.6))
+    crit = [c for c, _ in MK.CRIT]; Z = np.array([c["scores"] for c in comp])
+    im = a.imshow(Z, cmap="RdYlGn", vmin=1, vmax=5, aspect="auto")
+    for i in range(Z.shape[0]):
+        for j in range(Z.shape[1]): a.text(j, i, "%.1f" % Z[i, j], ha="center", va="center", fontsize=7.5)
+    import textwrap
+    a.set_xticks(range(len(crit))); a.set_xticklabels(["%s\n(bobot %.0f%%)" % ("\n".join(textwrap.wrap(c.split(" (")[0], 16)), w * 100) for c, w in MK.CRIT], fontsize=7)
+    a.set_yticks(range(len(comp))); a.set_yticklabels(["%s  [%.2f]" % (c["name"], c["total"]) for c in comp], fontsize=7.8)
+    a.set_title("Matriks pesaing berbobot (5 = terbaik bagi PKS) - [skor tertimbang]")
+    fig.colorbar(im, ax=a, fraction=.025); fig.tight_layout(); return save(fig, "g13_pesaing.png")
 
 def fig_porter_pestle():
     fig = plt.figure(figsize=(11, 8.2))
@@ -59,12 +110,12 @@ def fig_porter_pestle():
     c.barh(cats[::-1], vals_[::-1], color=[TE if v >= 0 else RD for v in vals_[::-1]])
     for i, v in enumerate(vals_[::-1]): c.text(v + (1 if v >= 0 else -1), i, "%+d" % v, va="center", ha="left" if v >= 0 else "right", fontsize=8)
     c.axvline(0, c="k", lw=.8); c.set_xlim(-45, 50)
-    c.set_xlabel("Skor bersih (peluang - ancaman); total %+d" % sum(vals_)); c.set_title("(c) Skor bersih PESTLE (21 faktor)")
+    c.set_xlabel("Skor bersih (peluang - ancaman); total %+d" % sum(vals_)); c.set_title("(c) Skor bersih PESTLE (%d faktor)" % len(MK.PESTLE))
     d = fig.add_subplot(2, 2, 4)
-    for (n_, at, ab, sz), col in zip(MK.SEGMENTS, (DK, TE, OR, BL, "#7a5c9e", RD, GR)):
+    for (n_, at, ab, sz), col in zip(MK.SEGMENTS, (DK, TE, OR, BL, "#7a5c9e", RD, GR, "#555555")):
         d.scatter(ab, at, s=sz, color=col, zorder=3); d.annotate(n_, (ab, at), xytext=(6, 4), textcoords="offset points", fontsize=7.5)
     d.axhline(3, c=GR, lw=.6, ls=":"); d.axvline(3, c=GR, lw=.6, ls=":")
-    d.set_xlim(1.5, 5); d.set_ylim(2, 4.5); d.set_xlabel("Kemampuan memenangkan pasar (1-5)"); d.set_ylabel("Daya tarik pasar (1-5)")
+    d.set_xlim(1.5, 5); d.set_ylim(1.5, 5); d.set_xlabel("Kemampuan memenangkan pasar (1-5)"); d.set_ylabel("Daya tarik pasar (1-5)")
     d.set_title("(d) Daya tarik dan kemampuan menang"); d.grid(alpha=.2)
     fig.tight_layout(); return save(fig, "g02_porter_pestle.png")
 
@@ -75,7 +126,7 @@ def fig_capex_opex(o):
     for g, n, q, u, c, t, b in rows:
         key = n.split(" ")[0] if g == "PEC" else g.title()
         if g == "PEC":
-            key = ("Bejana standar" if ("Reaktor" in n or "TK-101" in n) else "Membran + PM-4" if ("Membran" in n or "PM-4" in n) else
+            key = ("Tangki GFS" if ("Reaktor" in n or "TK-101" in n) else "Skid kontak PM-4" if "PM-4" in n else
                    "Genset PM-8" if "PM-8" in n else "Skid proses PM-1/5/6/7/9/10" if n.startswith("PM-") else "Listrik, I&C, pipa, PLN")
         grp[key] = grp.get(key, 0) + t
     ks = sorted(grp, key=lambda k: -grp[k])
@@ -87,7 +138,7 @@ def fig_capex_opex(o):
     b.set_xlabel("USD ribu/th (oranye = variabel)"); b.set_title("(b) OPEX tahun penuh USD %.0f ribu (+ MRV karbon)" % ((o["opF"] + o["opV"]) / 1e3))
     c = ax[2]; i = 2
     i = 3
-    parts = [("Jasa pengolahan POME", o["rev_fee"][i], OR), ("Listrik ke PLN", o["rev_exp"][i], DK), ("Listrik ke PKS", o["rev_cap"][i], BL), ("Kredit karbon", o["rev_c"][i], TE)]
+    parts = [("Jasa pengolahan POME", o["rev_fee"][i], OR), ("Listrik ke PLN", o["rev_exp"][i], DK), ("Listrik ke PKS (ganti solar)", o["rev_cap"][i], BL), ("Kredit karbon", o["rev_c"][i], TE)]
     c.pie([p[1] for p in parts], labels=["%s\n%.0f%%" % (p[0], 100 * p[1] / o["rev"][i]) for p in parts], colors=[p[2] for p in parts],
           startangle=90, wedgeprops=dict(width=.42, ec="white"), textprops=dict(fontsize=8))
     c.set_title("(c) Bauran pendapatan th %d: USD %.2f juta" % (o["years"][i], o["rev"][i] / M))
@@ -181,7 +232,7 @@ def fig_fleet(fl):
     a = ax[0]; a.bar(y, fl["sets_op"], color=TE, label="Set beroperasi"); a.bar(y, fl["sets_new"], bottom=fl["sets_op"], color=OR, label="Set baru (konstruksi)")
     a.set_ylabel("jumlah set"); b = a.twinx(); b.plot(y, fl["E"], c=DK, marker="o", ms=3, label="Listrik (GWh/th)"); b.set_ylabel("GWh/th"); b.spines["right"].set_visible(True)
     h1, l1 = a.get_legend_handles_labels(); h2, l2 = b.get_legend_handles_labels(); a.legend(h1 + h2, l1 + l2, frameon=False, fontsize=8, loc="upper left")
-    a.set_ylim(0, 46); a.set_title("(a) Rencana penggelaran armada (SOM %d set)" % sum(F.ROLL.values()))
+    a.set_ylim(0, sum(F.ROLL.values()) * 1.25); a.set_title("(a) Rencana penggelaran armada (SOM %d set)" % sum(F.ROLL.values()))
     c = ax[1]; c.bar(y, fl["rev"] / M, color=LT, ec=TE, label="Pendapatan"); c.bar(y, fl["fcff_co"] / M, color=[RD if v < 0 else TE for v in fl["fcff_co"]], width=.5, label="FCFF perusahaan")
     d = c.twinx(); d.plot(y, np.cumsum(fl["fcff_co"]) / M, c=OR, marker="o", ms=3, label="Kumulatif"); d.spines["right"].set_visible(True); d.set_ylabel("Kumulatif (USD juta)")
     lo = min(c.get_ylim()[0], d.get_ylim()[0]); hi = max(c.get_ylim()[1], d.get_ylim()[1]); c.set_ylim(lo, hi); d.set_ylim(lo, hi)
