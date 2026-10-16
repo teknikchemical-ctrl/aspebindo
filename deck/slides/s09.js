@@ -1,35 +1,26 @@
 // Slide 9: Peluang bisnis dan dampak
 module.exports = (pres, H, L) => {
-  const { C, D, fmt, FONT_H, NF, NF1 } = L; const k = D.keu, ps = D.pasar, lc = D.lca, fl = k.fleet;
-  const fnt = { catAxisLabelFontFace: "Calibri", valAxisLabelFontFace: "Calibri", dataLabelFontFace: "Calibri", legendFontFace: "Calibri" };
-  const s = H.slide(9, "Pasar yang dapat dilayani ±" + fmt(ps.rows[2].sets, 0) + " PKS ({{USD " + fmt(ps.rows[2].rev / 1e6, 0) + " juta per tahun}}); 10 set pada 2034 menghindari {{±" + fmt(10 * lc.net_total / 1000, 0) + " ribu tCO₂e per tahun}}",
-    "Peluang bisnis dan dampak. Pasar bottom-up per filter; ekonomi per set menurut skenario; armada 10 set; dampak terukur dan titik panas emisi.");
-  // ---- corong pasar
-  H.hdr(s, "Ukuran pasar bottom-up (set setara 60 t TBS/jam)", 0.45, 1.25, 4.1, { h: 0.25, fs: 9.5 });
-  const lab = ["TAM", "SAM luas", "SAM", "SOM 2034"], fw = [4.1, 3.4, 2.7, 2.0], fc = [C.navy, C.royal, C.green, C.teal];
-  ps.rows.forEach((r, i) => { const w = fw[i], x = 0.45 + (4.1 - w) / 2; H.box(s, [{ text: lab[i] + ": " + fmt(r.sets, 0) + " set", options: { bold: true, fontSize: 9.5, color: C.white, breakLine: true } }, { text: "USD " + fmt(r.rev / 1e6, 0) + " juta/tahun · " + fmt(r.MW, 0) + " MWe", options: { fontSize: 8, color: C.white } }], x, 1.55 + i * 0.5, w, 0.46, { fill: fc[i], line: null, radius: 0.04 }); });
-  H.table(s, [["Filter menuju SAM", "Porsi", "Keyakinan"], ["PKS tanpa penangkap metana", "88,5%", "sedang"], ["Kapasitas 30–60 t/jam; Sumatera/Kalimantan", "65% × 85%", "rendah"], ["Solar tergantikan ≥ 2 L/t TBS", "20%", "hipotesis"], ["Jaringan 20 kV ≤ 2 km", "60%", "hipotesis"], ["Bebas program biogas grup besar", "75%", "hipotesis"]], 0.45, 3.58, [2.5, 0.85, 0.75], { fs: 7.6, rh: 0.185, align: ["left", "center", "center"] });
-  H.t(s, "SOM 10 set = " + fmt(ps.share * 100, 0) + "% SAM dan " + fmt(ps.build_share * 100, 0) + "% laju bangun PLTBg nasional. Filter hipotesis divalidasi pada gerbang G0.", 0.45, 4.7, 4.1, 0.3, { fontSize: 7.5, color: C.slate });
-  // ---- NPV per skenario
-  H.hdr(s, "Peluang dan risiko per set: NPV menurut skenario (USD juta)", 4.7, 1.25, 4.25, { fill: C.teal, h: 0.25, fs: 9.5 });
-  const sc = k.scen; const pick = [["Kasus dasar", 0], ["Solar 3,0 L/t", 1], ["CAPEX −15%", 9], ["Unit ke-10", 11], ["Tanpa PM-12", 2], ["Solar 1,0 L/t", 3], ["Tarif excess 7,44", 4], ["PKS terisolasi", 8]];
-  s.addChart(pres.charts.BAR, [{ name: "NPV", labels: pick.map((x) => x[0]), values: pick.map((x) => sc[x[1]].NPV / 1e6) }], Object.assign({ x: 4.65, y: 1.52, w: 4.35, h: 3.2, barDir: "bar", chartColors: [C.green], invertedColors: [C.red], showValue: true, dataLabelFormatCode: L.NF2, dataLabelFontSize: 8, catAxisLabelFontSize: 8.3, catAxisOrientation: "maxMin", catAxisLabelPos: "low", valAxisHidden: true, valGridLine: { style: "none" }, showLegend: false, catGridLine: { style: "none" } }, fnt));
-  H.t(s, "Solar tergantikan dan CAPEX menentukan: pada 3,0 L/t NPV USD " + fmt(sc[1].NPV / 1e6, 2) + " juta (IRR " + fmt(sc[1].IRR * 100, 1) + "%, PKS hemat " + fmt(sc[1].save * 100, 0) + "%); tanpa ekspor PLN proyek tidak layak.", 4.7, 4.72, 4.25, 0.3, { fontSize: 7.5, color: C.slate });
-  // ---- dampak terukur
-  H.hdr(s, "Dampak terukur per set 60 t TBS/jam", 9.1, 1.25, 3.8, { h: 0.25, fs: 9.5 });
-  H.table(s, [["Tujuan", "Hasil terukur"], ["SDG 13 aksi iklim", fmt(lc.net_total, 0) + " tCO₂e/tahun (−" + fmt(lc.net_total / lc.base * 100, 0) + "%)"], ["SDG 7 energi bersih", fmt(k.E_net, 1) + " GWh/tahun; " + fmt(k.E_cap, 2) + " GWh ke PKS"], ["Solar tergantikan", "≈ " + fmt(k.E_cap * 0.3 * 1000, 0) + " ribu L/tahun"], ["SDG 8 pekerjaan", "10 pekerja lokal; fabrikasi skid dalam negeri"], ["SDG 6 air", "efluen BOD 1.543 mg/L; tanpa buang ke sungai"], ["Keselamatan (K3)", "HAZOP dan SOP sebelum operasi; detektor gas"], ["Tata kelola", "pemantauan emisi dan efluen dilaporkan terbuka"]], 9.1, 1.52, [1.3, 2.5], { fs: 7.8, rh: 0.35, hrh: 0.2 });
-  // ---- bawah: tawaran investor
-  H.hdr(s, "Tawaran kepada pemodal", 0.45, 5.05, 4.1, { h: 0.25, fs: 9.5 });
-  H.table(s, [["Unit pertama (60 t/jam)", "USD " + fmt(k.peak / 1e6, 1) + " juta dana puncak (utang 58%)"], ["Imbal hasil set 1", "IRR proyek " + fmt(k.IRR * 100, 1) + "%; ekuitas " + fmt(k.IRR_eq * 100, 1) + "%"], ["Set ke-10 (kurva belajar)", "IRR " + fmt(sc[11].IRR * 100, 1) + "%; NPV USD " + fmt(sc[11].NPV / 1e6, 2) + " juta"], ["Armada 10 set (2027–2034)", "dana puncak USD " + fmt(fl.peak / 1e6, 0) + " juta; NPV korporasi USD " + fmt(fl.NPV / 1e6, 1) + " juta"], ["Impas korporasi", "±" + fmt(fl.sets_breakeven, 0) + " set (overhead PV USD " + fmt(fl.pv_overhead / 1e6, 1) + " juta)"]], 0.45, 5.31, [1.55, 2.55], { fs: 7.6, rh: 0.2, head: 0 });
-  // ---- armada
-  H.hdr(s, "Penggelaran armada: set beroperasi", 4.7, 5.05, 4.25, { fill: C.teal, h: 0.25, fs: 9.5 });
-  const yy = fl.years.map((y, i) => (i % 4 === 0 ? String(y) : " ".repeat(i)));
-  s.addChart(pres.charts.BAR, [{ name: "Set beroperasi", labels: yy, values: fl.sets_op }], Object.assign({ x: 4.65, y: 5.3, w: 4.35, h: 1.15, chartColors: [C.royal], catAxisLabelFontSize: 7, valAxisLabelFontSize: 7.5, showLegend: false, valAxisLabelFormatCode: NF, valGridLine: { color: "E3ECF4", size: 0.5 } }, fnt));
-  // ---- titik panas
-  H.hdr(s, "Titik panas emisi sisa proyek (tCO₂e/tahun)", 9.1, 4.28, 3.8, { fill: C.teal, h: 0.25, fs: 9 });
-  const hs = [["Efluen di kolam polishing", lc.eff_pond], ["Bocor 1% biogas", lc.leak], ["Slip genset 0,5%", lc.slip], ["Baja tangki (20 tahun)", lc.embodied], ["CH₄ terlarut", lc.dissolved]];
-  s.addChart(pres.charts.BAR, [{ name: "tCO₂e/tahun", labels: hs.map((x) => x[0]), values: hs.map((x) => x[1]) }], Object.assign({ x: 9.05, y: 4.53, w: 3.9, h: 1.3, barDir: "bar", chartColors: [C.red], showValue: true, dataLabelFormatCode: NF, dataLabelFontSize: 7.8, catAxisLabelFontSize: 7.8, catAxisOrientation: "maxMin", valAxisHidden: true, valGridLine: { style: "none" }, showLegend: false, catGridLine: { style: "none" } }, fnt));
-  H.t(s, "Baseline kolam " + fmt(lc.base, 0) + " − emisi sisa " + fmt(lc.base - lc.net_total, 0) + " = " + fmt(lc.net_total, 0) + " tCO₂e dihindari. Kredit dijual " + fmt(lc.credited, 0) + " (rasio 0,95). Manfaat jaringan (" + fmt(lc.grid_cobenefit, 0) + ") dan solar (" + fmt(lc.diesel_cobenefit, 0) + ") tidak diklaim, agar tidak ada hitung ganda.", 9.1, 5.85, 3.8, 0.6, { fontSize: 7.4 });
-  H.concl(s, "Peluangnya nyata tetapi sempit: hanya ±57 dari ±1.150 PKS lolos filter solar, jaringan, dan program grup; armada baru menutup biaya korporasi setelah ±11 set, jadi pasar harus dibuktikan di gerbang G0.", "Kesimpulan");
-  H.src(s, "fin_market.py (pasar bottom-up; Trase/SEI-PCS, GAPKI 2026, PASPI/BRIN), fin_core.py (skenario, armada), neraca proses Rev 2; faktor baja 1,9 kgCO₂e/kg (ICE v3, asumsi); research/R1, R3.", "SAM pasar yang dapat dilayani; SOM pasar yang dapat dicapai; TAM total pasar; PLTBg pembangkit listrik tenaga biogas; K3 keselamatan dan kesehatan kerja; SDG tujuan pembangunan berkelanjutan.");
+  const { C, D, fmt, FONT_H } = L; const k = D.keu, ps = D.pasar, lc = D.lca, fl = k.fleet, sc = k.scen;
+  const s = H.slide(9, "Pasarnya sempit tetapi nyata: {{±" + fmt(ps.rows[2].sets, 0) + " PKS bernilai USD " + fmt(ps.rows[2].rev / 1e6, 0) + " juta per tahun}}, dan 10 set menghindari {{±" + fmt(10 * lc.net_total / 1000, 0) + " ribu tCO₂e}} setiap tahun",
+    "Peluang bisnis dan dampak. Pasar bottom-up per filter (filter solar, jaringan, dan program grup adalah hipotesis yang divalidasi di G0); ekonomi per set menurut skenario; armada 10 set; dampak terukur.");
+  const img = (f, x, y, w, h, n) => s.addImage({ path: L.ROOT + "/deck/img/" + f, x, y, w, h, objectName: n });
+  H.hdr(s, "(a) Corong pasar: set setara 60 t TBS/jam", 0.45, 1.25, 4.1, { h: 0.24, fs: 9.5 });
+  img("f_pasar.png", 0.45, 1.52, 4.1, 2.35, "grafik-pasar");
+  H.hdr(s, "(b) Sebaran PKS menurut provinsi (± pabrik)", 4.7, 1.25, 4.0, { fill: C.teal, h: 0.24, fs: 9.5 });
+  img("f_prov.png", 4.7, 1.52, 4.0, 2.35, "grafik-provinsi");
+  // dampak: kartu
+  H.hdr(s, "(c) Dampak terukur per set 60 t TBS/jam", 8.85, 1.25, 4.05, { h: 0.24, fs: 9.5 });
+  const im = [["" + fmt(lc.net_total / 1000, 0) + " ribu", "tCO₂e per tahun dihindari (−" + fmt(lc.net_total / lc.base * 100, 0) + "%) · SDG 13"], [fmt(k.E_net, 1) + " GWh", "listrik neto per tahun, " + fmt(k.E_cap, 1) + " GWh ke PKS · SDG 7"], ["±" + fmt(k.E_cap * 0.3 * 1000, 0) + " ribu L", "solar tergantikan per tahun (perkiraan)"], ["10 orang", "pekerja lokal tetap; fabrikasi skid dalam negeri · SDG 8"]];
+  im.forEach(([b, t], i) => { const x = 8.85 + (i % 2) * 2.05, y = 1.55 + Math.floor(i / 2) * 1.14; H.rect(s, x, y, 2.0, 1.08, { fill: C.panel, line: C.line, radius: 0.05 });
+    H.t(s, b, x + 0.06, y + 0.08, 1.88, 0.4, { fontFace: FONT_H, fontSize: 15, bold: true, color: C.navy, align: "center", valign: "middle" }); H.t(s, t, x + 0.1, y + 0.52, 1.8, 0.52, { fontSize: 8, color: C.ink, align: "center" }); });
+  H.t(s, "Efluen BOD 1.543 mg/L tidak dibuang ke sungai (SDG 6); HAZOP, SOP, dan detektor gas sebelum operasi (K3).", 8.85, 3.83, 4.05, 0.3, { fontSize: 7.6, color: C.slate });
+  // baris 2
+  H.hdr(s, "(d) NPV per set menurut skenario (USD juta)", 0.45, 4.15, 4.65, { h: 0.24, fs: 9.5 });
+  img("f_skenario.png", 0.45, 4.41, 4.65, 2.0, "grafik-skenario");
+  H.hdr(s, "(e) Armada 10 set: operasi dan emisi dihindari", 5.25, 4.15, 3.9, { fill: C.teal, h: 0.24, fs: 9.5 });
+  img("f_armada.png", 5.25, 4.41, 3.9, 1.95, "grafik-armada");
+  H.hdr(s, "(f) Tawaran kepada pemodal", 9.3, 4.15, 3.6, { h: 0.24, fs: 9.5 });
+  H.table(s, [["Unit pertama", "dana puncak USD " + fmt(k.peak / 1e6, 1) + " juta"], ["Imbal hasil set 1", "IRR " + fmt(k.IRR * 100, 1) + "% · ekuitas " + fmt(k.IRR_eq * 100, 1) + "%"], ["Set ke-10", "IRR " + fmt(sc[11].IRR * 100, 1) + "% · NPV USD " + fmt(sc[11].NPV / 1e6, 2) + " juta"], ["Armada 10 set", "puncak USD " + fmt(fl.peak / 1e6, 0) + " juta · NPV USD " + fmt(fl.NPV / 1e6, 1) + " juta"], ["Impas korporasi", "±" + fmt(fl.sets_breakeven, 0) + " set"], ["Hemat PKS", fmt(sc[0].save * 100, 1) + "% (3,0 L/t: " + fmt(sc[1].save * 100, 1) + "%)"]], 9.3, 4.41, [1.2, 2.4], { fs: 8, rh: 0.33, head: 0 });
+  H.concl(s, "Hanya ±57 dari ±1.150 PKS lolos filter solar, jaringan, dan program grup; karena itu pasar dibuktikan dulu di G0, dan armada baru menutup biaya korporasi pada set ke-11.", "Kesimpulan");
+  H.src(s, "fin_market.py (Trase/SEI-PCS, GAPKI 2026, PASPI/BRIN); fin_core.py (skenario, armada); neraca proses Rev 2; LCA AMS-III.H (UF 0,89; GWP 28); research/R1 dan R3.", "TAM total pasar; SAM pasar yang dapat dilayani; SOM pasar yang dapat dicapai; SDG tujuan pembangunan berkelanjutan; K3 keselamatan dan kesehatan kerja.");
 };

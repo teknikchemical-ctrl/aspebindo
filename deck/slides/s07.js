@@ -1,49 +1,30 @@
 // Slide 7: Model keuangan
 module.exports = (pres, H, L) => {
-  const { C, D, fmt, FONT_H, NF, NF1 } = L; const k = D.keu, m = D.meta, cf = k.cf, yr = k.years; const i3 = 3;
-  const s = H.slide(7, "Kasus dasar layak tipis: {{NPV USD " + fmt(k.NPV / 1e6, 2) + " juta dan IRR " + fmt(k.IRR * 100, 1) + "%}}; impas NPV pada beban PKS " + fmt(k.bep_util_npv * 100, 0) + "% terhadap asumsi " + fmt(m.util * 100, 0) + "%",
-    "Keuangan. Konfigurasi 60 t TBS/jam + PM-12; semua angka dari Excel berumus hidup (BG_Model_Keuangan.xlsx) yang cocok dengan model Python sampai sen.");
-  const fnt = { catAxisLabelFontFace: "Calibri", valAxisLabelFontFace: "Calibri", dataLabelFontFace: "Calibri", legendFontFace: "Calibri" };
-  // ---------- kolom 1: ringkasan
-  H.hdr(s, "Ringkasan ekonomi", 0.45, 1.25, 3.2, { h: 0.25, fs: 9.5 });
+  const { C, D, fmt, FONT_H } = L; const k = D.keu, m = D.meta, cf = k.cf, i3 = 3;
+  const img = (f, x, y, w, h, n) => pres.slides[pres.slides.length - 1].addImage({ path: L.ROOT + "/deck/img/" + f, x, y, w, h, objectName: n });
+  const s = H.slide(7, "Hitungannya lolos, tetapi tipis: {{NPV USD " + fmt(k.NPV / 1e6, 2) + " juta, IRR " + fmt(k.IRR * 100, 1) + "%}}, dan baru impas bila PKS memakai " + fmt(k.bep_util_npv * 100, 0) + "% kapasitasnya",
+    "Keuangan. Konfigurasi 60 t TBS/jam + PM-12. Semua angka berasal dari model Excel berumus hidup (BG_Model_Keuangan.xlsx) yang cocok dengan model Python sampai sen. Asumsi: umur 20 tahun (2028-2047), USD nominal, inflasi 2%, pajak 22%, beban PKS 75%, ketersediaan 93%, fee USD 1,25 per t TBS, listrik ke PKS USD 0,20/kWh, ekspor PLN 9,81 USc/kWh, karbon USD 5/t.");
   const rv = cf.rev[i3], eb = cf.ebitda[i3];
-  const sm = [["Investasi (FCI 2027)", "USD " + fmt(k.FCI / 1e6, 2) + " juta"], ["Pendapatan tahun penuh", "USD " + fmt(rv / 1e6, 2) + " juta"], ["EBITDA · margin", "USD " + fmt(eb / 1e6, 2) + " juta · " + fmt(eb / rv * 100, 0) + "%"],
-    ["Pembiayaan", fmt(m.debt * 100, 0) + "% utang " + fmt(m.r_debt * 100, 0) + "%, ekuitas " + fmt(m.r_eq * 100, 0) + "%"], ["WACC", fmt(k.WACC * 100, 1) + "%"], ["NPV proyek", "USD " + fmt(k.NPV / 1e6, 2) + " juta"], ["IRR proyek · ekuitas", fmt(k.IRR * 100, 1) + "% · " + fmt(k.IRR_eq * 100, 1) + "%"],
-    ["Payback (biasa · terdiskonto)", fmt(k.PBP, 1) + " · " + fmt(k.DPBP, 1) + " tahun"], ["DSCR minimum", fmt(k.DSCR, 2) + " (ambang 1,30)"], ["LCOE kotor · bersih", "USD " + fmt(k.LCOE, 3) + " · " + fmt(k.LCOE_net, 3) + "/kWh"], ["Impas akuntansi · NPV", fmt(k.bep_util_acc * 100, 0) + "% · " + fmt(k.bep_util_npv * 100, 0) + "% beban"], ["P(NPV > 0), Monte Carlo", fmt(k.mc.p_pos * 100, 0) + "% (P50 USD " + fmt(k.mc.P50 / 1e6, 2) + " juta)"]];
-  H.table(s, sm.map((r, i) => [{ text: r[0], options: { bold: true, color: C.navy } }, { text: r[1], options: { align: "right", bold: i === 5 || i === 6, color: i === 11 || i === 6 ? C.red : C.ink } }]), 0.45, 1.52, [1.55, 1.65], { fs: 8.2, rh: 0.265, head: 0, zebra: true });
-  H.hdr(s, "Asumsi kunci", 0.45, 4.78, 3.2, { fill: C.teal, h: 0.22, fs: 8.5 });
-  H.t(s, "Umur 20 tahun (2028–2047), USD nominal 2026, inflasi 2%, pajak 22% (penyusutan 8 tahun, tax allowance 30%), PKS 60 t TBS/jam × 20 jam × 300 hari × beban 75%, ketersediaan 93%. Fee USD " + fmt(m.fee, 2) + "/t TBS; listrik ke PKS USD 0,20/kWh (solar 2,0 L/t, Rp 21.000/L); ekspor PLN 9,81 USc/kWh; karbon USD 5/t. Kelas estimasi 4: −20%/+40%.", 0.45, 5.02, 3.2, 1.4, { fontSize: 7.6 });
-  // ---------- kolom 2: CAPEX, OPEX, mix
-  const X2 = 3.8, W2 = 4.45; const cc = k.capex_cat;
-  const cg = [["Tangki GFS (reaktor, umpan, efluen, ekualisasi)", cc["Tangki reaktor GFS"] + cc["Tangki umpan, efluen, ekualisasi"]], ["Genset biogas 2 × 800 kWe", cc["Genset biogas"]], ["Skid proses (praolah, kontak, dosing, lumpur, panas)", cc["Praolah (PM-1)"] + cc["Skid kontak (degasser + lamella)"] + cc["Dosing dan pompa"] + cc["Screw press dan lumpur"] + cc["Pemulih panas dan menara"]], ["Pemurnian biogas, penampung, flare", cc["Pemurnian biogas (PM-6)"] + cc["Penampung gas dan flare"]], ["Sipil, angkut, ereksi", cc["Sipil, angkut, ereksi"]], ["Perpipaan, listrik, SCADA", cc["Perpipaan, listrik, SCADA"]], ["Pipa lokasi dan interkoneksi PLN", cc["Pipa lokasi dan interkoneksi PLN"]], ["Rekayasa, izin, start-up", cc["Rekayasa, izin, start-up"]], ["Kontingensi 20%", cc["Kontingensi 20%"]]].sort((a, b) => b[1] - a[1]);
-  H.hdr(s, "CAPEX bottom-up: USD " + fmt(k.FCI26 / 1e6, 2) + " juta (2026)", X2, 1.25, W2, { h: 0.25, fs: 9.5 });
-  s.addChart(pres.charts.BAR, [{ name: "USD ribu", labels: cg.map((x) => x[0]), values: cg.map((x) => x[1] / 1000) }], Object.assign({ x: X2 - 0.05, y: 1.5, w: W2 + 0.1, h: 2.15, barDir: "bar", chartColors: [C.royal], showValue: true, dataLabelFormatCode: NF, dataLabelFontSize: 7.8, catAxisLabelFontSize: 7.8, catAxisOrientation: "maxMin", valAxisHidden: true, valGridLine: { style: "none" }, showLegend: false, catGridLine: { style: "none" } }, fnt));
-  H.t(s, "Biaya peralatan terbeli USD " + fmt(k.PEC / 1e6, 2) + " juta → terpasang dan tidak langsung → kontingensi 20% → FCI. USD " + fmt(k.FCI26 / k.chp, 0) + "/kWe terpasang (pembanding tangki CSTR USD 2.600).", X2, 3.66, W2, 0.3, { fontSize: 7.5, color: C.slate });
-  const oi = k.opex_items; const ox = [["Staf operasi (10 orang)", oi["Staf operasi (10 orang)"].v], ["O&M genset (kontrak)", oi["O&M genset (kontrak)"].v], ["Bahan kimia", oi["Bahan kimia (polimer, karbon aktif, NaOH)"].v], ["Perawatan proses", oi["Perawatan peralatan proses"].v], ["Administrasi dan SCADA", oi["Administrasi & SCADA jarak jauh"].v], ["Asuransi", oi["Asuransi"].v], ["Sewa lahan", oi["Sewa lahan plot di PKS"].v], ["MRV karbon", 12000]].sort((a, b) => b[1] - a[1]);
-  const oxT = ox.reduce((q, x) => q + x[1], 0);
-  H.hdr(s, "OPEX tahun penuh: USD " + fmt(oxT / 1000, 0) + " ribu (USD 2026)", X2, 4.0, W2, { fill: C.teal, h: 0.24, fs: 9 });
-  s.addChart(pres.charts.BAR, [{ name: "USD ribu", labels: ox.map((x) => x[0]), values: ox.map((x) => x[1] / 1000) }], Object.assign({ x: X2 - 0.05, y: 4.25, w: W2 + 0.1, h: 1.75, barDir: "bar", chartColors: [C.teal], showValue: true, dataLabelFormatCode: NF, dataLabelFontSize: 7.8, catAxisLabelFontSize: 7.8, catAxisOrientation: "maxMin", valAxisHidden: true, valGridLine: { style: "none" }, showLegend: false, catGridLine: { style: "none" } }, fnt));
-  H.t(s, "Biaya tetap USD " + fmt(k.opF / 1000, 0) + " ribu; variabel USD " + fmt(k.opV / 1000, 0) + " ribu. Tambahan: overhaul genset tahun 8 dan 16, penggantian atap tangki tahun 12.", X2, 6.02, W2, 0.3, { fontSize: 7.5, color: C.slate });
-  // ---------- kolom 3: BEP, arus kas, tornado
-  const X3 = 8.4, W3 = 4.5;
-  H.hdr(s, "Titik impas: pendapatan vs biaya terhadap beban PKS", X3, 1.25, W3, { h: 0.25, fs: 9.5 });
-  const bs = k.bep_series.filter((b) => b.util >= 0.2 + 1e-9 || true); const lab = bs.map((b, i) => (i % 2 === 0 ? fmt(b.util * 100, 0) + "%" : " ".repeat(i)));
-  s.addChart(pres.charts.LINE, [{ name: "Pendapatan", labels: lab, values: bs.map((b) => b.rev / 1000) }, { name: "Biaya tunai (OPEX)", labels: lab, values: bs.map((b) => b.opex / 1000) }, { name: "Biaya total (+ penyusutan + bunga)", labels: lab, values: bs.map((b) => b.tc / 1000) }],
-    Object.assign({ x: X3 - 0.05, y: 1.5, w: W3 + 0.1, h: 1.4, chartColors: [C.green, C.slate, C.red], lineSize: 2, lineDataSymbol: "none", catAxisLabelFontSize: 7.5, valAxisLabelFontSize: 7.5, valAxisLabelFormatCode: NF, showLegend: false, valGridLine: { color: "E3ECF4", size: 0.5 } }, fnt));
-  [["Pendapatan", C.green], ["Biaya tunai (OPEX)", C.slate], ["Biaya total + penyusutan + bunga", C.red]].forEach(([a, c], i) => { const xx = X3 + [0, 1.1, 2.55][i]; H.rect(s, xx, 2.96, 0.14, 0.09, { fill: c, line: null }); H.t(s, a, xx + 0.18, 2.93, 1.9, 0.14, { fontSize: 7.2 }); });
-  H.t(s, "x: beban PKS (% nameplate); y: USD ribu/tahun. Impas tunai ≈ " + fmt(k.bep_util_cash * 100, 0) + "% · impas akuntansi " + fmt(k.bep_util_acc * 100, 0) + "% · impas NPV " + fmt(k.bep_util_npv * 100, 0) + "% (asumsi " + fmt(m.util * 100, 0) + "%). Fee impas USD " + fmt(k.bep.fee_be, 2) + "/t; CAPEX impas +" + fmt((k.bep.capex_be - 1) * 100, 0) + "%.", X3, 3.08, W3, 0.32, { fontSize: 7.3, bold: true, color: C.navy });
-  H.hdr(s, "Arus kas proyek dan payback (USD juta)", X3, 3.42, W3, { fill: C.teal, h: 0.24, fs: 9 });
-  const ys = yr.map((y, i) => (i % 4 === 0 ? String(y) : " ".repeat(i))); const idx = yr.map((_, i) => i);
-  s.addChart([{ type: pres.charts.BAR, data: [{ name: "FCFF tahunan", labels: ys, values: idx.map((i) => cf.fcff[i] / 1e6) }], options: { chartColors: [C.royal], barGapWidthPct: 40 } }, { type: pres.charts.LINE, data: [{ name: "Kumulatif", labels: ys, values: idx.map((i) => cf.cum[i] / 1e6) }], options: { chartColors: [C.green], lineSize: 2, lineDataSymbol: "none" } }],
-    Object.assign({ x: X3 - 0.05, y: 3.66, w: W3 + 0.1, h: 1.2, catAxisLabelFontSize: 7, valAxisLabelFontSize: 7.5, valAxisLabelFormatCode: NF, showLegend: true, legendPos: "t", legendFontSize: 7.5, valGridLine: { color: "E3ECF4", size: 0.5 } }, fnt));
-  H.t(s, "Puncak dana USD " + fmt(k.peak / 1e6, 1) + " juta (2027–28); payback " + fmt(k.PBP, 1) + " tahun sejak operasi (2028); sustaining: overhaul 2035, 2043; atap 2039.", X3, 4.87, W3, 0.28, { fontSize: 7.5, color: C.slate });
-  H.hdr(s, "Tornado NPV (USD juta): skenario buruk ↔ baik", X3, 5.17, W3, { fill: C.teal, h: 0.22, fs: 8.5 });
-  const tr = k.tornado.rows.slice(0, 4);
-  s.addChart(pres.charts.BAR, [{ name: "Buruk", labels: tr.map((r) => r.l), values: tr.map((r) => r.lo / 1e6) }, { name: "Baik", labels: tr.map((r) => r.l), values: tr.map((r) => r.hi / 1e6) }], Object.assign({ x: X3 - 0.05, y: 5.4, w: W3 + 0.1, h: 1.05, barDir: "bar", barGrouping: "stacked", chartColors: [C.red, C.green], catAxisLabelFontSize: 7, valAxisLabelFontSize: 7, catAxisOrientation: "maxMin", valAxisLabelFormatCode: NF1, showLegend: false, catAxisLabelPos: "low", valAxisHidden: true, valGridLine: { color: "E3ECF4", size: 0.5 } }, fnt));
-  // bauran pendapatan (bentuk)
-  H.hdr(s, "Bauran pendapatan tahun penuh", 0.45, 5.9, 3.2, { fill: C.teal, h: 0.22, fs: 8.5 });
-  const mix = [["Jasa POME", cf.rev_fee[i3], C.navy], ["Listrik PKS", cf.rev_cap[i3], C.royal], ["Ekspor PLN", cf.rev_exp[i3], C.teal], ["Karbon", cf.rev_c[i3], C.green]]; const tot = mix.reduce((q, x) => q + x[1], 0); let xx = 0.45;
-  mix.forEach(([a, v, c]) => { const w = 3.2 * v / tot; H.box(s, fmt(v / tot * 100, 0) + "%", xx, 6.16, w, 0.2, { fs: 8, bold: true, color: C.white, fill: c, line: null, radius: 0, margin: 0 }); H.t(s, a, xx, 6.37, w, 0.13, { fontSize: 6.8, align: "center", color: C.slate }); xx += w; });
-  H.concl(s, "Kelayakan hanya terjadi jika beban PKS ≥ 74%, CAPEX tidak naik > 2%, dan fee ≥ USD " + fmt(k.bep.fee_be, 2) + "/t; peluang NPV positif 25% (Monte Carlo), naik ke ±45% setelah gerbang data, kuotasi, dan izin.", "Kesimpulan");
-  H.src(s, "BG_Model_Keuangan.xlsx; finance/fin_core.py v4; Monte Carlo 4.000 iterasi (distribusi di lembar Monte Carlo); research/R2, R6.", "FCI biaya modal tetap; FCFF arus kas bebas proyek; WACC biaya modal rata-rata tertimbang; DSCR rasio cakupan layanan utang; LCOE biaya listrik terlevelisasi; MRV pemantauan, pelaporan, verifikasi.");
+  const kp = [["USD " + fmt(k.FCI / 1e6, 2) + " juta", "Investasi (FCI 2027)\nUSD " + fmt(k.FCI26 / k.chp, 0) + "/kWe terpasang"], ["USD " + fmt(rv / 1e6, 2) + " juta", "Pendapatan tahun penuh\nbeban PKS 75%"], ["USD " + fmt(eb / 1e6, 2) + " juta", "EBITDA tahun penuh\nmargin " + fmt(eb / rv * 100, 0) + "%"],
+    ["USD " + fmt(k.NPV / 1e6, 2) + " juta", "NPV proyek, 20 tahun\nWACC " + fmt(k.WACC * 100, 1) + "%"], [fmt(k.IRR * 100, 1) + "%", "IRR proyek\nekuitas " + fmt(k.IRR_eq * 100, 1) + "% (< biaya ekuitas 15%)"], [fmt(k.PBP, 1) + " tahun", "Payback sejak operasi\nDSCR minimum " + fmt(k.DSCR, 2)]];
+  kp.forEach(([b, l], i) => { const x = 0.45 + i * 2.085, w = 2.0, red = i === 4; H.rect(s, x, 1.25, w, 0.66, { fill: C.white, line: red ? C.red : C.teal, radius: 0.05, lw: 1 });
+    H.t(s, b, x + 0.05, 1.27, w - 0.1, 0.3, { fontFace: FONT_H, fontSize: 14, bold: true, color: red ? C.red : C.navy, align: "center", valign: "middle" });
+    H.t(s, l, x + 0.05, 1.57, w - 0.1, 0.32, { fontSize: 7.4, color: C.slate, align: "center" }); });
+  // baris A
+  H.hdr(s, "(a) Rincian CAPEX bottom-up: USD " + fmt(k.FCI26 / 1e6, 2) + " juta (harga 2026, kelas estimasi 4)", 0.45, 2.0, 6.15, { h: 0.22, fs: 9 });
+  img("f_capex.png", 0.45, 2.24, 6.15, 2.0, "grafik-capex");
+  H.hdr(s, "(b) Rincian 8 pos OPEX tunai: USD " + fmt(k.opF / 1000 + k.opV / 1000 + 12, 0) + " ribu per tahun", 6.75, 2.0, 6.15, { fill: C.teal, h: 0.22, fs: 9 });
+  img("f_opex.png", 6.75, 2.24, 6.15, 2.0, "grafik-opex");
+  // baris B
+  H.hdr(s, "(c) Titik impas terhadap beban PKS", 0.45, 4.3, 4.0, { h: 0.22, fs: 9 });
+  img("f_bep.png", 0.45, 4.54, 4.0, 1.88, "grafik-bep");
+  H.hdr(s, "(d) Kurva payback: arus kas kumulatif", 4.55, 4.3, 4.6, { fill: C.teal, h: 0.22, fs: 9 });
+  img("f_payback.png", 4.55, 4.54, 4.6, 1.88, "grafik-payback");
+  H.hdr(s, "(e) Ringkasan ekonometrik", 9.25, 4.3, 3.65, { h: 0.22, fs: 9 });
+  const eq = [["WACC · biaya utang", fmt(k.WACC * 100, 1) + "% · " + fmt(m.r_debt * 100, 0) + "%"], ["Struktur modal", fmt(m.debt * 100, 0) + "% utang · " + (100 - Math.round(m.debt * 100)) + "% ekuitas"], ["DSCR minimum · rata-rata", fmt(k.DSCR, 2) + " · " + fmt(k.DSCR_avg, 2)], ["Indeks profitabilitas", fmt(k.PI, 2)], ["Payback terdiskonto", fmt(k.DPBP, 1) + " tahun"], ["LCOE kotor · bersih*", "USD " + fmt(k.LCOE, 3) + " · " + fmt(k.LCOE_net, 3)],
+    ["Impas tunai · akuntansi · NPV", fmt(k.bep_util_cash * 100, 0) + " · " + fmt(k.bep_util_acc * 100, 0) + " · " + fmt(k.bep_util_npv * 100, 0) + "%"], ["Peluang NPV > 0 (Monte Carlo)", fmt(k.mc.p_pos * 100, 0) + "% (P50 USD " + fmt(k.mc.P50 / 1e6, 2) + " juta)"]];
+  H.table(s, eq.map((r, i) => [{ text: r[0], options: { bold: true, color: C.navy } }, { text: r[1], options: { align: "right", bold: i === 7, color: i === 7 ? C.red : C.ink } }]), 9.25, 4.54, [1.75, 1.9], { fs: 7.6, rh: 0.222, head: 0 });
+  H.t(s, "*Bersih: setelah dikurangi pendapatan fee dan karbon.", 9.25, 6.31, 3.65, 0.14, { fontSize: 6.3, color: C.slate });
+  H.concl(s, "Satu set 60 t TBS/jam hanya layak jika PKS memakai ≥ " + fmt(k.bep_util_npv * 100, 0) + "% kapasitas, fee ≥ USD " + fmt(k.bep.fee_be, 2) + "/t, dan CAPEX tidak naik lebih dari 2%; peluang NPV positif baru 25%, dan gerbang G0–G3 yang menaikkannya.", "Kesimpulan");
+  H.src(s, "BG_Model_Keuangan.xlsx; finance/fin_core.py v4 (60 t TBS/jam + tangki ekualisasi PM-12, USD nominal); Monte Carlo 4.000 iterasi; research/R2 dan R6.", "FCI biaya modal tetap; WACC biaya modal rata-rata tertimbang; DSCR rasio cakupan layanan utang; LCOE biaya listrik terlevelisasi; MRV pemantauan, pelaporan, verifikasi; O&M operasi dan pemeliharaan.");
 };
